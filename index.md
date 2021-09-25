@@ -21,7 +21,7 @@ Hopefully this can also be useful to others, but really, I am really doing this 
 
 {% for post in site.posts %}
 
-##[{{ post.title }}]({{ post.url }})
+## [{{ post.title }}]({{ post.url }})
 {{ post.excerpt }}
 
 {% endfor %}
