@@ -1,5 +1,6 @@
 ---
 layout: collection
+permalink: /thisweek/
 collection: thisWeek
 title: Weekly summaries
 entries_layout: # list (default), grid
