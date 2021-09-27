@@ -1,0 +1,38 @@
+---
+layout: default
+---
+
+<main id="main" class="main-content" aria-label="Content">
+  <article class="h-entry">
+    {% include page-image.html %}
+    <div class="page-wrapper">
+      <header class="page-header">
+        {% assign title = page.title | markdownify | strip_html %}
+        <h1 id="page-title" class="page-title p-name"><a class="u-bookmark-of" href="{{ page.link }}">{{ title }}({{page.link}})</a></h1>
+      </header>
+      <time class="entry-date dt-published" datetime="{{ entry.date | date_to_xmlschema }}">
+        {{ entry.date | date: site.date_format  }}
+      </time>
+      <div class="page-content">
+        <div class="e-content"> 
+            {{ content }}
+            {% if page.sourceurl %}
+            <hr/>
+            <em>from:
+                <a class="u-bookmark-of" href="{{ page.sourceurl }}">
+                {% if page.source %}
+                    {{ page.source}}
+                {% else %}
+                    {{ page.sourceurl}}
+                {% endif %}
+                </a>
+            </em>
+            {% else if page.source %}
+            <hr/>
+            <em>from:{{ page.source}}</em>
+            {% endif %}
+        </div>
+      </div>
+    </div>
+  </article>
+</main>

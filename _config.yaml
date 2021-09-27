@@ -32,10 +32,18 @@ plugins:
   - jekyll-sitemap
   - jekyll-feed
   - jekyll-paginate
+  - jekyll-titles-from-headings
 
 collections:
+  thisWeek:
+    output: true
   links:
     output: true
+
+titles_from_headings:
+  enabled:     true
+  strip_title: true
+  collections: true
 
 defaults:
   - 
@@ -46,12 +54,19 @@ defaults:
       layout: post
       comments: true
       share: true
+  - 
+    scope:
+      path: "_thisWeek"
+      layout: posts
+    values:
+      strip_title: true
+
   -
     scope:
       path: "" 
       type: "links" 
     values:
-      layout: "link"
+      layout: link
 
 # Site Author
 author:

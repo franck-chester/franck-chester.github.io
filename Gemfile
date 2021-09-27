@@ -9,5 +9,6 @@ gem "jekyll-theme-so-simple"
 
 group :jekyll_plugins do
   gem "jekyll-paginate"
+  gem 'jekyll-titles-from-headings'
 end
 
