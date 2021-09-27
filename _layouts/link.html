@@ -8,11 +8,10 @@ layout: default
     <div class="page-wrapper">
       <header class="page-header">
         {% assign title = page.title | markdownify | strip_html %}
-        <h1 id="page-title" class="page-title p-name"><a class="u-bookmark-of" href="{{ page.link }}">{{ title }}({{page.link}})</a></h1>
+        <h2 id="page-title" class="page-title p-name">{{ title }}</h2>
+        <p>@ <a class="u-bookmark-of" href="{{ page.target }}">{{page.target}}</a></p>
       </header>
-      <time class="entry-date dt-published" datetime="{{ entry.date | date_to_xmlschema }}">
-        {{ entry.date | date: site.date_format  }}
-      </time>
+      {% include entry-date.html %}
       <div class="page-content">
         <div class="e-content"> 
             {{ content }}
@@ -32,6 +31,7 @@ layout: default
             <em>from:{{ page.source}}</em>
             {% endif %}
         </div>
+        {% include page-tags.html %}
       </div>
     </div>
   </article>

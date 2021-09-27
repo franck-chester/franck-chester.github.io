@@ -1,6 +1,6 @@
 ---
 title: An Exploration of JSON Interoperability Vulnerabilities
-link : "https://labs.bishopfox.com/tech-blog/an-exploration-of-json-interoperability-vulnerabilities"
+target :  "https://labs.bishopfox.com/tech-blog/an-exploration-of-json-interoperability-vulnerabilities"
 source : "the internet"
 tags: [infosec,json]
 ---

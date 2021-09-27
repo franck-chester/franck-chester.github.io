@@ -63,7 +63,7 @@ defaults:
 
   -
     scope:
-      path: "" 
+      path: "_links" 
       type: "links" 
     values:
       layout: link
