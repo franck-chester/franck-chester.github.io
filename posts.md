@@ -1,3 +1,4 @@
 ---
 layout: posts
+permalink: /posts/
 ---

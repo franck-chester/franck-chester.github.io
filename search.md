@@ -1,3 +1,4 @@
 ---
 layout: search
+permalink: /search/
 ---
