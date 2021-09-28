@@ -24,7 +24,7 @@ I'll do it as per this [SO answer](https://stackoverflow.com/a/60942437), which 
 Finally, we need to [commit the file back to main](https://lannonbr.com/blog/2019-12-09-git-commit-in-actions).
 Unfortunately this doesn't trigger our jekyll build action, as explained [here](https://github.community/t/github-action-not-triggering-gh-pages-upon-push/16096) :sad:
 
-At this stage I have not figured out why using a personal token hasn't worked around this issue.... To be coninues
+At this stage I have not figured out why using a personal token hasn't worked around this issue.... To be continued
 
 
 
