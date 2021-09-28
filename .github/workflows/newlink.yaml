@@ -66,11 +66,4 @@ jobs:
           # Stage the file, commit and push
           git add _links/${{ steps.date.outputs.filename }}
           git commit -m "New link: ${{ steps.filename.outputs.filename }}"
-          git push origin main
-
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: .
-          publish_branch: gh-pages
+          git push https://${{ secrets.GITHUB_TOKEN }}@github.com/${{GITHUB_REPOSITORY}}.git
