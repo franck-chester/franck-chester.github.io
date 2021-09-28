@@ -9,7 +9,7 @@ on:
       target:
         description: 'The URL we are sharing'     
         required: true
-        default: 'warning'
+        default: 'https://...'
       source:
         description: 'Where (free text) did we find out about the URL we are sharing'     
         required: true
@@ -35,7 +35,7 @@ jobs:
       - name: Generate the filename
         id: filename
         run: |
-          $date="$(date +'%Y-%m-%d')""
+          $date="$(date +'%Y-%m-%d')"
           echo "::set-output name=filename::${date}-${{ github.event.inputs.title }}.md"
 
       - name: Generate new link file
