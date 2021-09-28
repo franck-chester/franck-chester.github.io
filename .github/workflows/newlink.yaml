@@ -21,7 +21,7 @@ on:
         description: 'Space separated list of tags'     
         required: true
       blurb:
-        description: 'Some text to explain why you are haring'     
+        description: 'Some text to explain why you are sharing'     
         required: true
         default: 'This looks interesting...'
 
@@ -36,7 +36,8 @@ jobs:
         id: filename
         run: |
           $date="$(date +'%Y-%m-%d')"
-          echo "::set-output name=filename::${date}-${{ github.event.inputs.title }}.md"
+          $filename="${date}-${{ github.event.inputs.title }}.md"
+          echo "::set-output name=filename::${filename}"
 
       - name: Generate new link file
         uses: DamianReeves/write-file-action@v1.0
