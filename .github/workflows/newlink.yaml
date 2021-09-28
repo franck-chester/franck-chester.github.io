@@ -1,0 +1,67 @@
+name: Generate a new file in the _links folder
+
+on:
+  workflow_dispatch:
+    inputs:
+      title:
+        description: 'A user friendly name/description for the URL we are sharing'     
+        required: true
+      target:
+        description: 'The URL we are sharing'     
+        required: true
+        default: 'warning'
+      source:
+        description: 'Where (free text) did we find out about the URL we are sharing'     
+        required: true
+        default: 'the internet'
+      source_url:
+        description: 'Where (URL) did we find out about the URL we are sharing'     
+        required: false
+      tags:
+        description: 'Space separated list of tags'     
+        required: true
+      blurb:
+        description: 'Some text to explain why you are haring'     
+        required: true
+        default: 'This looks interesting...'
+
+jobs:
+  newlink:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Generate the filename
+        id: filename
+        run: |
+          $date="$(date +'%Y-%m-%d')""
+          echo "::set-output name=filename::${date}-${{ github.event.inputs.title }}.md"
+
+      - name: Generate new link file
+        uses: DamianReeves/write-file-action
+        with:
+          path: ${{ env.home}}/_links/${{ steps.date.outputs.filename }}
+          write-mode: append
+          contents: |
+            ---
+            title: ${{ github.event.inputs.title }}
+            target : ${{ github.event.inputs.target }}
+            source : ${{ github.event.inputs.source }}
+            source_url : ${{ github.event.inputs.source_url }}
+            tags: ${{ github.event.inputs.tags }}
+            ---
+
+            ${{ github.event.inputs.blurb }}
+
+      - name: setup git config
+        run: |
+          git config user.name "NewLink GitHub Action"
+          git config user.email "<>"
+
+      - name: commit
+        run: |
+          # Stage the file, commit and push
+          git add ${{ env.home}}/_links/${{ steps.date.outputs.filename }}
+          git commit -m "New link: ${{ steps.date.outputs.filename }}"
+          git push origin main
