@@ -35,8 +35,8 @@ jobs:
       - name: Generate the filename
         id: filename
         run: |
-          $date="$(date +'%Y-%m-%d')"
-          $filename="${date}-${{ github.event.inputs.title }}.md"
+          date="$(date +'%Y-%m-%d')"
+          filename="${date}-${{ github.event.inputs.title }}.md"
           echo "::set-output name=filename::${filename}"
 
       - name: Generate new link file
