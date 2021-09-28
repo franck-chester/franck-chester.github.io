@@ -3,7 +3,7 @@ title: Customising Jekyll
 tags: jekyll github liquid
 ---
 
-Following my initial setup of Jekyll (as per [Setting up my GitHub page with Jekyll]({% link _posts/2021-09-27-jekyll.md %})]), I now want to customise the site to meet my personal requirements.
+Following my initial setup of Jekyll (as per [Setting up my GitHub page with Jekyll]({% link _posts/2021-09-27-jekyll.md %})), I now want to customise the site to meet my personal requirements.
 
 First of all, I do not intend to blog daily, not really my style. I am however a prolific internet browser, and like to share interesting links I stumble about. 
 I do not like cross-posting, therefore I usually have to chose whether to share on twitter, linkedin or my current job's intranet. 
@@ -54,7 +54,7 @@ defaults:
 
 `strip_title: true` is used with the [jekyll-titles-from-headings](https://www.rubydoc.info/gems/jekyll-titles-from-headings/0.5.3) plugin to ensure that So-Simple doesn't display the collection name as well as the actual title.
 
-## Links layout
+## Link layout
 
 Is a cut and paste from the So-Solid `post.html` layout (to display a single *post*), hacked to display the *link* variables:
 - `target`: the actual URL I want to share
@@ -62,6 +62,8 @@ Is a cut and paste from the So-Solid `post.html` layout (to display a single *po
 - `source`: where/how I found that link in the first place (free text)
 - `source_url`: where/how I found that link in the first place (URL)
 - `tags`: keywords associated with this link
+
+See [the result](/links/)
 
 ## Week Ending layout
 
@@ -72,7 +74,8 @@ Another cut and paste, this time from the So-Solid  `posts.html` layout (to disp
 
 The main difficulty here was filtering on dates. The trick is to use the [`capture` tag](https://shopify.github.io/liquid/tags/variable/) to create time variables in unix format (number of seconds) which can then be manipulated as integers:
 
-``` Liquid
+{% raw %}
+``` liquid
 {% capture weekending %}{{page.date | date: "%s" }}{% endcapture %}
 {% capture seven_days_ago %}{{weekending |minus: 604800}}{% endcapture %}
 {% capture date %}{{entry.date | date: '%s'}}{% endcapture %}
@@ -80,7 +83,9 @@ The main difficulty here was filtering on dates. The trick is to use the [`captu
   ... show the post or link ...
 {% endif %}
 ```
+{% endraw %}
 
+See [the result](/thisweek/)
 ## Tags layout
 
 Another cut and paste, this time from the So-Solid `tags.html` layout (to display *posts* grouped by *tag*), hacked so that it considers tagged *posts* AND *links*.
@@ -89,17 +94,21 @@ The hardest bit here was to deal with Liquid arrays. An initial google of the is
 
 To initialise an empty array, you still need to split an empty string, but you can then use the `push` filter to add entries to it:
 
-```liquid
+{% raw %}
+``` liquid
 {% assign items = "" | split: ',' %}
 {% assign items = "" | push: 'a value' %}
 ```
+{% endraw %}
 
 That said, after a lot of faffing, I simply filtered down tag collections before concatenating them:
+{% raw %}
 ``` liquid
 {% assign taggedItems = "" | split: ',' %}
 {% assign taggedItems = taggedItems  | concat: site.posts| where_exp : "post", "post.tags contains tag" %}
 {% assign taggedItems = taggedItems  | concat: site.links | where_exp : "link", "link.tags contains tag" %}
 ```
+{% endraw %}
 
 What is really pants is that Liquid doesn't give us access to Map objects, other than through the `group_by` filter.
 My logic therefore is forced to iterate through all tagged content multiple time in order to replicate the logic of the original layout, which itself could do with the built-in `site.tags` map, keyed on tag names.
@@ -115,7 +124,9 @@ I have also initially made a mess of things by cut and pasting the markup from t
 
 Worth remembering this trick : you can use Jekyll `inspect` [filter](https://jekyllrb.com/docs/liquid/filters/) to dump the value of any variable:
 
+{% raw %}
 ``` liquid
 myVariable = {{ myVariable| inspect }} 
 ```
+{% endraw %}
 
