@@ -39,7 +39,7 @@ jobs:
           echo "::set-output name=filename::${date}-${{ github.event.inputs.title }}.md"
 
       - name: Generate new link file
-        uses: DamianReeves/write-file-action@v1
+        uses: DamianReeves/write-file-action
         with:
           path: ${{ env.home}}/_links/${{ steps.date.outputs.filename }}
           write-mode: append
