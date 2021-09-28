@@ -56,14 +56,15 @@ jobs:
 
             ${{ github.event.inputs.blurb }}
 
-      - name: setup git config
+      - name: Push changes
+        uses: actions/checkout@v2
+        continue-on-error: true
+        with:
+          token: ${{ secrets.MY_TOKEN }}
         run: |
-          git config user.name "NewLink GitHub Action"
-          git config user.email "<>"
-
-      - name: commit
-        run: |
-          # Stage the file, commit and push
+          date > generated.txt
+          git config user.name github-actions
+          git config user.email github-actions@github.com
           git add _links/${{ steps.date.outputs.filename }}
           git commit -m "New link: ${{ steps.filename.outputs.filename }}"
-          git push https://${{ secrets.MY_TOKEN }}@github.com/${{github.repository}}.git
+          git push
