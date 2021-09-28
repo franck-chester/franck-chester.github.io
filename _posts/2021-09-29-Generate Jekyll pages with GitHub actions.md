@@ -1,6 +1,6 @@
 ---
 title: Generate Jekyll pages with GitHub actions
-tags: github jekyll
+tags: github jekyll 
 ---
 
 Now that I have [customised Jekyll]({% link _posts/2021-09-28-customising jekyll.md%}) I want to simplify my workflow.
