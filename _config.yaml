@@ -2,7 +2,7 @@ theme: jekyll-theme-so-simple
 skin: "/assets/css/skins/default.css"
 locale: en-GB
 title: "Franck's stuff"
-description: "This is where I document and comment on those tidbits I keep stumbling on during my day job, and my evening browsing"
+description: "This is where I document and comment on those titbits I keep stumbling on during my day job, and my evening browsing"
 url: https://franck-chester.github.io/
 logo: 
 read_time: false
@@ -33,6 +33,7 @@ plugins:
   - jekyll-feed
   - jekyll-paginate
   - jekyll-titles-from-headings
+  - jemoji
 
 collections:
   thisWeek:
