@@ -4,7 +4,13 @@ on:
   push:
     branches:
       - main 
+    paths-ignore:
+      - 'README.md'
+      - '_drafts/**'
+      - '.github/**'
   repository_dispatch:
+  schedule:
+    - cron: '0 0 * * *'  # every day at midnight 
 
 jobs:
   jekyll:
