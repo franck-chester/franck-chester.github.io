@@ -7,5 +7,5 @@ It uses [Jekyll](https://jekyllrb.com/), and is refreshed automatically whenever
 When testing locally :
 
 ```
-bundle exec jekyll serve
+bundle exec jekyll serve --drafts --future
 ```

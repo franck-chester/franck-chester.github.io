@@ -59,6 +59,15 @@ defaults:
       share: true
   - 
     scope:
+      path: "_drafts"
+      type: posts
+    values:
+      layout: post
+      comments: true
+      share: true
+
+  - 
+    scope:
       path: "_thisWeek"
       layout: posts
     values:
