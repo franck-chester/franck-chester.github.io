@@ -47,10 +47,10 @@ jobs:
           write-mode: append
           contents: |
             ---
-            title: ${{ github.event.inputs.title }}
-            target : ${{ github.event.inputs.target }}
-            source : ${{ github.event.inputs.source }}
-            source_url : ${{ github.event.inputs.source_url }}
+            title: "${{ github.event.inputs.title }}"
+            target : "${{ github.event.inputs.target }}"
+            source : "${{ github.event.inputs.source }}"
+            source_url : "${{ github.event.inputs.source_url }}"
             tags: ${{ github.event.inputs.tags }}
             ---
 
