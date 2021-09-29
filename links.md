@@ -6,5 +6,5 @@ collection: links
 entries_layout: grid
 show_excerpts: true
 sort_by: date
-sort_order: forward
+sort_order: reverse
 ---
