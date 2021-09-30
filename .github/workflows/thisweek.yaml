@@ -1,0 +1,51 @@
+name: Generate a new file in the _thisWeek folder
+
+on:
+  schedule:
+    - cron: '00 06 * * 5'  # At 06:00 AM, only on Friday  
+
+jobs:
+  thisweek:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v2
+
+      - name: Generate the filename
+        id: filename
+        run: |
+          date="$(date +'%Y-%m-%d')"
+          filename="Week ending ${date}.md"
+          echo "filename = ${filename}"
+          echo "::set-output name=date::${date}"
+          echo "::set-output name=filename::${filename}"
+
+      - name: Generate new thisweek file
+        uses: DamianReeves/write-file-action@v1.0
+        with:
+          path: _thisWeek/${{ steps.filename.outputs.filename }}
+          write-mode: append
+          contents: |
+            ---
+            layout: weekending
+            tags: 
+            date: ${{ steps.filename.outputs.date }}
+            ---
+
+            This blurb was auto generated, probably because I have been too busy to write down anything about my week.  
+            Hopefully I have written some posts and/or posted interesting links : 
+
+      - name: Commit and push files
+        run: |
+          git config user.name "ThisWeek GitHub Action"
+          git config user.email "<>"
+          git add _thisWeek/${{ steps.filename.outputs.filename }}
+          git commit -m "Summary of week ending ${{ steps.filename.outputs.date }}"
+          git push https://${{ secrets.MY_TOKEN }}@github.com/${{github.repository}}.git main
+
+      - name: Trigger jekyll build
+        run: |
+          curl -X POST https://api.github.com/repos/${{github.repository}}/dispatches \
+          -H 'Accept: application/vnd.github.everest-preview+json' \
+          -u ${{ secrets.MY_TOKEN }} \
+          --data '{"event_type": "Summary of week ending ${{ steps.filename.outputs.date }}", "client_payload": { "customField": "customValue" }}'
