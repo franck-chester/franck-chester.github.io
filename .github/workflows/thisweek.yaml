@@ -11,25 +11,23 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v2
 
-      - name: Generate the filename
-        id: filename
+      - name: Caculate the date
+        id: caculateDate
         run: |
           date="$(date +'%Y-%m-%d')"
-          filename="Week ending ${date}.md"
-          echo "filename = ${filename}"
+          echo "date = ${date}"
           echo "::set-output name=date::${date}"
-          echo "::set-output name=filename::${filename}"
 
       - name: Generate new thisweek file
         uses: DamianReeves/write-file-action@v1.0
         with:
-          path: _thisWeek/${{ steps.filename.outputs.filename }}
+          path: _thisWeek/Week ending ${{ steps.calculateDate.outputs.date }}.md
           write-mode: append
           contents: |
             ---
             layout: weekending
             tags: 
-            date: ${{ steps.filename.outputs.date }}
+            date: ${{ steps.calculateDate.outputs.date }}
             ---
 
             This blurb was auto generated, probably because I have been too busy to write down anything about my week.  
@@ -39,8 +37,8 @@ jobs:
         run: |
           git config user.name "ThisWeek GitHub Action"
           git config user.email "<>"
-          git add _thisWeek/${{ steps.filename.outputs.filename }}
-          git commit -m "Summary of week ending ${{ steps.filename.outputs.date }}"
+          git add _thisWeek/${{ steps.calculateDate.outputs.filename }}
+          git commit -m "Summary of week ending ${{ steps.calculateDate.outputs.date }}"
           git push https://${{ secrets.MY_TOKEN }}@github.com/${{github.repository}}.git main
 
       - name: Trigger jekyll build
@@ -48,4 +46,4 @@ jobs:
           curl -X POST https://api.github.com/repos/${{github.repository}}/dispatches \
           -H 'Accept: application/vnd.github.everest-preview+json' \
           -u ${{ secrets.MY_TOKEN }} \
-          --data '{"event_type": "Summary of week ending ${{ steps.filename.outputs.date }}", "client_payload": { "customField": "customValue" }}'
+          --data '{"event_type": "Summary of week ending ${{ steps.calculateDate.outputs.date }}", "client_payload": { "customField": "customValue" }}'
