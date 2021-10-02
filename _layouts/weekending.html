@@ -10,6 +10,7 @@ layout: default
                 <h1 id="page-title" class="page-title p-name">Week ending {{ page.date | date: "%d/%m/%Y"}} </h1>
             </header>
             <div class="page-content">
+                 {{ content }}
                 {% capture weekending %}{{page.date | date: "%s" }}{% endcapture %}
                 {% capture seven_days_ago %}{{weekending |minus: 604800}}{% endcapture %}
                 <h2 class="taxonomy-title">Posts</h2>
