@@ -39,6 +39,12 @@ sudo apt-get -y update
 sudo apt-get -y install podman
 ```
 
+NB: on Ubuntu, we need to add docker.io as a default search registry in order to pull containers by their short name (see [Shortnames are broken in 3.0.0 due to missing list of unqualified-search registries ](https://github.com/containers/podman/issues/9390#issuecomment-876994582)), by adding this line to `/etc/containers/registries.conf`:
+
+```
+unqualified-search-registries=["docker.io"]
+```
+
 ## Alias vs-code
 
 Thanks to Visual Studio Code (vscode) [Remote - WSL](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-wsl) extension, I can launch my favourite IDE from WSL2 command line: `code .`.
