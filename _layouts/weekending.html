@@ -1,0 +1,129 @@
+---
+layout: default
+---
+
+<main id="main" class="main-content" aria-label="Content">
+    <article>
+        {% include page-image.html %}
+        <div class="page-wrapper">
+            <header class="page-header">
+                <h1 id="page-title" class="page-title p-name">Week ending {{ page.date | date: "%d/%m/%Y"}} </h1>
+            </header>
+            <div class="page-content">
+                 {{ content }}
+                {% capture weekending %}{{page.date | date: "%s" }}{% endcapture %}
+                {% capture seven_days_ago %}{{weekending |minus: 604800}}{% endcapture %}
+                <h2 class="taxonomy-title">Posts</h2>
+                <div class="entries-{{ page.entries_layout | default: 'list' }}">
+                    
+                    {% for entry in site.posts %}
+                        {% capture date %}{{entry.date | date: '%s'}}{% endcapture %}
+                        {% if seven_days_ago < date  and date <= weekending %}
+                            {% if entry.id %}
+                                {% assign title = entry.title | markdownify | strip_html %}
+                            {% else %}
+                                {% assign title = entry.title %}
+                            {% endif %}
+
+                            <article class="entry h-entry">
+                                <header class="entry-header">
+                                    <h3 class="entry-title p-name">
+                                    {% if entry.link %}
+                                        <a class="u-bookmark-of" href="{{ entry.link }}">{{ title }}</a>
+                                        <a href="{{ entry.url | relative_url }}" rel="bookmark"><span class="link-arrow">&rarr;</span></a>
+                                    {% else %}
+                                        <a href="{{ entry.url | relative_url }}" rel="bookmark">{{ title }}</a>
+                                    {% endif %}
+                                </h3>
+                                {% if entry.image.thumbnail %}
+                                    {% assign entry_image = entry.image.thumbnail %}
+                                    {% unless entry_image contains '://' %}
+                                        {% assign entry_image = entry_image | relative_url %}
+                                    {% endunless %}
+                                    {% assign entry_image = entry_image | escape %}
+                                    <img class="entry-image u-photo" src="{{ entry_image }}" alt="">
+                                {% endif %}
+                                </header>
+                                <time class="entry-date dt-published" datetime="{{ entry.date | date_to_xmlschema }}">
+                                    {{ entry.date | date: site.date_format  }}
+                                  </time>
+                                {% unless page.show_excerpts == false %}
+                                <div class="entry-excerpt p-summary">
+                                    {% if entry.excerpt %}
+                                    {{ entry.excerpt | markdownify }}
+                                    {% endif %}
+                                </div>
+                                {% endunless %}
+                        </article>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                <h2 class="taxonomy-title">Interesting links</h2>
+                <div class="entries-{{ page.entries_layout | default: 'list' }}">
+                    
+                    {% for entry in site.links %}
+                        {% capture date %}{{entry.date | date: '%s'}}{% endcapture %}
+                        {% if seven_days_ago < date  and date <= weekending %}
+                            {% if entry.id %}
+                                {% assign title = entry.title | markdownify | strip_html %}
+                            {% else %}
+                                {% assign title = entry.title %}
+                            {% endif %}
+
+                            <article class="entry h-entry">
+                                <header class="entry-header">
+                                    <h3 class="entry-title p-name">
+                                    <a class="u-bookmark-of" href="{{ entry.url | relative_url }}">{{ title }}</a>
+                                    </h3>
+                                    <a class="u-bookmark-of" href="{{ entry.target }}">{{entry.target}}</a>
+                                </header>
+                                <time class="entry-date dt-published" datetime="{{ entry.date | date_to_xmlschema }}">
+                                    {{ entry.date | date: site.date_format  }}
+                                  </time>
+                                <div class="entry-excerpt p-summary">
+                                   
+                                    {% if entry.sourceurl %}
+                                    <em>from:
+                                    <a class="u-bookmark-of" href="{{ entry.sourceurl }}">
+                                        {% if entry.source %}
+                                            {{ entry.source}}
+                                        {% else %}
+                                            {{ entry.sourceurl}}
+                                        {% endif %}
+                                        </a>
+                                    </em>
+                                    {% else if entry.source %}
+                                        <em>from:{{ entry.source}}</em>
+                                    {% endif %}
+                                    {% if entry.excerpt %}
+                                    {{ entry.excerpt | markdownify }}
+                                    {% endif %}
+                                </div>
+                        </article>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </article>
+    <nav class="page-pagination" role="navigation">
+        {% if page.previous %}
+          <a class="page-previous" href="{{ page.previous.url | relative_url }}">
+            <h4 class="page-pagination-label">{{ site.data.text[site.locale].previous | default: 'Previous' }}</h4>
+            <span class="page-pagination-title">
+              <i class="fas fa-arrow-left"></i> {{ page.previous.title | markdownify | strip_html }}
+            </span>
+          </a>
+        {% endif %}
+      
+        {% if page.next %}
+          <a class="page-next" href="{{ page.next.url | relative_url }}">
+            <h4 class="page-pagination-label">{{ site.data.text[site.locale].next | default: 'Next' }}</h4>
+            <span class="page-pagination-title">
+              {{ page.next.title | markdownify | strip_html }} <i class="fas fa-arrow-right"></i>
+            </span>
+          </a>
+        {% endif %}
+      </nav>
+</main>

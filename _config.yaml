@@ -1,0 +1,98 @@
+theme: jekyll-theme-so-simple
+skin: "/assets/css/skins/default.css"
+locale: en-GB
+title: "Franck's stuff"
+description: "This is where I document and comment on those titbits I keep stumbling on during my day job, and my evening browsing"
+url: https://franck-chester.github.io/
+logo: 
+read_time: false
+date_format: "%Y-%m-%d"
+copyright: |
+  [![Build and deploy Jekyll site to GitHub Pages](https://github.com/franck-chester/franck-chester.github.io/actions/workflows/jekyll.yaml/badge.svg)](https://github.com/franck-chester/franck-chester.github.io/actions/workflows/jekyll.yaml)<br/>
+  &copy; Franck-Chester. Powered by [Jekyll](https://jekyllrb.com) &amp; [So Simple](So Simple). 
+google_fonts:
+  - name: "Source Sans Pro"
+    weights: "400,400i,700,700i"
+  - name: "Lora"
+    weights: "400,400i,700,700i"
+liquid:
+  error_mode: strict
+markdown: kramdown
+
+# Pagination - https://jekyllrb.com/docs/pagination/
+paginate: 10
+paginate_path: /page:num/
+
+search_full_content: true
+
+# Taxonomy pages
+category_archive_path: "/categories/#"
+tag_archive_path: "/tags/#"
+
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
+  - jekyll-feed
+  - jekyll-paginate
+  - jekyll-titles-from-headings
+  - jemoji
+
+collections:
+  thisWeek:
+    output: true
+  links:
+    output: true
+
+titles_from_headings:
+  enabled:     true
+  strip_title: true
+  collections: true
+
+defaults:
+  - 
+    scope:
+      path: "_posts"
+      type: posts
+    values:
+      layout: post
+      comments: true
+      share: true
+  - 
+    scope:
+      path: "_drafts"
+      type: posts
+    values:
+      layout: post
+      comments: true
+      share: true
+
+  - 
+    scope:
+      path: "_thisWeek"
+      layout: posts
+    values:
+      strip_title: true
+
+  -
+    scope:
+      path: "_links" 
+      type: "links" 
+    values:
+      layout: link
+
+# Site Author
+author:
+  name: Franck
+  picture: /assets/images/franck.png
+  email:
+  twitter: 
+  links:
+    - title: GitHub
+      url: https://github.com/franck-chester
+      icon: fab fa-github-square
+
+# Footer Links
+footer_links:
+  - title: GitHub
+    url: https://github.com/franck-chester/franck-chester.github.io
+    icon: fab fa-github-square
