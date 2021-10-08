@@ -1,6 +1,6 @@
 ---
-title: "https://www.leshenko.net/p/ugit/#"
-target : "ugit: DIY Git in Python"
+title: "ugit: DIY Git in Python"
+target : "https://www.leshenko.net/p/ugit/#"
 source : "Hacker news "
 source_url : ""
 tags: Git python 

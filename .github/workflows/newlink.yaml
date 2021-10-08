@@ -9,11 +9,9 @@ on:
       target:
         description: 'The URL we are sharing'     
         required: true
-        default: 'https://...'
       source:
         description: 'Where (free text) did we find out about the URL we are sharing'     
         required: true
-        default: 'the internet'
       source_url:
         description: 'Where (URL) did we find out about the URL we are sharing'     
         required: false
