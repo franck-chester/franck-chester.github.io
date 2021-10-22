@@ -2,7 +2,7 @@
 title: Architecture descriptions in the cloud
 date: 2021-10-22
 tags: architecture
-image: /assets/images/2021-10-21-architecture-description-cube-small.png
+image: /assets/images/2021-10-21-architecture-description-cube.png
 ---
 
 This week I have started documenting our target architecture. Now, what I was actually asked to do was "document our target cloud infrastructure", but I have been there before and believe a formal (ish) overall architecture description is required before diving into any specific problem area.
