@@ -141,7 +141,7 @@ Cloud infrastructure, and the ability to consume solutions 'as a Service' requir
 # Summary
 Rather than a big monolithic amorphous chunk of documentation, architecture descriptions can be sliced and diced over 3 axes, with each cell hopefully supporting discussion and decision making within and without our team.
 
-![rubik cube like representation of the architecture description 3 axes](../assets/images/2021-10-21-architecture-description-cube.png)
+![rubik cube like representation of the architecture description 3 axes](/images/2021-10-21-architecture-description-cube.png)
 
 
 I will hopefully revisit the subject in later posts, notably to document my checklists and how and where I use them.
