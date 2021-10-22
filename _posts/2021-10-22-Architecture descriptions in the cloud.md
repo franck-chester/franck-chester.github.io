@@ -11,7 +11,7 @@ I am going to use this post to describe how I use architecture descriptions and 
 
 # Architecture description
 What do I mean by an architecture description? I mean [Systems and software engineering — Architecture description
-ISO/IEC/IEEE 42010] (http://www.iso-architecture.org/ieee-1471/ads/) which is an old fashion standard I was once required to adhere to for a government project. 
+ISO/IEC/IEEE 42010](http://www.iso-architecture.org/ieee-1471/ads/) which is an old fashion standard I was once required to adhere to for a government project. 
 
 Now, in those [waterfall](https://en.wikipedia.org/wiki/Waterfall_model) days, my role as software architect was to design the solution upfront before delivering a formal, all encompassing description of it to the development teams. At the time it was easy, and a good idea, to use the viewpoints and perspectives listed in [Rozanski and Woods "Software Systems Architecture"](https://www.viewpoints-and-perspectives.info)(R&W) book. In particular the book (but sadly not the website) helped me examine my architecture through different angles and lenses, and provided a lot of [checklists](https://checkify.com/blog/power-of-a-simple-checklist/) to validate both the solution and my description of it. 
 
