@@ -6,4 +6,4 @@ source_url : ""
 tags: Aws-certification 
 ---
 
-. Ore research about AWS Certifications
+More research about AWS Certifications.

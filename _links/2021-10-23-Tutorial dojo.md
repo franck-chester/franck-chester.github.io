@@ -6,4 +6,5 @@ source_url : "https://www.linkedin.com/posts/gregvarga_aws-activity-685661801065
 tags: Aws-certification 
 ---
 
-As part of my professional development, it is starting to feel like I should aim for certification.. This site came up, offers allegedly good quality tutorials
+As part of my professional development, it is starting to feel like I should aim for certification.
+This site came up, offers allegedly good quality tutorials.
