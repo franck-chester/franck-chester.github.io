@@ -358,5 +358,5 @@ I'll want to invoke [get-cost-and-usage](https://awscli.amazonaws.com/v2/documen
 
 I'll also want to parametrise the scripts to allow me to pass the policy file name as an argument, allow me to have experiment specific policies.
 
-That said, the next post in this series will be about me [using the Terraform CDK to setup infrastructure in the sandbox]({% post_url 2021-10-01-Scripting access to my AWS sandbox %}).
+That said, the next post in this series will be about me [using the Terraform CDK to setup infrastructure in the sandbox]({% post_url 2021-10-30-Terraform CDK part 1%}).
 
