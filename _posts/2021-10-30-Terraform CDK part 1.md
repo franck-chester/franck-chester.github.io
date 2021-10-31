@@ -2,7 +2,6 @@
 title: Terraform CDK - part 1
 date: 2021-10-30
 tags: iac terraform cdktf
-image: /assets/images/2021-10-21-architecture-description-cube.png
 ---
 
 In this post I start building infrastructure components in my AWS sandbox, using [the recently released Terraform Cloud Development Kit (CDK)](https://aws.amazon.com/blogs/developer/introducing-the-cloud-development-kit-for-terraform-preview/).
@@ -21,9 +20,9 @@ Where resources have dependencies on each other, it is smart enough to create (a
 
 These files can be source controlled and code reviewed, and the execution of terraform entirely automated, thus ensuring consistency and reproducibility between deployments, even across multiple environments, eliminating human error and greatly reducing the time it takes to setup infrastructure.
 
-Terraform uses the concept of providers, [written in Go](https://www.hashicorp.com/blog/writing-custom-terraform-providers), that implement a standard interface over the target infrastructure components API and can then be configured via HCL.
+Terraform uses the concept of [providers](https://www.terraform.io/docs/language/providers/index.html), , that implement a standard interface over the target infrastructure components API and can then be configured via HCL.
 
-I got quite adapt at terraforming in my previous role, including creating my own provider to workaround a then shortcoming in the [Datadog official provider](https://registry.terraform.io/providers/DataDog/datadog/latest/docs).
+I got quite adapt at terraforming in my previous role, including creating my own [custom provider in Go](https://www.hashicorp.com/blog/writing-custom-terraform-providers) to workaround a then shortcoming in the [Datadog official provider](https://registry.terraform.io/providers/DataDog/datadog/latest/docs).
 
 HCL is great but quickly becomes a pan to work with when your target infrastructure is dynamic. As soon as you need to loop or assert, you find yourself hacking and/or writing hard to read and maintain HCL. It is also, a very ugly language to work with.
 
@@ -68,21 +67,19 @@ Finally[^1], install typescript itself:
 npm install -g typescript
 ```
 
-[^1] This step is undocumented elsewhere, and maybe not actually required.
+[^1]: This step is undocumented elsewhere, and maybe not actually required.
  However, what was meant to be a quick experiment with the CDK ended up spread over 5 attempts: Things went very wrong, I kept hitting `MODULE_NOT_FOUND` errors when running `cdktf synth`. The code and all paths were fine, I and [vscode](https://code.visualstudio.com/docs) could see all the modules, but `cdktf synth` kept failing.
  On what was actually Day 07, I decided to ignored the `cdktf` commands and compile the typescript code directly (`tsc --build --clean`, `tsc --build --verbose`), which required me to install typescript (`npm install -g typescript`), which then somehow got rid of my `MODULE_NOT_FOUND` errors.
  I am therefore going to assume that installing typescript separately is a pre-requisite to using the terraform CDK. 
  I won't know for sure until retry it all on a clean machine, maybe spin a container for it.
 
- ## CDK Terraform project initialisation
+## CDK Terraform project initialisation
 
 We create a new empty folder (`day03`) and run the [`cdktf init` command](https://www.terraform.io/docs/cdktf/cli-reference/commands.html#init) to initialise a brand new project:
 
 ```
 day03> cdktf init --template=typescript --local
 ```
-[![loading...](https://www.screencast.com/users/FranckSchmidlin/folders/Capture/media/050c0f09-91a3-4882-8e9c-b9b5624b9214/embed)]
-
 
 ```
 Newer version of Terraform CDK is available [0.6.3] - Upgrade recommended
@@ -164,7 +161,7 @@ found 0 vulnerabilities
 
 Turns out I'm already out of date[^2] so need to [upgrade to v0.6.03](https://github.com/hashicorp/terraform-cdk/blob/main/docs/upgrade-guide/upgrading-to-0.6.md) with `npm run upgrade`, which execute the [run-script command](https://docs.npmjs.com/cli/v7/commands/npm-run-script) the upgrade script defined in the `package.json` file : `npm i cdktf@latest cdktf-cli@latest` . 
 
-[^2] A few weeks elapsed between my installing the tooling and actually trying to use it
+[^2]: A few weeks elapsed between my installing the tooling and actually trying to use it
 
 ```
 day03> npm run upgrade
@@ -230,7 +227,7 @@ This initially caused me to both install the pre-built modules, then build a loc
 
 My aim is eventually to port the infrastructure elements of the [API gateway tutorial](https://docs.aws.amazon.com/lambda/latest/dg/services-apigateway-tutorial.html) to the Terraform CDK. The first step is to create an [execution role](https://docs.aws.amazon.com/lambda/latest/dg/lambda-intro-execution-role.html). 
 
-> This AWS Identity and Access Management (IAM) role uses a custom policy to give your Lambda function permission to access the required AWS resources. Note that you must first create the policy and then create the execution role.
+*This AWS Identity and Access Management (IAM) role uses a custom policy to give your Lambda function permission to access the required AWS resources. Note that you must first create the policy and then create the execution role.*
 
 ## Code the execution role
 I edit the generated `main.ts` file to import the AWS provider and IAM resources from the pre-built provider in stalled earlier:
@@ -243,14 +240,14 @@ import { IAM } from '@cdktf/provider-aws';
 I can now control click on the type and find the constructor definition:
 
 ``` typescript
-          /**
-         * Create a new {@link https://www.terraform.io/docs/providers/aws/r/iam_policy.html aws_iam_policy} Resource.
-         *
-         * @param scope The scope in which to define this construct.
-         * @param id The scoped construct ID.
-         * @stability stable
-         */
-        constructor(scope: Construct, id: string, config: IamPolicyConfig);
+/**
+* Create a new {@link https://www.terraform.io/docs/providers/aws/r/iam_policy.html aws_iam_policy} Resource.
+*
+* @param scope The scope in which to define this construct.
+* @param id The scoped construct ID.
+* @stability stable
+*/
+constructor(scope: Construct, id: string, config: IamPolicyConfig);
 ```
 
 which I use to guess the following code:
@@ -263,7 +260,6 @@ import { App, TerraformStack} from 'cdktf';
 import { AwsProvider} from '@cdktf/provider-aws';
 
 import { IAM } from '@cdktf/provider-aws';
-
 
 class MyStack extends TerraformStack {
   constructor(scope: Construct, id: string) {
@@ -370,7 +366,7 @@ We are starting from a blank sandbox and therefore we should only need to create
 
 Let's go wild and apply this to the sandbox
 
-``` 
+``` terraform
 > cdktf apply
 ⠇ Deploying Stack: day03
 Resources
@@ -416,7 +412,7 @@ I can use [my handy `update-policy.ps1` script]({% post_url 2021-10-01-Scripting
 
 Let's try again:
 
-```
+``` terraform
 > cdktf apply
 ...
 AccessDenied: User: arn:aws:iam::012345678910:user/franck-iac is not authorized to perform: iam:GetPolicy on resource: policy arn:aws:iam::012345678910:policy/lambda-apigateway-policy
@@ -426,7 +422,7 @@ Getting there. For the lack of comprehensive documentation, I am going to go a f
 The advantage is that I can check the [IAM actions](https://docs.aws.amazon.com/service-authorization/latest/reference/list_identityandaccessmanagement.html) individually to understand what is going on under the hood. The disadvantage is that the process is slow and painful.
 
 I have yet to find a smarter way to do this, and I am not on my own - as per this [terraform issue](https://github.com/hashicorp/terraform/issues/2834), and [stackoverflow](https://stackoverflow.com/questions/51273227/whats-the-most-efficient-way-to-determine-the-minimum-aws-permissions-necessary).
-I will, one day, experiment with [iamlive](https://github.com/iann0036/iamlive), which would theoratically allow me to execute my terraform configuration with a super -user, log the corresponding access rights and then add these to my IaC user policy.
+I will, one day, experiment with [iamlive](https://github.com/iann0036/iamlive), which would theoretically allow me to execute my terraform configuration with a super -user, log the corresponding access rights and then add these to my IaC user policy.
 
 Anyway, my `iac-policy.json` ends up looking like this :
 
@@ -452,7 +448,7 @@ Anyway, my `iac-policy.json` ends up looking like this :
 
 ## Success
 
-```
+``` terraform
 > cdktf apply
 Deploying Stack: day03
 Resources
@@ -489,7 +485,7 @@ const lambda_assume_role_policy = {
     });
 ```
 
-```
+``` terraform
 Error: error creating IAM Role (lambda-apigateway-role): AccessDenied: User: arn:aws:iam::012345678910:user/franck-iac is not authorized to perform: iam:CreateRole on resource: arn:aws:iam::012345678910:role/lambda-apigateway-role
 ```
 
@@ -498,21 +494,21 @@ Note that I add them to `iac-policy.json` as a separate [policy statement](https
 
 ``` json
 {
-            "Sid": "IaC02",
-            "Effect": "Allow",
-            "Action": [
-                "iam:CreateRole",
-                "iam:GetRole",
-                "iam:ListRolePolicies",
-                "iam:ListAttachedRolePolicies",
-                "iam:ListInstanceProfilesForRole",
-                "iam:DeleteRole"
-            ],
-            "Resource": "arn:aws:iam::012345678910:role/*"
-        }
+    "Sid": "IaC02",
+    "Effect": "Allow",
+    "Action": [
+        "iam:CreateRole",
+        "iam:GetRole",
+        "iam:ListRolePolicies",
+        "iam:ListAttachedRolePolicies",
+        "iam:ListInstanceProfilesForRole",
+        "iam:DeleteRole"
+    ],
+    "Resource": "arn:aws:iam::012345678910:role/*"
+}
 ```
 
-```
+``` terraform
 > cdktf apply
 Deploying Stack: day03
 Resources
@@ -530,7 +526,7 @@ The role itself is new, therefore has been created as a new resource, which can 
 
 When experimenting in the cloud is it good practice to clean up as soon as we're done, and save ourselves money. Doesn't really matter here, roles and policies don't incur costs, but a good habit to get into.
 
-```
+``` terraform
 > cdktf destroy
 Destroying Stack: day03
 Resources
@@ -541,7 +537,7 @@ Resources
 Summary: 2 destroyed.
 ```
 
-```
+``` powershell
 > .\teardown.ps1
 Delete Access Key for IaC user 'franck-iac' ...
 Detach policy  to user 'franck-iac'...
