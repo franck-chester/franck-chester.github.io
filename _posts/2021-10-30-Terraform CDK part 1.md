@@ -2,6 +2,7 @@
 title: Terraform CDK - part 1
 date: 2021-10-30
 tags: iac terraform cdktf
+image: /assets/images/2021-10-30-code.png
 ---
 
 In this post I start building infrastructure components in my AWS sandbox, using [the recently released Terraform Cloud Development Kit (CDK)](https://aws.amazon.com/blogs/developer/introducing-the-cloud-development-kit-for-terraform-preview/).
