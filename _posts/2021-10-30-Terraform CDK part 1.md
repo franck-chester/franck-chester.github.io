@@ -68,10 +68,10 @@ npm install -g typescript
 ```
 
 [^1]: This step is undocumented elsewhere, and maybe not actually required.
- However, what was meant to be a quick experiment with the CDK ended up spread over 5 attempts: Things went very wrong, I kept hitting `MODULE_NOT_FOUND` errors when running `cdktf synth`. The code and all paths were fine, I and [vscode](https://code.visualstudio.com/docs) could see all the modules, but `cdktf synth` kept failing.
- On what was actually Day 07, I decided to ignored the `cdktf` commands and compile the typescript code directly (`tsc --build --clean`, `tsc --build --verbose`), which required me to install typescript (`npm install -g typescript`), which then somehow got rid of my `MODULE_NOT_FOUND` errors.
- I am therefore going to assume that installing typescript separately is a pre-requisite to using the terraform CDK. 
- I won't know for sure until retry it all on a clean machine, maybe spin a container for it.
+    However, what was meant to be a quick experiment with the CDK ended up spread over 5 attempts: Things went very wrong, I kept hitting `MODULE_NOT_FOUND` errors when running `cdktf synth`. The code and all paths were fine, I and [vscode](https://code.visualstudio.com/docs) could see all the modules, but `cdktf synth` kept failing.
+    On what was actually Day 07, I decided to ignored the `cdktf` commands and compile the typescript code directly (`tsc --build --clean`, `tsc --build --verbose`), which required me to install typescript (`npm install -g typescript`), which then somehow got rid of my `MODULE_NOT_FOUND` errors.
+    I am therefore going to assume that installing typescript separately is a pre-requisite to using the terraform CDK. 
+    I won't know for sure until retry it all on a clean machine, maybe spin a container for it.
 
 ## CDK Terraform project initialisation
 
