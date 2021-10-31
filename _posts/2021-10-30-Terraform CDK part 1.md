@@ -23,9 +23,9 @@ These files can be source controlled and code reviewed, and the execution of ter
 
 Terraform uses the concept of [providers](https://www.terraform.io/docs/language/providers/index.html), , that implement a standard interface over the target infrastructure components API and can then be configured via HCL.
 
-I got quite adapt at terraforming in my previous role, including creating my own [custom provider in Go](https://www.hashicorp.com/blog/writing-custom-terraform-providers) to workaround a then shortcoming in the [Datadog official provider](https://registry.terraform.io/providers/DataDog/datadog/latest/docs).
+I got quite adept at terraforming in my previous role, including creating my own [custom provider in Go](https://www.hashicorp.com/blog/writing-custom-terraform-providers) to workaround a then shortcoming in the [Datadog official provider](https://registry.terraform.io/providers/DataDog/datadog/latest/docs).
 
-HCL is great but quickly becomes a pan to work with when your target infrastructure is dynamic. As soon as you need to loop or assert, you find yourself hacking and/or writing hard to read and maintain HCL. It is also, a very ugly language to work with.
+HCL is great but quickly becomes a pain to work with when your target infrastructure is dynamic. As soon as you need to loop or assert, you find yourself hacking and/or writing hard to read and maintain HCL. It is also, a very ugly language to work with.
 
 # Terraform CDK
 
@@ -62,7 +62,7 @@ Install the **CDK for Terraform** globally:
 > npm install -g cdktf-cli
 ```
 
-Finally[^1], install typescript itself:
+Finally[^1], install typescript itself, globallu:
 
 ```
 npm install -g typescript
