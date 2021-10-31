@@ -328,20 +328,27 @@ write-host "Delete previous versions of policy '$username': done"
 
 ### `teardown.ps1`
 
+The teardown script is all about undoing everything `setup.ps1' did, in reverse order.
+The order matters, you cannot delete a policy that is attached to a user.
+
 ``` powershell
 ."$PSSCriptRoot/variables.ps1"
 
 write-host "Delete Access Key for IaC user '$username' ..."
 aws iam delete-access-key  --profile admin-sandbox --cli-input-json file://$PSScriptRoot/cli-input-delete-access-key.json
 
+write-host "Detach policy $policyArn to user '$username'..."
+# Recreate the arn from first principle (ie the account id and polic name
+$PolicyArn = "arn:aws:iam::$($account):policy/$($username)"
+aws iam detach-user-policy --profile admin-sandbox --user-name $username --policy-arn $policyArn
+
 write-host "Delete IaC user '$username' ..."
 aws iam delete-user  --profile admin-sandbox --user-name $username 
 
-# Recreate the arn from first principle (ie the account id and polic name
-$PolicyArn = "arn:aws:iam::$($account):policy/$($username)"
-
 write-host "Delete access policy '$username' ..."
 aws iam delete-policy --profile admin-sandbox --policy-arn $PolicyArn
+
+write-host "Sandbox IaC user teardown complete ..."
 
 ```
 
@@ -349,7 +356,7 @@ aws iam delete-policy --profile admin-sandbox --policy-arn $PolicyArn
 
 I'll want to invoke [get-cost-and-usage](https://awscli.amazonaws.com/v2/documentation/api/latest/reference/ce/get-cost-and-usage.html) to get an idea of the overall cost of my experiment.
 
-I'll also want to parameterise the scripts to allow me to pass the policy file name as an argument, allow me to have experiment specific policies.
+I'll also want to parametrise the scripts to allow me to pass the policy file name as an argument, allow me to have experiment specific policies.
 
-That said, the next post in this series will be about me using the Terraform CDK to deploy a few bits and bobs in the sandbox.
+That said, the next post in this series will be about me [using the Terraform CDK to setup infrastructure in the sandbox]({% post_url 2021-10-01-Scripting access to my AWS sandbox %}).
 
