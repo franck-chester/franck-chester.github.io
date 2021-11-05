@@ -6,4 +6,4 @@ source_url : ""
 tags: aws devops lambda terraform sam
 ---
 
-Some good stuff in there. Not exactly what I'm looking for, I think, which is a strong(er) separation of infrastructure and code.
+Some good stuff in there. Not exactly what I'm looking for, I think, which is a strong(er) separation of infrastructure and code, but still a good read.

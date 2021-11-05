@@ -1,7 +1,7 @@
 ---
 title: "Jeckyll plug in to create heading anchors"
 target : "https://github.com/allejo/jekyll-anchor-headings"
-source : "Googme"
+source : "Google"
 source_url : ""
 tags: jeckyll 
 ---

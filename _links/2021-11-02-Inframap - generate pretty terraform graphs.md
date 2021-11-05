@@ -6,4 +6,4 @@ source_url : "https://medium.com/vmacwrites/tools-to-visualize-your-terraform-pl
 tags: Terraform iac
 ---
 
-Looking for something to make my Cdktf posts prettier
+Looking for something to make my CDK TF posts prettier

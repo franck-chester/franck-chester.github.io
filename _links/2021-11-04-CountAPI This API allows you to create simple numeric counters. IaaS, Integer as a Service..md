@@ -6,4 +6,4 @@ source_url : "https://javascript.plainenglish.io/how-to-count-page-views-with-th
 tags: jeckyll javascript 
 ---
 
-I'm curious to see whether anyone actually visits the blog pages that I've shared (aka attention seeking) and implenting a basic page counter would help.
+I'm curious to see whether anyone actually visits the blog pages that I've shared (aka attention seeking) and implementing a basic page counter would help.

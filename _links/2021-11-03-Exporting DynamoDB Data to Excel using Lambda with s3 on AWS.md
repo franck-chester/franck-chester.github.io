@@ -6,4 +6,4 @@ source_url : ""
 tags: dynamodb lambda excel nodejs
 ---
 
-This is something I might need to replicate for my current project,where my dy amodb is just a staging stage before the data is eventually sent to our datalake. In the meantime, emailing the data to my colleagues in marketing will do nicely 😁
+This is something I might need to replicate for my current project,where my dynamodb is just a staging stage before the data is eventually sent to our data lake. In the meantime, emailing the data to my colleagues in marketing will do nicely 😁

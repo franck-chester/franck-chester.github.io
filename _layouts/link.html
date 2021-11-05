@@ -9,26 +9,26 @@ layout: default
       <header class="page-header">
         {% assign title = page.title | markdownify | strip_html %}
         <h2 id="page-title" class="page-title p-name">{{ title }}</h2>
-        <p>@ <a class="u-bookmark-of" href="{{ page.target }}">{{page.target}}</a></p>
+        <p><a class="u-bookmark-of" href="{{ page.target }}">{{page.target}}</a></p>
       </header>
       {% include entry-date.html %}
       <div class="page-content">
         <div class="e-content"> 
             {{ content }}
-            {% if page.sourceurl %}
+            {% if page.source_url %}
             <hr/>
-            <em>from:
-                <a class="u-bookmark-of" href="{{ page.sourceurl }}">
+            <em>source:
+                <a class="u-bookmark-of" href="{{ page.source_url }}">
                 {% if page.source %}
                     {{ page.source}}
                 {% else %}
-                    {{ page.sourceurl}}
+                    {{ page.source_url}}
                 {% endif %}
                 </a>
             </em>
             {% else if page.source %}
             <hr/>
-            <em>from:{{ page.source}}</em>
+            <em>source:{{ page.source}}</em>
             {% endif %}
         </div>
         {% include page-tags.html %}
