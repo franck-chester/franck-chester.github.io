@@ -13,7 +13,8 @@ layout: page
   {% assign linkTags = site.links | map: 'tags' | uniq %}
   {% assign allTags = allTags | concat: linkTags | uniq %}
 
-  {% for tag in allTags %}
+  {% for rawTag in allTags %}
+    {% assign tag = rawTag | downcase %}
     {% assign taggedItems = "" | split: ',' %}
     {% assign taggedItems = taggedItems  | concat: site.posts| where_exp : "post", "post.tags contains tag" %}
     {% assign taggedItems = taggedItems  | concat: site.links | where_exp : "link", "link.tags contains tag" %}
@@ -30,7 +31,8 @@ layout: page
     {% assign tag_names = "" %}
     {% assign first_tag = true %}
   
-    {% for tag in allTags %}
+    {% for rawTag in allTags %}
+      {% assign tag = rawTag | downcase %}
       {% assign taggedItems = "" | split: ',' %}
       {% assign taggedItems = taggedItems  | concat: site.posts| where_exp : "post", "post.tags contains tag" %}
       {% assign taggedItems = taggedItems  | concat: site.links | where_exp : "link", "link.tags contains tag" %}

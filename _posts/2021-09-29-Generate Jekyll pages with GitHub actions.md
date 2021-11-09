@@ -44,7 +44,7 @@ on:
       target:
         description: 'The URL we are sharing'     
         required: true
-        default: 'https://...'
+        default: ''
       source:
         description: 'Where (free text) did we find out about the URL we are sharing'     
         required: true

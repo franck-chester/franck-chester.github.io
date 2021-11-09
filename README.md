@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+# franck-chester.github.io
+Blog like repo to publish things of note via github pages
+=======
 # franck-chester.github.io
 
 This repository holds my personal blog, [franck-chester.github.io] (https://franck-chester.github.io/).
@@ -9,3 +13,4 @@ When testing locally :
 ```
 bundle exec jekyll serve --drafts --future
 ```
+>>>>>>> faca766f7f665b63e9d05e4cf19942a3a4032506

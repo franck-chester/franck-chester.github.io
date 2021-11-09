@@ -115,7 +115,7 @@ NB: very bad example, at this stage I do not have a policy document I have actua
 I can then use this file with the CLI [`create-policy`](https://awscli.amazonaws.com/v2/documentation/api/latest/reference/iam/create-policy.html):
 
 ```
-> aws iam create-policy --policy-name franck-iac --policy-document file:/iac-policy.json
+> aws iam create-policy --profile admin-sandbox --policy-name franck-iac --policy-document file://iac-policy.json --tag Key=sandbox,Value=franck-iac
 {
     "Policy": {
         "PolicyName": "franck-iac",
@@ -127,17 +127,40 @@ I can then use this file with the CLI [`create-policy`](https://awscli.amazonaws
         "PermissionsBoundaryUsageCount": 0,
         "IsAttachable": true,
         "CreateDate": "2021-09-30T07:00:06+00:00",
-        "UpdateDate": "2021-09-30T07:00:06+00:00"
+        "UpdateDate": "2021-09-30T07:00:06+00:00",
+        "Tags": [
+            {
+                "Key": "sandbox",
+                "Value": "franck-iac"
+            }
+        ]
     }
 }
 ```
+
+If and when I need to update this policy to gradually add the required access right, I will update the file and call [`create-policy-version`](https://awscli.amazonaws.com/v2/documentation/api/latest/reference/iam/create-policy-version.html):
+
+```
+> aws iam --profile admin-sandbox create-policy-version --set-as-default --policy-arn arn:aws:iam::012345678910:policy/franck-iac --policy-document file://iac-policy.json
+{
+    "PolicyVersion": {
+        "VersionId": "v2",
+        "IsDefaultVersion": true,
+        "CreateDate": "2021-10-29T13:22:09+00:00"
+    }
+}
+```
+
+The `--set-as-default` is important, without it our IaC user will not be attached to the new version!
+
+NB: [A managed policy can have up to 5 versions](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-versioning.html). Before you create a new version, we must delete an existing version ([`delete-policy-version`](https://awscli.amazonaws.com/v2/documentation/api/latest/reference/iam/delete-policy-version.html)). Here we don't really care, therefore we'll always delete the previous version. To script this, we'll use [`list-policy-versions`](https://awscli.amazonaws.com/v2/documentation/api/latest/reference/iam/list-policy-versions.html) and delete anything with ` "IsDefaultVersion": false`.
 
 ## Create IaC user via CLI
 
 I use [`create-user`](https://awscli.amazonaws.com/v2/documentation/api/latest/reference/iam/create-user.html):
 
 ```
-> aws iam create-user --user-name franck-iac --permissions-boundary arn:aws:iam::012345678910:policy/franck-iac --tag Key=sandbox,Value=franck-iac
+> aws iam create-user --profile admin-sandbox --user-name franck-iac --permissions-boundary arn:aws:iam::012345678910:policy/franck-iac --tag Key=sandbox,Value=franck-iac
 {
     "User": {
         "Path": "/",
@@ -159,14 +182,23 @@ I use [`create-user`](https://awscli.amazonaws.com/v2/documentation/api/latest/r
 }
 ```
 
-Notice how I try to be good and start tagging everything. To start with I'll tag resources with the name of my experiment.
+## Attach the policy to the user
+
+Now, do note that the previous command set the user's permission boundaries, that is the maximum range of what it is allowed to do, which is different from its actual permissions. These are set separately, with [`attach-user-policy`](https://awscli.amazonaws.com/v2/documentation/api/latest/reference/iam/attach-user-policy.html).
+
+Here I am being either silly and/or paranoid, as I use the same policy document for boundaries and actual rights. This will guarantee that the policy is the one and only definition of what this user can do. 
+
+```
+aws iam attach-user-policy --profile admin-sandbox --user-name franck-iac --policy-arn arn:aws:iam::012345678910:policy/franck-iac --tag Key=sandbox,Value=franck-iac 
+
+```
 
 ## Create access key for user
 
 I use [`create-access-key`](https://awscli.amazonaws.com/v2/documentation/api/latest/reference/iam/create-access-key.html):
 
 ```
-aws iam create-access-key --user-name franck-iac
+aws iam create-access-key --profile admin-sandbox  --user-name franck-iac
 {
     "AccessKey": {
         "UserName": "franck-iac",
@@ -195,7 +227,7 @@ At this point I now have a IaC profile I will be able to use with Terraform.
 
 ## Tearing things down
 
-Although the environment will eventually be nuked, I am keen to do the right thing and clean up afer myself.
+Although the environment will eventually be nuked, I am keen to do the right thing and clean up after myself.
 
 I will therefore generate [cli-input.json](https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-skeleton.html) files which I'll save locally so that they can be used the delete the policy, access key and user we've just created
 
@@ -211,6 +243,9 @@ See [Understanding return codes from the AWS CLI](https://docs.aws.amazon.com/cl
 $username = 'franck-iac'
 $sandbox = 'franck-iac'
 $tags = "Key=sandbox,Value=$sandbox" 
+
+$identity = aws sts get-caller-identity --profile admin-sandbox | ConvertFrom-Json 
+$account = $identity.Account
 ```
 
 ### `setup.ps1`
@@ -219,33 +254,33 @@ $tags = "Key=sandbox,Value=$sandbox"
 ."$PSSCriptRoot/variables.ps1"
 
 write-host "Create access policy for IaC users ..."
-$policy = aws iam create-policy --policy-name $username --policy-document file://$PSScriptRoot/iac-policy.json --tag $tags
+$policy = aws iam create-policy --profile admin-sandbox --policy-name $username --policy-document file://$PSScriptRoot/iac-policy.json --tag $tags
+
 if($lastexitcode -eq 254){
     # The command returned an error, probably because the policy already exists
     ## for example if we ran this script multiple time
+    # Recreate the arn from first principle (ie the account id and polic name
+    $PolicyArn = "arn:aws:iam::$($account):policy/$($username)"
     write-host "Attempt to retrieve existing access policy for IaC users ..."
-    $policy = aws iam get-policy --cli-input-json file://$PSScriptRoot/cli-input-delete-policy.json
+    $policy = aws iam get-policy --policy-arn $PolicyArn
 }
 if($lastexitcode){
-    write-error "Aborting sript, unable to create or retrieve access policy"
+    write-error "Aborting script, unable to create or retrieve access policy"
     exit -1
 }
 $ap =  $policy | ConvertFrom-Json  
 $policyArn = $ap.Policy.Arn
-write-host "Create cli-input file for eventual call to delete-policy when we tear this down......"
-@"
-{
-    "PolicyArn": "$policyArn"
-}
-"@ | set-content "$PSScriptRoot/cli-input-delete-policy.json"
 write-host "Created access policy for IaC users, ARN = $policyArn"
 
 write-host "Create IaC user '$username' ..."
-$u = aws iam create-user --user-name $username --permissions-boundary $policyArn --tag $tags | ConvertFrom-Json  
+$u = aws iam create-user --profile admin-sandbox --user-name $username --permissions-boundary $policyArn --tag $tags | ConvertFrom-Json  
 write-host "Created IaC user '$username', ARN = $($u.User.Arn)"
 
+write-host "Attach policy $policyArn to user '$username'..."
+aws iam attach-user-policy --profile admin-sandbox --user-name $username --policy-arn $policyArn --tag $tags 
+
 write-host "Create access key for IaC user '$username' ..."
-$ak = aws iam create-access-key --user-name $username | ConvertFrom-Json  
+$ak = aws iam create-access-key --profile admin-sandbox --user-name $username | ConvertFrom-Json  
 $accesskeyId = $ak.AccessKey.AccessKeyId
 write-host "Create cli-input file for eventual call to delete-access-key when we tear this down......"
 @"
@@ -263,19 +298,57 @@ write-host "Updated profile for IaC user '$username' . "
 Write-host "All done - you can now terraform at will"
 ```
 
+### `update-policy.ps1`
+
+This is the script I run everytime I need to tweak my IaC user access right by editing `iac-policy.json`:
+
+``` powershell
+."$PSSCriptRoot/variables.ps1"
+
+# Recreate the arn from first principle (ie the account id and polic name
+$PolicyArn = "arn:aws:iam::$($account):policy/$($username)"
+
+write-host "Create new default version of policy '$username' / $PolicyArn..."
+$pv = aws iam create-policy-version --profile admin-sandbox --set-as-default --policy-document file://iac-policy.json --policy-arn $PolicyArn | ConvertFrom-Json  
+if(-not $lastexitcode){
+    write-host "Created version $($pv.PolicyVersion.VersionId) of policy '$username'"
+}
+
+write-host "Delete previous versions of policy '$username' ..."
+$pl = aws iam list-policy-versions --profile admin-sandbox --policy-arn $PolicyArn | ConvertFrom-Json  
+foreach ($v in $pl.Versions) {
+    if (-not $v.IsDefaultVersion) {
+        write-host "Delete version $($v.VersionId) of access policy '$username' ..."
+        aws iam delete-policy-version  --profile admin-sandbox --policy-arn $PolicyArn --version-id $v.VersionId
+    }
+}
+write-host "Delete previous versions of policy '$username': done"
+
+```
+
 ### `teardown.ps1`
+
+The teardown script is all about undoing everything `setup.ps1' did, in reverse order.
+The order matters, you cannot delete a policy that is attached to a user.
 
 ``` powershell
 ."$PSSCriptRoot/variables.ps1"
 
 write-host "Delete Access Key for IaC user '$username' ..."
-aws iam delete-access-key --cli-input-json file://$PSScriptRoot/cli-input-delete-access-key.json
+aws iam delete-access-key  --profile admin-sandbox --cli-input-json file://$PSScriptRoot/cli-input-delete-access-key.json
+
+write-host "Detach policy $policyArn to user '$username'..."
+# Recreate the arn from first principle (ie the account id and polic name
+$PolicyArn = "arn:aws:iam::$($account):policy/$($username)"
+aws iam detach-user-policy --profile admin-sandbox --user-name $username --policy-arn $policyArn
 
 write-host "Delete IaC user '$username' ..."
-aws iam delete-user --user-name $username 
+aws iam delete-user  --profile admin-sandbox --user-name $username 
 
 write-host "Delete access policy '$username' ..."
-aws iam delete-policy --cli-input-json file://$PSScriptRoot/cli-input-delete-policy.json
+aws iam delete-policy --profile admin-sandbox --policy-arn $PolicyArn
+
+write-host "Sandbox IaC user teardown complete ..."
 
 ```
 
@@ -283,5 +356,7 @@ aws iam delete-policy --cli-input-json file://$PSScriptRoot/cli-input-delete-pol
 
 I'll want to invoke [get-cost-and-usage](https://awscli.amazonaws.com/v2/documentation/api/latest/reference/ce/get-cost-and-usage.html) to get an idea of the overall cost of my experiment.
 
-I'll also want to parameterise the scripts to allow me to pass the policy file name as an argument, allow me to have experiment specific policies.
+I'll also want to parametrise the scripts to allow me to pass the policy file name as an argument, allow me to have experiment specific policies.
+
+That said, the next post in this series will be about me [using the Terraform CDK to setup infrastructure in the sandbox]({% post_url 2021-10-30-Terraform CDK part 1%}).
 
