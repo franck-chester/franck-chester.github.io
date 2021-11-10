@@ -25,15 +25,15 @@ My plan is therefore to deploy the lambda infrastructure with a *skeleton* imple
 
 Also, my first attempt at terraforming the lambda function for this tutorial was based on using the [archive provider](https://registry.terraform.io/providers/hashicorp/archive/latest/docs) to zip the source code before using the zip file as a parameter of the [lambda function resource](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_function), very much like [this tutorial](http://aws-cloud.guru/creating-aws-lambdas-through-terraform-using-archive_file/) and every other tutorial out there, including the API Gateway one I am trying to reproduce.
 
-Now, this was already a bad idea in standard terraform, as it intermingles infrastructure and code deployments, and seems somehow worth in the CDK, probably because it is hard to stop myself from using the CDK code, which is meant to generate the HCL files which then deploy the infrastructure, to zip and deploy the code itself, which is really a separate concern. I had a few go at this in various formats but at the end of the day, it smells.
+Now, this was already a bad idea in standard terraform, as it intermingles infrastructure and code deployments, and seems somehow worse in the CDK, probably because it is hard to stop myself from using the CDK code, which is meant to generate the HCL files which then deploy the infrastructure, to zip and deploy the code itself, which is really a separate concern. I had a few goes at this in various formats but at the end of the day, it smells.
 
-So, I am going to create a [S3 bucket for code deployment](https://aws.amazon.com/blogs/compute/new-deployment-options-for-aws-lambda/), as part of my sandbox setup scripts, refer to it within my CDK code and later when calling [`update-function-code`](https://awscli.amazonaws.com/v2/documentation/api/2.0.33/reference/lambda/update-function-code.html).
+So, I am going to create a [S3 bucket for code deployment](https://aws.amazon.com/blogs/compute/new-deployment-options-for-aws-lambda/), as part of my sandbox setup scripts, refer to it within my CDK code and later, when calling [`update-function-code`](https://awscli.amazonaws.com/v2/documentation/api/2.0.33/reference/lambda/update-function-code.html).
 
 ### Use iamlive to create IaC user IAM policy
 
-I know from experience that creating a S3 bucket requires quite a few [Actions](https://docs.aws.amazon.com/AmazonS3/latest/userguide/list_amazons3.html#amazons3-actions-as-permissions). Rather than carry on with the painful one-at-a-time approach used in [part 1]({% post_url 2021-10-30-Terraform CDK part 1 %}), I am going to get smarter and use the [iamlive utility](https://github.com/iann0036/iamlive).
+I know from experience that creating a S3 bucket requires access rights to quite a few [Actions](https://docs.aws.amazon.com/AmazonS3/latest/userguide/list_amazons3.html#amazons3-actions-as-permissions). Rather than carry on with the painful one-at-a-time approach used in [part 1]({% post_url 2021-10-30-Terraform CDK part 1 %}), I am going to get smarter and use the [iamlive utility](https://github.com/iann0036/iamlive).
 
-I first clone the repository, built and install the utility.
+I first clone the repository, build and install the utility.
 I then add this new powershell script - `iamlive.ps1` - to my setup folder:
 
 ``` powershell
@@ -128,15 +128,15 @@ I can now incorporate the missing actions in the IaC user policy.
 
 I've also installed the [sort json array vscode extension](https://github.com/fvclaus/vsc-sort-json-array#sort-json-array), to keep my `iac-policy.json` file tidy, and easily compare the output from iamlive to it, and identify what needs adding.
 
-Although this works remarkably well, it is far from perfect and can still miss some actions, probably because the iamlive [map](https://raw.githubusercontent.com/iann0036/iamlive/main/iamlivecore/map.json) is incomplete or out of date. For example, it output the v1 permissions for the APIGateway, and completely missed the `s3:DeleteObject` and `s3:DeleteObjectVersion`, causing me quite a bit of faffing to identify the correct policy using the tried and tested combination of IAM console and documentation [(Actions, resources, and condition keys for AWS services)](https://docs.aws.amazon.com/service-authorization/latest/reference/reference_policies_actions-resources-contextkeys.html). The policy also needs the actions associated with updates, otherwise small updates to the CDK code will fail withoutthout destroying the stack entirely first before reapplying it.
+Although this works remarkably well, it is far from perfect and can still miss some actions, probably because the iamlive [map](https://raw.githubusercontent.com/iann0036/iamlive/main/iamlivecore/map.json) is incomplete or out of date. For example, it output the v1 permissions for the APIGateway, and completely missed the `s3:DeleteObject` and `s3:DeleteObjectVersion`, causing me quite a bit of faffing to identify the correct policy using the tried and tested combination of IAM console and documentation [(Actions, resources, and condition keys for AWS services)](https://docs.aws.amazon.com/service-authorization/latest/reference/reference_policies_actions-resources-contextkeys.html). The policy also needs the actions associated with updates, otherwise small updates to the CDK code will fail without destroying the stack entirely first before reapplying it.
 
-Finally, I will need to revisit this again later as this is still not a least privilege policy, as it still enables my IaC user to delete resources it hasn't created.
+Finally, I will need to revisit this again later as this is still not a [least privilege](https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html#grant-least-privilege) policy, as it still enables my IaC user to delete resources it hasn't created.
 My next move, in a future experiment, will be [using tags](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_iam-tags.html).
 
 ### Creating a S3 bucket for lambda code deployment
 
 Not much to say, we simply use the [S3 Bucket resource](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket), making sure to set 
-`forceDestroy: true` to ensure [all objects (including any locked objects) are from the bucket before destroying it](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket#force_destroy)[^1] - otherwise we wouldn't be able to tear down this infrastructure.
+`forceDestroy: true` to ensure [all objects (including any locked objects) are from the bucket before destroying it](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket#force_destroy) [^1] - otherwise we wouldn't be able to tear down this infrastructure.
 
 ``` typescript
 import { S3 } from '@cdktf/provider-aws';
@@ -156,8 +156,7 @@ const sourceBucket = new S3.S3Bucket(this, 'lambda_source_bucket', {
 
 ### Upload placeholder lambda source code to S3 Bucket
 
-We cannot create a lambda function without code behind it, but we can point the lambda to a barebone implementation which we'll later override with the actual code.
-Interestingly, unless I am horribly mistaken, the exemplar lambda in the [API Gateway tutorial](https://docs.aws.amazon.com/lambda/latest/dg/services-apigateway-tutorial.html) does not return the [correct schema to be used with the API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-output-format)!
+We cannot create a lambda function without code behind it, but we can point the lambda to a barebone implementation which we'll later override with the actual code [^2].
 
 ``` javascript
 exports.handler = function(event, context, callback) {
@@ -193,7 +192,7 @@ const sourceBucketObject = new S3.S3BucketObject(this, "lambda_archive", {
 });
 ```
 
-NB: when using one resource's attribute to set another's, we often hit this error `Type 'string | undefined' is not assignable to type 'string'.`.
+NB: when using one resource's attribute to set another's, we often hit this error `Type 'string | undefined' is not assignable to type 'string'`.
 To work around this, we simply use the typescript [non-null assertion operator (!)](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html#non-null-assertion-operator).
 
 ### Creating a Lambda function sourced from a S3 Bucket
@@ -428,6 +427,7 @@ new TerraformOutput(this, "invoke-url", {
 
 ## Deploy to the sandbox
 
+``` terraform
 Deploying Stack: day04
 Resources
  ✔ AWS_API_GATEWAY_ACCO api_gateway_account aws_api_gateway_account.api_gateway_acc
@@ -474,14 +474,15 @@ Resources
 Summary: 20 created, 0 updated, 0 destroyed.
 
 Output: invoke-url = https://ruwqixs5g5.execute-api.eu-west-1.amazonaws.com/v1
+```
 
-Looking good! 20 terraform resources tho, for a simple API!
+Looking good! 20 terraform resources though, for a simple API!
 
 ## Invoke our newly deployed API
 
 I am a big fan of the vscode [REST client extension](https://marketplace.visualstudio.com/items?itemName=humao.rest-client) - much easier than the bloat of [postman](https://www.postman.com/product/what-is-postman/)
 
-``` http
+```
 POST https://ruwqixs5g5.execute-api.eu-west-1.amazonaws.com/v1/dynamodbmanager
 Content-Type: application/json
 
@@ -489,7 +490,6 @@ Content-Type: application/json
      "hello": "world"
 }
 ```
-
 results in 
 ```
 HTTP/1.1 200 OK
@@ -589,8 +589,10 @@ Again, result!
 ## Refactor the code
 
 So far, we have not really leveraged the move from HCL to a strongly typed language (typescript).
+
 Let's do that now - group related resources in their own functions, and start using self-descriptive names for functions and variables to make it all easier to understand.
-And while we are at it, mostly for the fun of it, because strictly speaking we have no need for it yet, let's add some logic to enable us to define multiple methods on an resource, not just POST, but GET, PUT and DELETE as well, to cover all aspects of [CRUD](https://en.wikipedia.org/wiki/Create,_read,_update_and_delete)
+
+And, while we are at it, mostly for the fun of it, because strictly speaking we have no need for it yet, let's add some logic to enable us to define multiple methods on an resource, not just POST, but GET, PUT and DELETE as well, to cover all aspects of [CRUD](https://en.wikipedia.org/wiki/Create,_read,_update_and_delete)
 
 For example:
 
@@ -702,25 +704,38 @@ class ApiGatewayTutorialStack extends TerraformStack {
 }
 ```
 
-Eventually, this functions could be moved to a [typescript module](https://www.typescriptlang.org/docs/handbook/modules.html) and reused across stacks.
+Eventually, these functions could be moved to a [typescript module](https://www.typescriptlang.org/docs/handbook/modules.html) and reused across stacks.
+
 The world is my oyster.
 
-You can see the final code [here](/assets/files/2021-11-11-main.ts) 
-and compare it to the [generated HCL](assets/files/2021-11-11-cdk.tf.json).
-My IaC user policy is [here] (assets/files/2021-11-11-iac-policy.json).
+You can see the final code [here](https://github.com/franck-chester/franck-chester.github.io/blob/main/assets/files/2021-11-11-main.ts) 
+and compare it to the [generated HCL](https://github.com/franck-chester/franck-chester.github.io/blob/main/assets/files/2021-11-11-cdk.tf.json).
+My IaC user policy is [here](https://github.com/franck-chester/franck-chester.github.io/blob/main/assets/files/2021-11-11-iac-policy.json).
 
 ## Terraform graph
 I would really like a pretty picture to accompany this blog, so I am going to try terraform built in [graph function](https://www.terraform.io/docs/cli/commands/graph.html).
 
 I start by installing graphviz with chocolatey `choco install graphviz`
 
-I can then navigate to the generated terraform files and execute `\day04\cdktf.out\stacks\day04 [main ≡ +2 ~7 -0 !]> terraform graph | dot -Tsvg > ../../../../docs/day04.svg`
+I can then navigate to the generated terraform files folder `\day04\cdktf.out\stacks\day04` 
+and execute `> terraform graph | dot -Tsvg > ../../../../docs/day04.svg`
 
 which gives me this `day04.svg` file:
-![](assets/images/2021-11-11-day04-tfgraph.svg)
 
-Which is useful but quite ugly :sad:
+![](/assets/images/2021-11-11-day04-tfgraph.svg)
 
+Which is useful but quite ugly :frowning_face:
+
+## Conclusion
+
+I can see the benefits of using the terraform CDK to generate my Infrastructure as Code files. Using a strongly typed language allows for a much more legibility and flexibility than HCL
+
+Next on my list are tags:
+1) use them [to tighten my IAM policies](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_iam-tags.html)
+2) check whether the terraform CDK allow, like the AWS one, tagging at [construct level](https://docs.aws.amazon.com/cdk/latest/guide/tagging.html)
+
+and of course actually deploying the code for my lambda, and complete the tutorial by creating a dynamoDB table to manipulate via my API.
 
 ----------- 
 [^1]: see also this blog [Benchmarking S3 force_destroy](https://dev.to/ericksoen/teaching-terraform-from-the-ground-up-benchmarking-s3-forcedestroy-2nlf)
+[^2]: Interestingly, unless I am horribly mistaken, the exemplar lambda in the [API Gateway tutorial](https://docs.aws.amazon.com/lambda/latest/dg/services-apigateway-tutorial.html) does not return the [correct schema to be used with the API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-output-format)!
