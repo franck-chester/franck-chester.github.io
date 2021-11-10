@@ -480,10 +480,10 @@ const lambda_assume_role_policy = {
       ]
     };
 
-    new IAM.IamRole(this, 'lambda-apigateway-role', {
-      name: 'lambda-apigateway-role',
-      assumeRolePolicy: JSON.stringify(lambda_assume_role_policy)
-    });
+new IAM.IamRole(this, 'lambda-apigateway-role', {
+  name: 'lambda-apigateway-role',
+  assumeRolePolicy: JSON.stringify(lambda_assume_role_policy)
+});
 ```
 
 ``` terraform
@@ -551,7 +551,9 @@ Sandbox IaC user teardown complete ...
 
 This is all very basic but I now have a good understanding of the Terraform CDK and its foibles. I have also tested my developer workflow, and exercised my IaC scripts.
 
-I will continue this experiment in a later post, deploy a lambda function, configure the API Gateway to invoke it, etc.
+I will continue[^3] this experiment in a [later post]({% post_url 2021-11-11-Terraform CDK part 2 %}), deploy a lambda function, configure the API Gateway to invoke it, etc.
+
+[^3]: and **TIDY UP**, as I have now spotted inconsistencies in my naming terraform resources ([should use underscore rather than hyphens](https://www.terraform-best-practices.com/naming)).
 
 
 
