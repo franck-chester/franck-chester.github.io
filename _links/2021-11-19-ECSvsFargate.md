@@ -1,8 +1,8 @@
 ---
 title: "ECS vs. Fargate: What's the difference?"
 target : "https://cloudonaut.io/ecs-vs-fargate-whats-the-difference/"
-source : "Remind"
-source_url : "Reminding myself the difference between ec2 and fargaye"
+source : "Reminding myself the differences between ec2 and fargate"
+source_url : 
 tags: aws ecs fargate containers
 ---
 

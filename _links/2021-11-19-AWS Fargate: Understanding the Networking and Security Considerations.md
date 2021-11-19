@@ -6,4 +6,4 @@ source_url : ""
 tags: aws fargate security 
 ---
 
-First part. Of this article provides a simple overview of fargate networking
+First part of this article provides a simple overview of fargate networking

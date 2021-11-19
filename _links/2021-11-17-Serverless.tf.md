@@ -1,7 +1,7 @@
 ---
-title: "Serverless. tf"
+title: "Serverless.tf"
 target : "https://github.com/antonbabenko/serverless.tf"
-source : "Googling about Sam and terraform"
+source : "Googling about SAM and terraform"
 source_url : ""
 tags: aws terraform serverless
 ---

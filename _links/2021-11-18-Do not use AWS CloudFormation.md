@@ -6,4 +6,4 @@ source_url : "https://twitter.com/clintgibler/status/1461121977293459464?t=Ukiic
 tags: Terraform aws cloudformation
 ---
 
-This looks interesting...
+A useful comparison of Terraform and Cloudformation
