@@ -1,8 +1,8 @@
 ---
 title: "Layering Microservices"
-target : "https://philcalcado.com/2018/09/24/services_layers.html"
-source : "Googling up "layered microservices architectures'"
-source_url : ""
+target: "https://philcalcado.com/2018/09/24/services_layers.html"
+source: "Googling up layered microservices architectures'"
+source_url: "http://test"
 tags: architecture  microservices 
 ---
 
