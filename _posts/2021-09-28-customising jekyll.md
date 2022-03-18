@@ -21,6 +21,8 @@ I will therefore need to customise (aka hack) So-Solid's [tags layout](https://g
 Finally, I want to emulate a colleague of mine (*hi Paul!*) who publishes a weekly summary of his reading/viewing/listening to our colleagues, which is a much better way to do it than my wanton posting on random intranet channels.
 I will therefore create yet another collection, *weekending*, with its own custom layout, to group *posts* and *links* per week, with an optional blurb should I want to expand on my tech activities that week.
 
+*Update March 22:* I wasn't posting often enough to generate any useful weekly summaries, so have now deleted this section of the site.
+
 ## Collections
 
 As per the instructions, add this to my `_config.yaml`:

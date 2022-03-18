@@ -38,8 +38,6 @@ plugins:
   - jemoji
 
 collections:
-  thisWeek:
-    output: true
   links:
     output: true
 
@@ -65,14 +63,6 @@ defaults:
       layout: post
       comments: true
       share: true
-
-  - 
-    scope:
-      path: "_thisWeek"
-      layout: posts
-    values:
-      strip_title: true
-
   -
     scope:
       path: "_links" 
