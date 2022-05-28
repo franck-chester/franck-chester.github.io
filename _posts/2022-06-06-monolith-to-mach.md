@@ -63,11 +63,36 @@ Unfortunately, by definition, a monolith is not made
 individual components, so how will we identify the bits 
 we can replace? We will slive and dice the monolith 
 along logical boundaries that might not exist in
-Athe code base but are meaningful to our team.
+the code base but are meaningful to our team.
 
 ## Logically distinct customer journeys
+
+Our squads are already organised along the journeys 
+our customers take through our website.
+The presentation and business logic associated with let's say product discovery
+(browsing for and eventually selecting a specific product)
+is logically distinct from customer onboarding (creating an account)
+or account management.
+
+These journeys are therefore an easy way to slive through the responsibilities of our monolith.
+
 ## Logically distinct architecture layers
+
+Although monolithic,our platform is layered, with distinct areas of the  codebase dealing with front end, business logic and integration with other systems.
+Again, the codebase will have undesirable dependencies,
+but these architectural layers are another easy way to slice through the monolith.
+
+
 ## Logically distinct bounded contexts
+
+We now look at our entire solution, or rather the problems we are solving with that solution.
+This 'problem domain' can be broken down into subdomain thay either
+core, generic or supporting:
+
+- The core domain is what truly differentiate us from our competitors,
+our bread and butter, our Unique Selling Point (USP).
+This is what matters to us as an organisation and where we want to put in all our efforts.
+
 ## Strangler fig pattern
 
 # MACH target architecture
