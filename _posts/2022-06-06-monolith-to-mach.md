@@ -92,6 +92,20 @@ core, generic or supporting:
 - The core domain is what truly differentiate us from our competitors,
 our bread and butter, our Unique Selling Point (USP).
 This is what matters to us as an organisation and where we want to put in all our efforts.
+Our core problem is how to provide the best digital customer experience, across multi channel,
+and make it as easy as possible to find and buy yhe right product, at the right price, with
+if required financial options, while meeting all our compliance requirements.
+
+- On the other hand, many problems innour domain are 
+quite generic across our industry and actually quite difficult to solve in anybway
+that would differentiate us feom our competitors.
+Instead, we are better off partnering with 3rd parties
+who are happy to treat these problems as their core domain
+and for us to simply consume those 3rd parties solution s to these problems.
+
+- finally, supporting sub domains are problems that we must 
+solve in order to address our core problems, but will not
+in themselves differentiate us from our competitors.
 
 ## Strangler fig pattern
 
