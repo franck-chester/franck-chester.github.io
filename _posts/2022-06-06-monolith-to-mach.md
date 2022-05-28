@@ -109,6 +109,13 @@ in themselves differentiate us from our competitors.
 
 ## Strangler fig pattern
 
+We have now sliced and diced our monolith into bounded  contexts,
+mapped these to our customer journeys and architecture layers
+and decided whether they address a core, generic or supporting
+problem. We now need to start reimplementing them away from
+rhe monolith, and introduce them into the overall solution
+without the customer being aware.
+
 # MACH target architecture
 
 ## Microservices
