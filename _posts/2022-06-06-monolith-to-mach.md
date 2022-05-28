@@ -118,7 +118,23 @@ without the customer being aware.
 
 # MACH target architecture
 
+MACH is a cute acronym coined in the retail industry
+to market SaaS platforms that can be composed into
+best of breed e-commerce solutions.
+
+It stands for Microservices, API-first, Cliud native and Headless components.
+
 ## Microservices
+
+Microservices are the technical implementation of the bounded contexts we mentioned earlier.
+Having identified tightly defined problems areas with
+a clear boundary between what does and doesn't pertain to a specific problem,
+we can design and implement specific solutions to these specific problems.
+These solutions should each be applications in their own right,
+managed entirely separately from each other, truly independently.
+
+Instead of one big monolithic solution to all ourbproblems, we will
+have much smaller (hence the micro- prefix) individual solutions to individual problems.
 ## APIs and Events, everything 'as a Service'
 ## Cloud native components and technologies
 ## Headless components and services
