@@ -49,6 +49,22 @@ releases with quick customer feedback loops to adjust the direction of travel
 # Replacing the monolith - carefully
 
 ## Ship of Theseus
+
+This thought experiment from the philosophers of ancient Greece asks whether something
+that has had all of its constituent parts replaced remains the same thing.
+
+Putting aside the philosophical question, we will inspire
+ourselves from that approach and replace our monolith not 
+through one big bang all or nothing approach, but very gradually,
+bit by bit, so that our customers will at all time
+remain unaware of the transformation.
+
+Unfortunately, by definition, a monolith is not made
+individual components, so how will we identify the bits 
+we can replace? We will slive and dice the monolith 
+along logical boundaries that might not exist in
+Athe code base but are meaningful to our team.
+
 ## Logically distinct customer journeys
 ## Logically distinct architecture layers
 ## Logically distinct bounded contexts
