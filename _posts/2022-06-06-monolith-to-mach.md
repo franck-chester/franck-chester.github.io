@@ -22,6 +22,30 @@ thoughts I didn't have time to cover during my slot.
 
 # The problem of the monolith
 
+A monolithic platform such as Oracle e-commerce ATG
+will always, sooner or later, lead to spaghetti logic.
+A single codebase will cause well intentioned engineers
+to apply DRY and SOLID principles, which although
+the correct approach at component level, will cause
+logically independent **business** concerns to become
+coupled through shared code artefacts.
+
+Eventually, on a large codebase such as the Very Group
+websites and underlying business systems, this coupling
+bmakes it near impossible to experiment or accelarate 
+the deployment of new feature, as every single code 
+change risks impacting an unrelated feature.
+
+Releases have to be batched, with sufficient time in between
+to allow for regression testing. Automating these tests
+is itself difficult as each combination of feature causes
+ causes an explosion in the number of regression tests required.
+
+All of this is incompatible with moderns ways of developing and deploying
+software, which privilege small and frequent feature
+releases with quick customer feedback loops to adjust the direction of travel
+ and prioritise the next feature.
+
 # Replacing the monolith - carefully
 
 ## Ship of Theseus
