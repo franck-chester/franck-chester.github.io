@@ -227,7 +227,7 @@ On the other, we have MACH's definition:
 
 Personally, I like to think of cloud native as leveraging *value-added* services from the cloud, i.e. work on the right hand-side of this diagram, from SaaS to PaaS:
 
-![](/assets/images/Hackajob-cloudnative.png)
+![](/assets/images/hackajob-cloudnative.png)
 
 **SaaS**: 3rd party software incorporated into our architecture to provide *generic domain* functionality, should be consumed 'as a Service', meaning via APIs or events, and have near zero infrastructure footprint.
 
