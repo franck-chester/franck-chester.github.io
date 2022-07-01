@@ -18,7 +18,11 @@ the Digital Customer Experience (DCX) tribe will re-architect
 our flagship e-commerce websites away from our ageing 
 monolithic platforms towards a modern, composable, MACH architecture .
 
-Here, I reproduce the slides (badly, as powerpoint *export to GIF* function is poo), together with additional
+You can watch the whole presentation here: 
+
+[![Hackajob x The Very Group - Modernising the Technology Behind Very](https://i9.ytimg.com/vi_webp/A08DhahTZxY/mqdefault.webp?v=62beb7ab&sqp=CLzx-pUG&rs=AOn4CLDRF9DB3lVlaCG5GFhaqfsTMTb64Q)](https://youtu.be/A08DhahTZxY "Hackajob x The Very Group - Modernising the Technology Behind Very")
+
+In this post, I reproduce the slides (badly, as powerpoint *export to GIF* function is poo), together with additional
 thoughts I didn't have time to cover during my slot.
 
 
@@ -242,7 +246,7 @@ To be truly *Cloud Native* means working together, and trusting your cloud and S
 
 In order to keep control of all aspect of our Customers experience, it is essential that all the components we incorporate into our solution remain completely Headless, meaning have no user interface, and do not impose any specific user workflows.
 
-As stated above, all interactions must be 'as a Service', i.e. via APIs or events, and these must not convey any element of user interaction, be it user messages or any sort of content formatting, and make no assumption as to the user journey that lead to these interaction, or whether there is indeed an actual user involved.
+As stated above, all interactions must be 'as a Service', i.e. via APIs or events, and these must not convey any element of user interaction, be it user messages or any sort of content formatting, and make no assumption as to the user journey that led to these interactions, or whether there is indeed an actual user involved.
 
 # Technologies behind our transformation
 
