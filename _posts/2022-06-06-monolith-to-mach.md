@@ -45,7 +45,7 @@ the deployment of new features, as every single code change risks impacting othe
 Releases have to be batched, with sufficient time in between
 to allow for regression testing. Automating these tests
 is itself difficult as each combination of features causes
- causes an explosion in the number of regression tests required.
+ an explosion in the number of regression tests required.
 
 All of this is incompatible with moderns ways of developing and deploying
 software, which privilege small and frequent feature
@@ -75,18 +75,18 @@ plank by plank, so that our customers will at all time
 remain unaware of the transformation.
 
 Unfortunately, by definition, a monolith is not made of
-individual components, so how will we identify the bits 
+individual components, so, how will we identify the bits 
 we can replace?
 
 We will slice and dice the monolith 
 along logical boundaries that might not exist in
-the code base but are meaningful to our team.
+the codebase but are meaningful to our team.
 
 ## Logically distinct customer journeys
 
 ![](/assets/images/Hackajob-slide27.gif){:style="float:right; padding 0 20px 20px 0"}
 
-Our squads are already organised along the journeys 
+Our engineering squads are already organised along the journeys 
 our customers take through our website.
 The presentation and business logic associated with let's say product discovery
 (browsing for and eventually selecting a specific product)
@@ -94,7 +94,6 @@ is logically distinct from customer onboarding (creating an account)
 or account management.
 
 These journeys are therefore an easy way to slice through the responsibilities of our monolith.
-
 
 ## Logically distinct architecture layers
 
@@ -104,21 +103,19 @@ Although monolithic, our platform is layered, with distinct areas of the codebas
 Again, the codebase itself will have undesirable dependencies,
 but these architectural layers are logically independent and another easy way to slice through the monolith.
 
-
-
 ## Logically distinct bounded contexts
 
 ![](/assets/images/Hackajob-slide29-30.gif){:style="float:right; padding 0 20px 20px 0"}
 
 We now look at our entire solution, or rather the problems we are solving with that solution.
-According to Domain Driven Design (DDD) This 'problem domain' can be broken down into subdomains that either
+According to Domain Driven Design (DDD) This 'problem domain' can be broken down into subdomains that are either
 [core, generic or supporting](https://blog.jonathanoliver.com/ddd-strategic-design-core-supporting-and-generic-subdomains/):
 
 - The **core** domain is what truly differentiates us from our competitors, 
   our bread and butter, our Unique Selling Point (USP). This is what matters to us as an organisation and where we want to put in all our efforts.
 
   Our core problem here at the Very Group is how to provide the best digital customer experience, across multi channels,
-  and make it as easy as possible to find and buy yhe right product, at the right price, with, if required,
+  and make it as easy as possible to find and buy the right product, at the right price, with, if required,
   financial options, while meeting all our compliance requirements.
 
 - On the other hand, many problems in our domain are quite **generic** across our industry and actually quite difficult 
