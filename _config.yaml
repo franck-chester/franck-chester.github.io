@@ -86,3 +86,6 @@ footer_links:
   - title: GitHub
     url: https://github.com/franck-chester/franck-chester.github.io
     icon: fab fa-github-square
+
+
+mixpanel_token: 1234
