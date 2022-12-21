@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<!--
+    So Simple Jekyll Theme 3.2.0
+    Copyright 2013-2019 Michael Rose - mademistakes.com | @mmistakes
+    Free for personal and commercial use under the MIT license
+    https://github.com/mmistakes/so-simple-theme/blob/master/LICENSE
+-->
+<html lang="en-US" class="no-js">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  
+
+  
+    
+    <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Scripting access to my AWS sandbox | Franck’s stuff</title>
+<meta name="generator" content="Jekyll v4.3.1" />
+<meta property="og:title" content="Scripting access to my AWS sandbox" />
+<meta name="author" content="Franck" />
+<meta property="og:locale" content="en_GB" />
+<meta name="description" content="Today I am documenting how I intend to use the AWS sandbox environments provided by my current employer. These are phoenix environments - we can book them for anything between 1 and 7 days, after which time they get wiped out with AWS nuke. We get given near free rein, with AdministratorAccess AWS managed policy. We are also supposedly restricted in the EC2 instances size we can launch, although I have not seen this reflected in the policies attached to my user :confused: ." />
+<meta property="og:description" content="Today I am documenting how I intend to use the AWS sandbox environments provided by my current employer. These are phoenix environments - we can book them for anything between 1 and 7 days, after which time they get wiped out with AWS nuke. We get given near free rein, with AdministratorAccess AWS managed policy. We are also supposedly restricted in the EC2 instances size we can launch, although I have not seen this reflected in the policies attached to my user :confused: ." />
+<link rel="canonical" href="https://franck-chester.github.io//2021/10/01/Scripting-access-to-my-AWS-sandbox.html" />
+<meta property="og:url" content="https://franck-chester.github.io//2021/10/01/Scripting-access-to-my-AWS-sandbox.html" />
+<meta property="og:site_name" content="Franck’s stuff" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-10-01T00:00:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Scripting access to my AWS sandbox" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Franck"},"dateModified":"2021-10-01T00:00:00+00:00","datePublished":"2021-10-01T00:00:00+00:00","description":"Today I am documenting how I intend to use the AWS sandbox environments provided by my current employer. These are phoenix environments - we can book them for anything between 1 and 7 days, after which time they get wiped out with AWS nuke. We get given near free rein, with AdministratorAccess AWS managed policy. We are also supposedly restricted in the EC2 instances size we can launch, although I have not seen this reflected in the policies attached to my user :confused: .","headline":"Scripting access to my AWS sandbox","mainEntityOfPage":{"@type":"WebPage","@id":"https://franck-chester.github.io//2021/10/01/Scripting-access-to-my-AWS-sandbox.html"},"url":"https://franck-chester.github.io//2021/10/01/Scripting-access-to-my-AWS-sandbox.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+  
+
+  <script>
+    /* Cut the mustard */
+    if ( 'querySelector' in document && 'addEventListener' in window ) {
+      document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + 'js';
+    }
+  </script>
+
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="/assets/css/skins/default.css">
+  
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,700,700i|Lora:400,400i,700,700i">
+  <link rel="alternate" type="application/atom+xml" title="Franck&#39;s stuff" href="/feed.xml">
+<!-- start custom head snippets -->
+
+<!-- insert favicons. use http://realfavicongenerator.net/ -->
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/images/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon-16x16.png">
+<link rel="manifest" href="/assets/images/site.webmanifest">
+<link rel="mask-icon" href="/assets/images/safari-pinned-tab.svg" color="#5bbad5">
+<link rel="shortcut icon" href="/assets/images/favicon.ico">
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="msapplication-config" content="/assets/images/browserconfig.xml">
+<meta name="theme-color" content="#ffffff">
+<!-- end custom head snippets -->
+
+</head>
+
+
+  <body class="layout--post  scripting-access-to-my-aws-sandbox">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#primary-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+  <div class="navigation-wrapper">
+    <a href="#menu-toggle" id="menu-toggle">Menu</a>
+    <nav id="primary-nav" class="site-nav animated drop">
+      <ul>
+<li><a href="/posts/">Posts</a></li>
+<li><a href="/links/">Links</a></li>
+<li><a href="/tags/">Tags</a></li>
+<li><a href="/search/">Search</a></li>
+<li><a href="/">About</a></li>
+</ul>
+    </nav>
+  </div><!-- /.navigation-wrapper -->
+
+
+    <header class="masthead">
+  <div class="wrap">
+    
+    
+    
+      
+        <div class="site-title animated fadeIn"><a href="/">Franck's stuff</a></div>
+      
+      <p class="site-description animated fadeIn" itemprop="description">This is where I document and comment on those titbits I keep stumbling on during my day job, and my evening browsing</p>
+    
+  </div>
+</header><!-- /.masthead -->
+
+
+    <main id="main" class="main-content" aria-label="Content">
+  <article class="h-entry">
+    
+
+    <div class="page-wrapper">
+      <header class="page-header">
+        
+        
+          <h1 id="page-title" class="page-title p-name">Scripting access to my AWS sandbox
+</h1>
+        
+      </header>
+
+      <div class="page-sidebar">
+        <div class="page-author h-card p-author">
+<img src="/assets/images/franck.png" class="author-avatar u-photo" alt="Franck"><div class="author-info">
+<div class="author-name">
+        <em>by</em> <span class="p-name">Franck</span>
+      </div>
+<ul class="author-links"><li class="author-link">
+            <a class="u-url" rel="me" href="https://github.com/franck-chester"><i class="fab fa-github-square fa-lg" title="GitHub"></i></a>
+          </li></ul>
+    <time class="page-date dt-published" datetime="2021-10-01T00:00:00+00:00"><a class="u-url" href="">2021-10-01</a>
+</time>
+
+  </div>
+</div>
+
+        
+
+        
+  <h3 class="page-taxonomies-title">Tags</h3>
+  
+  <ul class="page-taxonomies">
+<li class="page-taxonomy"><a href="/tags/#aws-cli" title="Pages tagged aws-cli" rel="tag">aws-cli</a></li>
+<li class="page-taxonomy"><a href="/tags/#iac" title="Pages tagged iac" rel="tag">iac</a></li>
+<li class="page-taxonomy"><a href="/tags/#sandbox" title="Pages tagged sandbox" rel="tag">sandbox</a></li>
+  </ul>
+
+
+      </div>
+
+      <div class="page-content">
+        <div class="e-content">
+          <p>Today I am documenting how I intend to use the AWS sandbox environments provided by my current employer. These are <a href="https://martinfowler.com/bliki/PhoenixServer.html">phoenix environments</a> - we can book them for anything between 1 and 7 days, after which time they get wiped out with <a href="https://github.com/rebuy-de/aws-nuke#aws-nuke">AWS nuke</a>.<br>
+We get given near free rein, with <a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_job-functions.html#jf_administrator"><code class="language-plaintext highlighter-rouge">AdministratorAccess</code></a>  AWS managed policy. We are also supposedly restricted in the EC2 instances size we can launch, although I have not seen this reflected in the policies attached to my user <img class="emoji" title=":confused:" alt=":confused:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f615.png" height="20" width="20"> .</p>
+
+<p>If you’ve stumbled upon these instructions from somewhere else, you might have been given an account by your employer, or more likely, as I had to do in my previous job, used your own credit card to get one and hope the <a href="https://aws.amazon.com/free/">AWS free tier</a> is enough for you to play with.</p>
+
+<p>NB: I use a windows machine and the powershell terminal.</p>
+
+<h2 id="pre-reqs">Pre-reqs</h2>
+
+<h3 id="aws-cli">AWS CLI</h3>
+
+<p>Install the AWS command line interface, v2, as per <a href="https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-windows.html">Installing, updating, and uninstalling the AWS CLI version 2 on Windows</a></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt; msiexec.exe /i https://awscli.amazonaws.com/AWSCLIV2.msi
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt; aws --version
+aws-cli/2.2.38 Python/3.8.8 Windows/10 exe/AMD64 prompt/off
+</code></pre></div></div>
+
+<h3 id="aws-powershell-tools">AWS powershell tools</h3>
+
+<p>This is mostly to manage my iac profile and credentials, as I prefer to use the cli directly. 
+However, the <a href="https://docs.aws.amazon.com/powershell/latest/reference/index.html?page=Set-AWSCredential.html&amp;tocid=Set-AWSCredential">Set-AWSCredentials</a> cmdlet will be used in my scripts to manage my cli profile.</p>
+
+<p>Follow the instructions for <a href="https://docs.aws.amazon.com/powershell/latest/userguide/pstools-getting-set-up-windows.html#ps-installing-awstools">Installing the AWS tools for powershell on windows</a>, limiting ourselves to the <code class="language-plaintext highlighter-rouge">AWS.Tools.Common</code> module.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Install-Module -Name AWS.Tools.Installer
+Install-AWSToolsModule AWS.Tools.Common -CleanUp
+</code></pre></div></div>
+
+<h2 id="book-a-sandbox">Book a sandbox</h2>
+
+<p>This is a process internal to my current employer. They provide us with a portal that triggers a script that initialises a dedicated AWS account with a set of admin credentials, before emailing the user (that is me) with the account details and a one-time password:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Hello, franck@acme.com
+Please find your login details below:
+
+Console: https://012345678910.signin.aws.amazon.com/console/
+Username: franck@acme.com
+Password: 7w9cu61Tl8T0EXAMPLE 
+</code></pre></div></div>
+
+<h2 id="create-access-key-for-the-admin-user">Create access key for the admin user</h2>
+
+<p>The first order of business is to logon to the console to create an access key for my admin user.<br>
+The idea is that once I have done this, I will not use the console to manage my sandbox, but do everything via Command Line Interface (CLI) and Infrastructure as Code (IaC) scripts.</p>
+
+<p>The admin user password must be changed on first access. I use a password I manage in my <a href="https://keepass.info/">keepass password manager</a>.</p>
+
+<p>I then navigate to the <a href="https://console.aws.amazon.com/iam/">IAM (identity and Access Management) web console</a> to <a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_access-keys.html#Using_CreateAccessKey">create an access key</a>.</p>
+
+<p>I either keep the page up while I perform the next step, or cut and paste the key details somewhere safe.</p>
+
+<h2 id="create-or-update-my-admin-sandbox-profile">Create or Update my admin-sandbox profile</h2>
+
+<p>Configure a named profile as per <a href="https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html#cli-configure-quickstart-config">Quick configuration with <code class="language-plaintext highlighter-rouge">aws configure</code></a>.</p>
+
+<p>Once the <code class="language-plaintext highlighter-rouge">admin-sandbox</code> profile has been created once, the existing values can be reused by simply pressing return when prompted</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt; aws configure --profile admin-sandbox
+AWS Access Key ID [None]: AKIAIOSFODNN7EXAMPLE
+AWS Secret Access Key [None]: wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+Default region name [None]: eu-west-2
+Default output format [None]: json
+</code></pre></div></div>
+
+<h2 id="initialise-an-iac-specific-profile">Initialise an IaC specific profile</h2>
+
+<p>Only need to do this once, I’ll reuse the one profile across my sandbox experiments.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt; aws configure --profile franck-iac
+AWS Access Key ID [None]: 
+AWS Secret Access Key [None]: 
+Default region name [None]: eu-west-2
+Default output format [None]: json
+</code></pre></div></div>
+
+<h2 id="create-policy-via-cli">create policy via CLI</h2>
+
+<p>I am keen on limiting my IaC user to the permissions needed for the specific experiment I am running, and nothing more.</p>
+
+<p>Each experiment will define the IaC policy as <a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies.html">a JSON document</a>, for example:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="nl">"Version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2012-10-17"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"Statement"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+            </span><span class="nl">"Effect"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Allow"</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"Action"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+                </span><span class="s2">"ec2:DescribeImages"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"es:*"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"ec2:CreateImage"</span><span class="w">
+            </span><span class="p">],</span><span class="w">
+            </span><span class="nl">"Resource"</span><span class="p">:</span><span class="w"> </span><span class="s2">"*"</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>NB: very bad example, at this stage I do not have a policy document I have actually used!</p>
+
+<p>I can then use this file with the CLI <a href="https://awscli.amazonaws.com/v2/documentation/api/latest/reference/iam/create-policy.html"><code class="language-plaintext highlighter-rouge">create-policy</code></a>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt; aws iam create-policy --profile admin-sandbox --policy-name franck-iac --policy-document file://iac-policy.json --tag Key=sandbox,Value=franck-iac
+{
+    "Policy": {
+        "PolicyName": "franck-iac",
+        "PolicyId": "ANPAQSHUG5ELHLEXAMPLE",
+        "Arn": "arn:aws:iam::012345678910:policy/franck-iac",
+        "Path": "/",
+        "DefaultVersionId": "v1",
+        "AttachmentCount": 0,
+        "PermissionsBoundaryUsageCount": 0,
+        "IsAttachable": true,
+        "CreateDate": "2021-09-30T07:00:06+00:00",
+        "UpdateDate": "2021-09-30T07:00:06+00:00",
+        "Tags": [
+            {
+                "Key": "sandbox",
+                "Value": "franck-iac"
+            }
+        ]
+    }
+}
+</code></pre></div></div>
+
+<p>If and when I need to update this policy to gradually add the required access right, I will update the file and call <a href="https://awscli.amazonaws.com/v2/documentation/api/latest/reference/iam/create-policy-version.html"><code class="language-plaintext highlighter-rouge">create-policy-version</code></a>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt; aws iam --profile admin-sandbox create-policy-version --set-as-default --policy-arn arn:aws:iam::012345678910:policy/franck-iac --policy-document file://iac-policy.json
+{
+    "PolicyVersion": {
+        "VersionId": "v2",
+        "IsDefaultVersion": true,
+        "CreateDate": "2021-10-29T13:22:09+00:00"
+    }
+}
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">--set-as-default</code> is important, without it our IaC user will not be attached to the new version!</p>
+
+<p>NB: <a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-versioning.html">A managed policy can have up to 5 versions</a>. Before you create a new version, we must delete an existing version (<a href="https://awscli.amazonaws.com/v2/documentation/api/latest/reference/iam/delete-policy-version.html"><code class="language-plaintext highlighter-rouge">delete-policy-version</code></a>). Here we don’t really care, therefore we’ll always delete the previous version. To script this, we’ll use <a href="https://awscli.amazonaws.com/v2/documentation/api/latest/reference/iam/list-policy-versions.html"><code class="language-plaintext highlighter-rouge">list-policy-versions</code></a> and delete anything with ` “IsDefaultVersion”: false`.</p>
+
+<h2 id="create-iac-user-via-cli">Create IaC user via CLI</h2>
+
+<p>I use <a href="https://awscli.amazonaws.com/v2/documentation/api/latest/reference/iam/create-user.html"><code class="language-plaintext highlighter-rouge">create-user</code></a>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt; aws iam create-user --profile admin-sandbox --user-name franck-iac --permissions-boundary arn:aws:iam::012345678910:policy/franck-iac --tag Key=sandbox,Value=franck-iac
+{
+    "User": {
+        "Path": "/",
+        "UserName": "franck-iac",
+        "UserId": "AIDAQSHUG5ELIKEXAMPLE",
+        "Arn": "arn:aws:iam::012345678910:user/franck-iac",
+        "CreateDate": "2021-09-30T07:05:43+00:00",
+        "PermissionsBoundary": {
+            "PermissionsBoundaryType": "Policy",
+            "PermissionsBoundaryArn": "arn:aws:iam::012345678910:policy/franck-iac"
+        },
+        "Tags": [
+            {
+                "Key": "sandbox",
+                "Value": "franck-iac"
+            }
+        ]
+    }
+}
+</code></pre></div></div>
+
+<h2 id="attach-the-policy-to-the-user">Attach the policy to the user</h2>
+
+<p>Now, do note that the previous command set the user’s permission boundaries, that is the maximum range of what it is allowed to do, which is different from its actual permissions. These are set separately, with <a href="https://awscli.amazonaws.com/v2/documentation/api/latest/reference/iam/attach-user-policy.html"><code class="language-plaintext highlighter-rouge">attach-user-policy</code></a>.</p>
+
+<p>Here I am being either silly and/or paranoid, as I use the same policy document for boundaries and actual rights. This will guarantee that the policy is the one and only definition of what this user can do.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>aws iam attach-user-policy --profile admin-sandbox --user-name franck-iac --policy-arn arn:aws:iam::012345678910:policy/franck-iac --tag Key=sandbox,Value=franck-iac 
+
+</code></pre></div></div>
+
+<h2 id="create-access-key-for-user">Create access key for user</h2>
+
+<p>I use <a href="https://awscli.amazonaws.com/v2/documentation/api/latest/reference/iam/create-access-key.html"><code class="language-plaintext highlighter-rouge">create-access-key</code></a>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>aws iam create-access-key --profile admin-sandbox  --user-name franck-iac
+{
+    "AccessKey": {
+        "UserName": "franck-iac",
+        "AccessKeyId": "AKIAQSHUG5ELFEXAMPLE",
+        "Status": "Active",
+        "SecretAccessKey": "ZVtmI0yh0J0Z+NhfTsIVl7Ell4PelOiXGEXAMPLE",
+        "CreateDate": "2021-09-30T07:07:48+00:00"
+    }
+}
+</code></pre></div></div>
+
+<h2 id="save-access-keys-to-iac-user-profile">Save access keys to IaC user profile</h2>
+
+<p>This is where we use the <a href="https://docs.aws.amazon.com/powershell/latest/reference/index.html?page=Set-AWSCredential.html&amp;tocid=Set-AWSCredential">Set-AWSCredentials</a>.</p>
+
+<p>Worth noting that <em>on platforms that support the encrypted credential file the profile is written to the <strong>encrypted store</strong>. If the platform does not support the encrypted store (Linux, MacOS, Windows Nano Server) the profile is written to the plain text ini-format shared credential file at %HOME%.aws\credentials. To force the profile to be written to the shared credential file on systems that support both stores (i.e. Windows), specify the path and filename of the credential file using the -ProfileLocation parameter.</em></p>
+
+<p>Our command is therefore</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Set-AWSCredential -AccessKey AKIAQSHUG5ELFEXAMPLE -SecretKey ZVtmI0yh0J0Z+NhfTsIVl7Ell4PelOiXGEXAMPLE -StoreAs franck-iac -ProfileLocation "$($env:userprofile)\.aws\credentials" 
+
+</code></pre></div></div>
+
+<p>At this point I now have a IaC profile I will be able to use with Terraform.</p>
+
+<h2 id="tearing-things-down">Tearing things down</h2>
+
+<p>Although the environment will eventually be nuked, I am keen to do the right thing and clean up after myself.</p>
+
+<p>I will therefore generate <a href="https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-skeleton.html">cli-input.json</a> files which I’ll save locally so that they can be used the delete the policy, access key and user we’ve just created</p>
+
+<h2 id="handle-errors-in-my-scripts">Handle errors in my scripts</h2>
+
+<p>See <a href="https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-returncodes.html#powershell">Understanding return codes from the AWS CLI</a></p>
+
+<h2 id="putting-it-all-together">Putting it all together</h2>
+
+<h3 id="variablesps1"><code class="language-plaintext highlighter-rouge">variables.ps1</code></h3>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$username</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'franck-iac'</span><span class="w">
+</span><span class="nv">$sandbox</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'franck-iac'</span><span class="w">
+</span><span class="nv">$tags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"Key=sandbox,Value=</span><span class="nv">$sandbox</span><span class="s2">"</span><span class="w"> 
+
+</span><span class="nv">$identity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">aws</span><span class="w"> </span><span class="nx">sts</span><span class="w"> </span><span class="nx">get-caller-identity</span><span class="w"> </span><span class="nt">--profile</span><span class="w"> </span><span class="nx">admin-sandbox</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ConvertFrom-Json</span><span class="w"> 
+</span><span class="nv">$account</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">$identity</span><span class="o">.</span><span class="nf">Account</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="setupps1"><code class="language-plaintext highlighter-rouge">setup.ps1</code></h3>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">.</span><span class="s2">"</span><span class="nv">$PSSCriptRoot</span><span class="s2">/variables.ps1"</span><span class="w">
+
+</span><span class="n">write-host</span><span class="w"> </span><span class="s2">"Create access policy for IaC users ..."</span><span class="w">
+</span><span class="nv">$policy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">aws</span><span class="w"> </span><span class="nx">iam</span><span class="w"> </span><span class="nx">create-policy</span><span class="w"> </span><span class="nt">--profile</span><span class="w"> </span><span class="nx">admin-sandbox</span><span class="w"> </span><span class="nt">--policy-name</span><span class="w"> </span><span class="nv">$username</span><span class="w"> </span><span class="nt">--policy-document</span><span class="w"> </span><span class="nx">file://</span><span class="bp">$PSScriptRoot</span><span class="nx">/iac-policy.json</span><span class="w"> </span><span class="nt">--tag</span><span class="w"> </span><span class="nv">$tags</span><span class="w">
+
+</span><span class="kr">if</span><span class="p">(</span><span class="nv">$lastexitcode</span><span class="w"> </span><span class="o">-eq</span><span class="w"> </span><span class="mi">254</span><span class="p">){</span><span class="w">
+    </span><span class="c"># The command returned an error, probably because the policy already exists</span><span class="w">
+    </span><span class="c">## for example if we ran this script multiple time</span><span class="w">
+    </span><span class="c"># Recreate the arn from first principle (ie the account id and polic name</span><span class="w">
+    </span><span class="nv">$PolicyArn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"arn:aws:iam::</span><span class="si">$(</span><span class="nv">$account</span><span class="si">)</span><span class="s2">:policy/</span><span class="si">$(</span><span class="nv">$username</span><span class="si">)</span><span class="s2">"</span><span class="w">
+    </span><span class="n">write-host</span><span class="w"> </span><span class="s2">"Attempt to retrieve existing access policy for IaC users ..."</span><span class="w">
+    </span><span class="nv">$policy</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">aws</span><span class="w"> </span><span class="nx">iam</span><span class="w"> </span><span class="nx">get-policy</span><span class="w"> </span><span class="nt">--policy-arn</span><span class="w"> </span><span class="nv">$PolicyArn</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span><span class="kr">if</span><span class="p">(</span><span class="nv">$lastexitcode</span><span class="p">){</span><span class="w">
+    </span><span class="n">write-error</span><span class="w"> </span><span class="s2">"Aborting script, unable to create or retrieve access policy"</span><span class="w">
+    </span><span class="kr">exit</span><span class="w"> </span><span class="nt">-1</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span><span class="nv">$ap</span><span class="w"> </span><span class="o">=</span><span class="w">  </span><span class="nv">$policy</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ConvertFrom-Json</span><span class="w">  
+</span><span class="nv">$policyArn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">$ap</span><span class="o">.</span><span class="nf">Policy</span><span class="o">.</span><span class="nf">Arn</span><span class="w">
+</span><span class="n">write-host</span><span class="w"> </span><span class="s2">"Created access policy for IaC users, ARN = </span><span class="nv">$policyArn</span><span class="s2">"</span><span class="w">
+
+</span><span class="n">write-host</span><span class="w"> </span><span class="s2">"Create IaC user '</span><span class="nv">$username</span><span class="s2">' ..."</span><span class="w">
+</span><span class="nv">$u</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">aws</span><span class="w"> </span><span class="nx">iam</span><span class="w"> </span><span class="nx">create-user</span><span class="w"> </span><span class="nt">--profile</span><span class="w"> </span><span class="nx">admin-sandbox</span><span class="w"> </span><span class="nt">--user-name</span><span class="w"> </span><span class="nv">$username</span><span class="w"> </span><span class="nt">--permissions-boundary</span><span class="w"> </span><span class="nv">$policyArn</span><span class="w"> </span><span class="nt">--tag</span><span class="w"> </span><span class="nv">$tags</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ConvertFrom-Json</span><span class="w">  
+</span><span class="n">write-host</span><span class="w"> </span><span class="s2">"Created IaC user '</span><span class="nv">$username</span><span class="s2">', ARN = </span><span class="si">$(</span><span class="nv">$u</span><span class="o">.</span><span class="nf">User</span><span class="o">.</span><span class="nf">Arn</span><span class="si">)</span><span class="s2">"</span><span class="w">
+
+</span><span class="n">write-host</span><span class="w"> </span><span class="s2">"Attach policy </span><span class="nv">$policyArn</span><span class="s2"> to user '</span><span class="nv">$username</span><span class="s2">'..."</span><span class="w">
+</span><span class="n">aws</span><span class="w"> </span><span class="nx">iam</span><span class="w"> </span><span class="nx">attach-user-policy</span><span class="w"> </span><span class="nt">--profile</span><span class="w"> </span><span class="nx">admin-sandbox</span><span class="w"> </span><span class="nt">--user-name</span><span class="w"> </span><span class="nv">$username</span><span class="w"> </span><span class="nt">--policy-arn</span><span class="w"> </span><span class="nv">$policyArn</span><span class="w"> </span><span class="nt">--tag</span><span class="w"> </span><span class="nv">$tags</span><span class="w"> 
+
+</span><span class="n">write-host</span><span class="w"> </span><span class="s2">"Create access key for IaC user '</span><span class="nv">$username</span><span class="s2">' ..."</span><span class="w">
+</span><span class="nv">$ak</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">aws</span><span class="w"> </span><span class="nx">iam</span><span class="w"> </span><span class="nx">create-access-key</span><span class="w"> </span><span class="nt">--profile</span><span class="w"> </span><span class="nx">admin-sandbox</span><span class="w"> </span><span class="nt">--user-name</span><span class="w"> </span><span class="nv">$username</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ConvertFrom-Json</span><span class="w">  
+</span><span class="nv">$accesskeyId</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">$ak</span><span class="o">.</span><span class="nf">AccessKey</span><span class="o">.</span><span class="nf">AccessKeyId</span><span class="w">
+</span><span class="n">write-host</span><span class="w"> </span><span class="s2">"Create cli-input file for eventual call to delete-access-key when we tear this down......"</span><span class="w">
+</span><span class="sh">@"
+{
+    "UserName": "</span><span class="nv">$username</span><span class="sh">",
+    "AccessKeyId": "</span><span class="nv">$accesskeyId</span><span class="sh">"
+}
+"@</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">set-content</span><span class="w"> </span><span class="s2">"</span><span class="bp">$PSScriptRoot</span><span class="s2">/cli-input-delete-access-key.json"</span><span class="w">
+</span><span class="n">write-host</span><span class="w"> </span><span class="s2">"Created access key for IaC user '</span><span class="nv">$username</span><span class="s2">', ID = </span><span class="nv">$accesskeyId</span><span class="s2">"</span><span class="w">
+
+</span><span class="n">write-host</span><span class="w"> </span><span class="s2">"Update profile for IaC user '</span><span class="nv">$username</span><span class="s2">' ..."</span><span class="w">
+</span><span class="n">Set-AWSCredential</span><span class="w"> </span><span class="nt">-AccessKey</span><span class="w"> </span><span class="nv">$accesskeyId</span><span class="w"> </span><span class="nt">-SecretKey</span><span class="w"> </span><span class="nv">$ak</span><span class="o">.</span><span class="nf">AccessKey</span><span class="o">.</span><span class="nf">SecretAccesskey</span><span class="w"> </span><span class="nt">-StoreAs</span><span class="w"> </span><span class="nv">$username</span><span class="w"> </span><span class="nt">-ProfileLocation</span><span class="w"> </span><span class="s2">"</span><span class="si">$(</span><span class="nv">$</span><span class="nn">env</span><span class="p">:</span><span class="nv">userprofile</span><span class="si">)</span><span class="s2">\.aws\credentials"</span><span class="w"> 
+</span><span class="n">write-host</span><span class="w"> </span><span class="s2">"Updated profile for IaC user '</span><span class="nv">$username</span><span class="s2">' . "</span><span class="w">
+
+</span><span class="n">Write-host</span><span class="w"> </span><span class="s2">"All done - you can now terraform at will"</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="update-policyps1"><code class="language-plaintext highlighter-rouge">update-policy.ps1</code></h3>
+
+<p>This is the script I run everytime I need to tweak my IaC user access right by editing <code class="language-plaintext highlighter-rouge">iac-policy.json</code>:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">.</span><span class="s2">"</span><span class="nv">$PSSCriptRoot</span><span class="s2">/variables.ps1"</span><span class="w">
+
+</span><span class="c"># Recreate the arn from first principle (ie the account id and polic name</span><span class="w">
+</span><span class="nv">$PolicyArn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"arn:aws:iam::</span><span class="si">$(</span><span class="nv">$account</span><span class="si">)</span><span class="s2">:policy/</span><span class="si">$(</span><span class="nv">$username</span><span class="si">)</span><span class="s2">"</span><span class="w">
+
+</span><span class="n">write-host</span><span class="w"> </span><span class="s2">"Create new default version of policy '</span><span class="nv">$username</span><span class="s2">' / </span><span class="nv">$PolicyArn</span><span class="s2">..."</span><span class="w">
+</span><span class="nv">$pv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">aws</span><span class="w"> </span><span class="nx">iam</span><span class="w"> </span><span class="nx">create-policy-version</span><span class="w"> </span><span class="nt">--profile</span><span class="w"> </span><span class="nx">admin-sandbox</span><span class="w"> </span><span class="nt">--set</span><span class="o">-as</span><span class="nt">-default</span><span class="w"> </span><span class="nt">--policy-document</span><span class="w"> </span><span class="nx">file://iac-policy.json</span><span class="w"> </span><span class="nt">--policy-arn</span><span class="w"> </span><span class="nv">$PolicyArn</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ConvertFrom-Json</span><span class="w">  
+</span><span class="kr">if</span><span class="p">(</span><span class="o">-not</span><span class="w"> </span><span class="nv">$lastexitcode</span><span class="p">){</span><span class="w">
+    </span><span class="n">write-host</span><span class="w"> </span><span class="s2">"Created version </span><span class="si">$(</span><span class="nv">$pv</span><span class="o">.</span><span class="nf">PolicyVersion</span><span class="o">.</span><span class="nf">VersionId</span><span class="si">)</span><span class="s2"> of policy '</span><span class="nv">$username</span><span class="s2">'"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="n">write-host</span><span class="w"> </span><span class="s2">"Delete previous versions of policy '</span><span class="nv">$username</span><span class="s2">' ..."</span><span class="w">
+</span><span class="nv">$pl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">aws</span><span class="w"> </span><span class="nx">iam</span><span class="w"> </span><span class="nx">list-policy-versions</span><span class="w"> </span><span class="nt">--profile</span><span class="w"> </span><span class="nx">admin-sandbox</span><span class="w"> </span><span class="nt">--policy-arn</span><span class="w"> </span><span class="nv">$PolicyArn</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ConvertFrom-Json</span><span class="w">  
+</span><span class="kr">foreach</span><span class="w"> </span><span class="p">(</span><span class="nv">$v</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="nv">$pl</span><span class="o">.</span><span class="nf">Versions</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="kr">if</span><span class="w"> </span><span class="p">(</span><span class="o">-not</span><span class="w"> </span><span class="nv">$v</span><span class="o">.</span><span class="nf">IsDefaultVersion</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="n">write-host</span><span class="w"> </span><span class="s2">"Delete version </span><span class="si">$(</span><span class="nv">$v</span><span class="o">.</span><span class="nf">VersionId</span><span class="si">)</span><span class="s2"> of access policy '</span><span class="nv">$username</span><span class="s2">' ..."</span><span class="w">
+        </span><span class="n">aws</span><span class="w"> </span><span class="nx">iam</span><span class="w"> </span><span class="nx">delete-policy-version</span><span class="w">  </span><span class="nt">--profile</span><span class="w"> </span><span class="nx">admin-sandbox</span><span class="w"> </span><span class="nt">--policy-arn</span><span class="w"> </span><span class="nv">$PolicyArn</span><span class="w"> </span><span class="nt">--version-id</span><span class="w"> </span><span class="nv">$v</span><span class="o">.</span><span class="nf">VersionId</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span><span class="n">write-host</span><span class="w"> </span><span class="s2">"Delete previous versions of policy '</span><span class="nv">$username</span><span class="s2">': done"</span><span class="w">
+
+</span></code></pre></div></div>
+
+<h3 id="teardownps1"><code class="language-plaintext highlighter-rouge">teardown.ps1</code></h3>
+
+<p>The teardown script is all about undoing everything `setup.ps1’ did, in reverse order.
+The order matters, you cannot delete a policy that is attached to a user.</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">.</span><span class="s2">"</span><span class="nv">$PSSCriptRoot</span><span class="s2">/variables.ps1"</span><span class="w">
+
+</span><span class="n">write-host</span><span class="w"> </span><span class="s2">"Delete Access Key for IaC user '</span><span class="nv">$username</span><span class="s2">' ..."</span><span class="w">
+</span><span class="n">aws</span><span class="w"> </span><span class="nx">iam</span><span class="w"> </span><span class="nx">delete-access-key</span><span class="w">  </span><span class="nt">--profile</span><span class="w"> </span><span class="nx">admin-sandbox</span><span class="w"> </span><span class="nt">--cli-input-json</span><span class="w"> </span><span class="nx">file://</span><span class="bp">$PSScriptRoot</span><span class="nx">/cli-input-delete-access-key.json</span><span class="w">
+
+</span><span class="n">write-host</span><span class="w"> </span><span class="s2">"Detach policy </span><span class="nv">$policyArn</span><span class="s2"> to user '</span><span class="nv">$username</span><span class="s2">'..."</span><span class="w">
+</span><span class="c"># Recreate the arn from first principle (ie the account id and polic name</span><span class="w">
+</span><span class="nv">$PolicyArn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"arn:aws:iam::</span><span class="si">$(</span><span class="nv">$account</span><span class="si">)</span><span class="s2">:policy/</span><span class="si">$(</span><span class="nv">$username</span><span class="si">)</span><span class="s2">"</span><span class="w">
+</span><span class="n">aws</span><span class="w"> </span><span class="nx">iam</span><span class="w"> </span><span class="nx">detach-user-policy</span><span class="w"> </span><span class="nt">--profile</span><span class="w"> </span><span class="nx">admin-sandbox</span><span class="w"> </span><span class="nt">--user-name</span><span class="w"> </span><span class="nv">$username</span><span class="w"> </span><span class="nt">--policy-arn</span><span class="w"> </span><span class="nv">$policyArn</span><span class="w">
+
+</span><span class="n">write-host</span><span class="w"> </span><span class="s2">"Delete IaC user '</span><span class="nv">$username</span><span class="s2">' ..."</span><span class="w">
+</span><span class="n">aws</span><span class="w"> </span><span class="nx">iam</span><span class="w"> </span><span class="nx">delete-user</span><span class="w">  </span><span class="nt">--profile</span><span class="w"> </span><span class="nx">admin-sandbox</span><span class="w"> </span><span class="nt">--user-name</span><span class="w"> </span><span class="nv">$username</span><span class="w"> 
+
+</span><span class="n">write-host</span><span class="w"> </span><span class="s2">"Delete access policy '</span><span class="nv">$username</span><span class="s2">' ..."</span><span class="w">
+</span><span class="n">aws</span><span class="w"> </span><span class="nx">iam</span><span class="w"> </span><span class="nx">delete-policy</span><span class="w"> </span><span class="nt">--profile</span><span class="w"> </span><span class="nx">admin-sandbox</span><span class="w"> </span><span class="nt">--policy-arn</span><span class="w"> </span><span class="nv">$PolicyArn</span><span class="w">
+
+</span><span class="n">write-host</span><span class="w"> </span><span class="s2">"Sandbox IaC user teardown complete ..."</span><span class="w">
+
+</span></code></pre></div></div>
+
+<h2 id="what-next">What next?</h2>
+
+<p>I’ll want to invoke <a href="https://awscli.amazonaws.com/v2/documentation/api/latest/reference/ce/get-cost-and-usage.html">get-cost-and-usage</a> to get an idea of the overall cost of my experiment.</p>
+
+<p>I’ll also want to parametrise the scripts to allow me to pass the policy file name as an argument, allow me to have experiment specific policies.</p>
+
+<p>That said, the next post in this series will be about me <a href="/2021/10/30/Terraform-CDK-part-1.html">using the Terraform CDK to setup infrastructure in the sandbox</a>.</p>
+
+        </div>
+
+        
+          <div class="page-share">
+  <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Ffranck-chester.github.io%2F%2F2021%2F10%2F01%2FScripting-access-to-my-AWS-sandbox.html" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="btn btn--facebook btn--small"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i> <span>Share</span></a>
+  <a href="https://twitter.com/intent/tweet?text=Scripting+access+to+my+AWS+sandbox%20https%3A%2F%2Ffranck-chester.github.io%2F%2F2021%2F10%2F01%2FScripting-access-to-my-AWS-sandbox.html" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="btn btn--twitter btn--small"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i> <span>Tweet</span></a>
+  <a href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3A%2F%2Ffranck-chester.github.io%2F%2F2021%2F10%2F01%2FScripting-access-to-my-AWS-sandbox.html" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="btn btn--linkedin btn--small"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i> <span>LinkedIn</span></a>
+  <a href="https://reddit.com/submit?title=Scripting+access+to+my+AWS+sandbox&amp;url=https%3A%2F%2Ffranck-chester.github.io%2F%2F2021%2F10%2F01%2FScripting-access-to-my-AWS-sandbox.html" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="btn btn--reddit btn--small"><i class="fab fa-fw fa-reddit" aria-hidden="true"></i> <span>Reddit</span></a>
+</div>
+
+        
+
+        
+
+        <nav class="page-pagination" role="navigation">
+  
+    <a class="page-previous" href="/2021/09/30/Installing-podman-on-WSL2.html">
+      <h4 class="page-pagination-label">Previous</h4>
+      <span class="page-pagination-title">
+        <i class="fas fa-arrow-left"></i> Installing Podman on WSL2
+
+      </span>
+    </a>
+  
+
+  
+    <a class="page-next" href="/2021/10/18/Setting-up-git-ssh-with-multiple-repos.html">
+      <h4 class="page-pagination-label">Next</h4>
+      <span class="page-pagination-title">
+        Configuring Git to use the proper SSH key across multiple remote repositories
+ <i class="fas fa-arrow-right"></i>
+      </span>
+    </a>
+  
+</nav>
+
+      </div>
+    </div>
+  </article>
+</main>
+
+
+    <footer id="footer" class="site-footer">
+  <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+<div class="social-icons"><a class="social-icon" href="https://github.com/franck-chester/franck-chester.github.io"><i class="fab fa-github-square fa-2x" title="GitHub"></i></a></div>
+<div class="copyright">
+    
+      <p><a href="https://github.com/franck-chester/franck-chester.github.io/actions/workflows/jekyll.yaml"><img src="https://github.com/franck-chester/franck-chester.github.io/actions/workflows/jekyll.yaml/badge.svg" alt="Build and deploy Jekyll site to GitHub Pages"></a><br>
+© Franck-Chester. Powered by <a href="https://jekyllrb.com">Jekyll</a> &amp; <a href="So%20Simple">So Simple</a>.</p>
+
+    
+  </div>
+</footer>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+  <script src="/assets/js/main.min.js"></script>
+  <script src="https://use.fontawesome.com/releases/v5.0.12/js/all.js"></script>
+
+<script type="text/javascript">
+    var mpq = [];
+    mpq.push(["init", ""]);
+    (function(){var b,a,e,d,c;b=document.createElement("script");b.type="text/javascript";
+    b.async=true;b.src=(document.location.protocol==="https:"?"https:":"http:")+
+    "//api.mixpanel.com/site_media/js/api/mixpanel.js";a=document.getElementsByTagName("script")[0];
+    a.parentNode.insertBefore(b,a);e=function(f){return function(){mpq.push(
+    [f].concat(Array.prototype.slice.call(arguments,0)))}};d=["init","track","track_links",
+    "track_forms","register","register_once","identify","name_tag","set_config"];for(c=0;c<
+    d.length;c++){mpq[d[c]]=e(d[c])}})();
+</script>
+
+  </body>
+
+</html>

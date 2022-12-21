@@ -1,0 +1,317 @@
+{
+  "//": {
+    "metadata": {
+      "version": "0.7.0",
+      "stackName": "day04",
+      "backend": "local"
+    }
+  },
+  "terraform": {
+    "required_providers": {
+      "aws": {
+        "version": "~> 3.0",
+        "source": "aws"
+      }
+    }
+  },
+  "provider": {
+    "aws": [
+      {
+        "profile": "franck-iac",
+        "region": "eu-west-1"
+      }
+    ]
+  },
+  "resource": {
+    "aws_iam_policy": {
+      "api_gateway_policy": {
+        "description": "Access rights for my API Gateway - mainly read and write cloudwatch logs",
+        "name": "api_gateway_policy",
+        "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":[\"logs:CreateLogGroup\",\"logs:CreateLogStream\",\"logs:DescribeLogGroups\",\"logs:DescribeLogStreams\",\"logs:PutLogEvents\",\"logs:GetLogEvents\",\"logs:FilterLogEvents\"],\"Resource\":\"*\"}]}",
+        "tags": {
+          "sandbox": "franck-iac"
+        },
+        "//": {
+          "metadata": {
+            "path": "day04/api_gateway_policy",
+            "uniqueId": "api_gateway_policy"
+          }
+        }
+      },
+      "lambda_apigateway_policy": {
+        "description": "Access rights for my API Gateway lambda, as per https://docs.aws.amazon.com/lambda/latest/dg/services-apigateway-tutorial.html#services-apigateway-tutorial-role",
+        "name": "lambda_apigateway_policy",
+        "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Resource\":\"*\",\"Action\":[\"logs:CreateLogGroup\",\"logs:CreateLogStream\",\"logs:PutLogEvents\"],\"Effect\":\"Allow\"}]}",
+        "//": {
+          "metadata": {
+            "path": "day04/lambda_apigateway_policy",
+            "uniqueId": "lambda_apigateway_policy"
+          }
+        }
+      },
+      "rest_api_policy_TfTokenTOKEN9": {
+        "description": "Access rights for my API Gateway lambda, as per https://docs.aws.amazon.com/lambda/latest/dg/services-apigateway-tutorial.html#services-apigateway-tutorial-role",
+        "name": "rest_api_policy_${aws_lambda_function.lambda.function_name}",
+        "policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Action\":\"lambda:InvokeFunction\",\"Resource\":\"${aws_lambda_function.lambda.arn}\"}]}",
+        "//": {
+          "metadata": {
+            "path": "day04/rest_api_policy_${aws_lambda_function.lambda.function_name}",
+            "uniqueId": "rest_api_policy_TfTokenTOKEN9"
+          }
+        }
+      }
+    },
+    "aws_iam_role": {
+      "apigateway_role": {
+        "assume_role_policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"apigateway.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}",
+        "description": "IAM role for the API Gateway",
+        "name": "apigateway_role",
+        "//": {
+          "metadata": {
+            "path": "day04/apigateway_role",
+            "uniqueId": "apigateway_role"
+          }
+        }
+      },
+      "lambda_apigateway_role": {
+        "assume_role_policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"lambda.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}",
+        "name": "lambda_apigateway_role",
+        "//": {
+          "metadata": {
+            "path": "day04/lambda_apigateway_role",
+            "uniqueId": "lambda_apigateway_role"
+          }
+        }
+      },
+      "rest_api_role_TfTokenTOKEN11": {
+        "assume_role_policy": "{\"Version\":\"2012-10-17\",\"Statement\":[{\"Effect\":\"Allow\",\"Principal\":{\"Service\":\"apigateway.amazonaws.com\"},\"Action\":\"sts:AssumeRole\"}]}",
+        "description": "Credentials used when calling via the API Gateway",
+        "name": "rest_api_role_${aws_lambda_function.lambda.function_name}",
+        "//": {
+          "metadata": {
+            "path": "day04/rest_api_role_${aws_lambda_function.lambda.function_name}",
+            "uniqueId": "rest_api_role_TfTokenTOKEN11"
+          }
+        }
+      }
+    },
+    "aws_iam_role_policy_attachment": {
+      "apigateway_role_policy_attachment": {
+        "policy_arn": "${aws_iam_policy.api_gateway_policy.arn}",
+        "role": "${aws_iam_role.apigateway_role.name}",
+        "//": {
+          "metadata": {
+            "path": "day04/apigateway_role_policy_attachment",
+            "uniqueId": "apigateway_role_policy_attachment"
+          }
+        }
+      },
+      "lambda_apigateway_role_policy_attachment": {
+        "policy_arn": "${aws_iam_policy.lambda_apigateway_policy.arn}",
+        "role": "${aws_iam_role.lambda_apigateway_role.name}",
+        "//": {
+          "metadata": {
+            "path": "day04/lambda_apigateway_role_policy_attachment",
+            "uniqueId": "lambda_apigateway_role_policy_attachment"
+          }
+        }
+      },
+      "rest_api_role_policy_attachment_TfTokenTOKEN12": {
+        "policy_arn": "${aws_iam_policy.rest_api_policy_TfTokenTOKEN9.arn}",
+        "role": "${aws_iam_role.rest_api_role_TfTokenTOKEN11.name}",
+        "//": {
+          "metadata": {
+            "path": "day04/rest_api_role_policy_attachment_${aws_lambda_function.lambda.function_name}",
+            "uniqueId": "rest_api_role_policy_attachment_TfTokenTOKEN12"
+          }
+        }
+      }
+    },
+    "aws_api_gateway_account": {
+      "api_gateway_account": {
+        "cloudwatch_role_arn": "${aws_iam_role.apigateway_role.arn}",
+        "//": {
+          "metadata": {
+            "path": "day04/api_gateway_account",
+            "uniqueId": "api_gateway_account"
+          }
+        }
+      }
+    },
+    "aws_s3_bucket": {
+      "lambda_source_bucket": {
+        "acl": "private",
+        "bucket": "franck-iac-lambda-source-bucket",
+        "force_destroy": true,
+        "tags": {
+          "sandbox": "franck-iac"
+        },
+        "versioning": {
+          "enabled": false
+        },
+        "//": {
+          "metadata": {
+            "path": "day04/lambda_source_bucket",
+            "uniqueId": "lambda_source_bucket"
+          }
+        }
+      }
+    },
+    "aws_s3_bucket_object": {
+      "lambda_archive": {
+        "bucket": "${aws_s3_bucket.lambda_source_bucket.bucket}",
+        "key": "archive.zip",
+        "source": "assets/lambda_asset/E65D62B13D69DBDA8CCEDEB9D18C3B48/archive.zip",
+        "//": {
+          "metadata": {
+            "path": "day04/lambda_archive",
+            "uniqueId": "lambda_archive"
+          }
+        }
+      }
+    },
+    "aws_lambda_function": {
+      "lambda": {
+        "description": "as per https://docs.aws.amazon.com/lambda/latest/dg/services-apigateway-tutorial.html",
+        "function_name": "LambdaFunctionOverHttps",
+        "handler": "index.handler",
+        "role": "${aws_iam_role.lambda_apigateway_role.arn}",
+        "runtime": "nodejs12.x",
+        "s3_bucket": "${aws_s3_bucket.lambda_source_bucket.bucket}",
+        "s3_key": "${aws_s3_bucket_object.lambda_archive.key}",
+        "tags": {
+          "sandbox": "franck-iac"
+        },
+        "//": {
+          "metadata": {
+            "path": "day04/lambda",
+            "uniqueId": "lambda"
+          }
+        }
+      }
+    },
+    "aws_api_gateway_rest_api": {
+      "api_gateway_rest_api_dynamodbmanager": {
+        "description": "as per https://docs.aws.amazon.com/lambda/latest/dg/services-apigateway-tutorial.html",
+        "name": "dynamodbmanager",
+        "tags": {
+          "sandbox": "franck-iac"
+        },
+        "endpoint_configuration": {
+          "types": [
+            "REGIONAL"
+          ]
+        },
+        "//": {
+          "metadata": {
+            "path": "day04/api_gateway_rest_api_dynamodbmanager",
+            "uniqueId": "api_gateway_rest_api_dynamodbmanager"
+          }
+        }
+      }
+    },
+    "aws_api_gateway_resource": {
+      "api_gateway_resource_dynamodbmanager": {
+        "parent_id": "${aws_api_gateway_rest_api.api_gateway_rest_api_dynamodbmanager.root_resource_id}",
+        "path_part": "dynamodbmanager",
+        "rest_api_id": "${aws_api_gateway_rest_api.api_gateway_rest_api_dynamodbmanager.id}",
+        "//": {
+          "metadata": {
+            "path": "day04/api_gateway_resource_dynamodbmanager",
+            "uniqueId": "api_gateway_resource_dynamodbmanager"
+          }
+        }
+      }
+    },
+    "aws_api_gateway_method": {
+      "api_gateway_method_post_dynamodbmanager": {
+        "authorization": "NONE",
+        "http_method": "POST",
+        "resource_id": "${aws_api_gateway_resource.api_gateway_resource_dynamodbmanager.id}",
+        "rest_api_id": "${aws_api_gateway_rest_api.api_gateway_rest_api_dynamodbmanager.id}",
+        "//": {
+          "metadata": {
+            "path": "day04/api_gateway_method_post_dynamodbmanager",
+            "uniqueId": "api_gateway_method_post_dynamodbmanager"
+          }
+        }
+      }
+    },
+    "aws_api_gateway_integration": {
+      "api_gateway_method_post_integration_dynamodbmanager": {
+        "credentials": "${aws_iam_role.rest_api_role_TfTokenTOKEN11.arn}",
+        "http_method": "${aws_api_gateway_method.api_gateway_method_post_dynamodbmanager.http_method}",
+        "integration_http_method": "POST",
+        "resource_id": "${aws_api_gateway_resource.api_gateway_resource_dynamodbmanager.id}",
+        "rest_api_id": "${aws_api_gateway_rest_api.api_gateway_rest_api_dynamodbmanager.id}",
+        "type": "AWS_PROXY",
+        "uri": "${aws_lambda_function.lambda.invoke_arn}",
+        "//": {
+          "metadata": {
+            "path": "day04/api_gateway_method_post_integration_dynamodbmanager",
+            "uniqueId": "api_gateway_method_post_integration_dynamodbmanager"
+          }
+        }
+      }
+    },
+    "aws_api_gateway_deployment": {
+      "api_gateway_deployment": {
+        "rest_api_id": "${aws_api_gateway_rest_api.api_gateway_rest_api_dynamodbmanager.id}",
+        "triggers": {
+          "redeployment": "${sha1(jsonencode([aws_api_gateway_resource.api_gateway_resource_dynamodbmanager.id, aws_api_gateway_method.api_gateway_method_post_dynamodbmanager.id, aws_api_gateway_integration.api_gateway_method_post_integration_dynamodbmanager.id]))}"
+        },
+        "lifecycle": {
+          "create_before_destroy": true
+        },
+        "//": {
+          "metadata": {
+            "path": "day04/api_gateway_deployment",
+            "uniqueId": "api_gateway_deployment"
+          }
+        }
+      }
+    },
+    "aws_api_gateway_stage": {
+      "api_gateway_stage": {
+        "deployment_id": "${aws_api_gateway_deployment.api_gateway_deployment.id}",
+        "rest_api_id": "${aws_api_gateway_deployment.api_gateway_deployment.rest_api_id}",
+        "stage_name": "v1",
+        "tags": {
+          "sandbox": "franck-iac"
+        },
+        "//": {
+          "metadata": {
+            "path": "day04/api_gateway_stage",
+            "uniqueId": "api_gateway_stage"
+          }
+        }
+      }
+    },
+    "aws_api_gateway_method_settings": {
+      "api-gateway-method-settings": {
+        "method_path": "*/*",
+        "rest_api_id": "${aws_api_gateway_deployment.api_gateway_deployment.rest_api_id}",
+        "stage_name": "${aws_api_gateway_stage.api_gateway_stage.stage_name}",
+        "settings": {
+          "data_trace_enabled": true,
+          "logging_level": "INFO",
+          "metrics_enabled": true,
+          "throttling_burst_limit": 50,
+          "throttling_rate_limit": 100
+        },
+        "//": {
+          "metadata": {
+            "path": "day04/api-gateway-method-settings",
+            "uniqueId": "api-gateway-method-settings"
+          }
+        }
+      }
+    }
+  },
+  "output": {
+    "invoke-url": {
+      "value": "${aws_api_gateway_stage.api_gateway_stage.invoke_url}",
+      "description": "Invoke URL for the API"
+    }
+  }
+}

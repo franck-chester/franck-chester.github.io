@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<!--
+    So Simple Jekyll Theme 3.2.0
+    Copyright 2013-2019 Michael Rose - mademistakes.com | @mmistakes
+    Free for personal and commercial use under the MIT license
+    https://github.com/mmistakes/so-simple-theme/blob/master/LICENSE
+-->
+<html lang="en-US" class="no-js">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  
+
+  
+    
+    <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>From monolithic to MACH architecture | Franck’s stuff</title>
+<meta name="generator" content="Jekyll v4.3.1" />
+<meta property="og:title" content="From monolithic to MACH architecture" />
+<meta name="author" content="Franck" />
+<meta property="og:locale" content="en_GB" />
+<meta name="description" content="It’s been a while since my last proper post, but I’ve given a presentation last week that, I believe, deserves to be expanded into a post." />
+<meta property="og:description" content="It’s been a while since my last proper post, but I’ve given a presentation last week that, I believe, deserves to be expanded into a post." />
+<link rel="canonical" href="https://franck-chester.github.io//2022/06/06/monolith-to-mach.html" />
+<meta property="og:url" content="https://franck-chester.github.io//2022/06/06/monolith-to-mach.html" />
+<meta property="og:site_name" content="Franck’s stuff" />
+<meta property="og:image" content="https://franck-chester.github.io//assets/images/2022-06-06-header.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2022-06-06T00:00:00+00:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://franck-chester.github.io//assets/images/2022-06-06-header.png" />
+<meta property="twitter:title" content="From monolithic to MACH architecture" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Franck"},"dateModified":"2022-06-06T00:00:00+00:00","datePublished":"2022-06-06T00:00:00+00:00","description":"It’s been a while since my last proper post, but I’ve given a presentation last week that, I believe, deserves to be expanded into a post.","headline":"From monolithic to MACH architecture","image":"https://franck-chester.github.io//assets/images/2022-06-06-header.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://franck-chester.github.io//2022/06/06/monolith-to-mach.html"},"url":"https://franck-chester.github.io//2022/06/06/monolith-to-mach.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+  
+
+  <script>
+    /* Cut the mustard */
+    if ( 'querySelector' in document && 'addEventListener' in window ) {
+      document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + 'js';
+    }
+  </script>
+
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="/assets/css/skins/default.css">
+  
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,700,700i|Lora:400,400i,700,700i">
+  <link rel="alternate" type="application/atom+xml" title="Franck&#39;s stuff" href="/feed.xml">
+<!-- start custom head snippets -->
+
+<!-- insert favicons. use http://realfavicongenerator.net/ -->
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/images/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon-16x16.png">
+<link rel="manifest" href="/assets/images/site.webmanifest">
+<link rel="mask-icon" href="/assets/images/safari-pinned-tab.svg" color="#5bbad5">
+<link rel="shortcut icon" href="/assets/images/favicon.ico">
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="msapplication-config" content="/assets/images/browserconfig.xml">
+<meta name="theme-color" content="#ffffff">
+<!-- end custom head snippets -->
+
+</head>
+
+
+  <body class="layout--post  from-monolithic-to-mach-architecture">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#primary-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+  <div class="navigation-wrapper">
+    <a href="#menu-toggle" id="menu-toggle">Menu</a>
+    <nav id="primary-nav" class="site-nav animated drop">
+      <ul><li><a href="/posts/">Posts</a></li><li><a href="/links/">Links</a></li><li><a href="/tags/">Tags</a></li><li><a href="/search/">Search</a></li><li><a href="/">About</a></li></ul>
+    </nav>
+  </div><!-- /.navigation-wrapper -->
+
+
+    <header class="masthead">
+  <div class="wrap">
+    
+    
+    
+  </div>
+</header><!-- /.masthead -->
+
+
+    <main id="main" class="main-content" aria-label="Content">
+  <article class="h-entry">
+    
+  
+  
+  
+
+  <div class="page-image">
+    <img src="/assets/images/2022-06-06-header.png" class="entry-feature-image u-photo" alt="From monolithic to MACH architecture" style="margin-top: 0;">
+    
+  </div>
+
+
+    <div class="page-wrapper">
+      <header class="page-header">
+        
+        
+          <h1 id="page-title" class="page-title p-name">From monolithic to MACH architecture
+</h1>
+        
+      </header>
+
+      <div class="page-sidebar">
+        <div class="page-author h-card p-author"><img src="/assets/images/franck.png" class="author-avatar u-photo" alt="Franck"><div class="author-info"><div class="author-name">
+        <em>by</em> <span class="p-name">Franck</span>
+      </div><ul class="author-links"><li class="author-link">
+            <a class="u-url" rel="me" href="https://github.com/franck-chester"><i class="fab fa-github-square fa-lg" title="GitHub"></i></a>
+          </li></ul>
+    <time class="page-date dt-published" datetime="2022-06-06T00:00:00+00:00"><a class="u-url" href="">2022-06-06</a>
+</time>
+
+  </div>
+</div>
+
+        
+
+        
+  <h3 class="page-taxonomies-title">Tags</h3>
+  
+  <ul class="page-taxonomies"><li class="page-taxonomy"><a href="/tags/#architecture" title="Pages tagged architecture" rel="tag">architecture</a></li><li class="page-taxonomy"><a href="/tags/#aws" title="Pages tagged aws" rel="tag">aws</a></li><li class="page-taxonomy"><a href="/tags/#mach" title="Pages tagged mach" rel="tag">mach</a></li><li class="page-taxonomy"><a href="/tags/#monolith" title="Pages tagged monolith" rel="tag">monolith</a></li>
+  </ul>
+
+
+      </div>
+
+      <div class="page-content">
+        <div class="e-content">
+          <p>It’s been a while since my last proper post, 
+but I’ve given a presentation last week that, I believe,
+ deserves to be expanded into a post.</p>
+
+<p>The presentation was about my current employer,
+ the Very Group, transformation away from its legacy systems and processes,
+and the technology behind that modernisation.</p>
+
+<p>My contribution to the presentation was specifically about how
+the Digital Customer Experience (DCX) tribe will re-architect
+our flagship e-commerce websites away from our ageing 
+monolithic platforms towards a modern, composable, MACH architecture .</p>
+
+<p>You can watch the whole presentation here:</p>
+
+<p><a href="https://youtu.be/A08DhahTZxY" title="Hackajob x The Very Group - Modernising the Technology Behind Very"><img src="https://i9.ytimg.com/vi_webp/A08DhahTZxY/mqdefault.webp?v=62beb7ab&amp;sqp=CLzx-pUG&amp;rs=AOn4CLDRF9DB3lVlaCG5GFhaqfsTMTb64Q" alt="Hackajob x The Very Group - Modernising the Technology Behind Very" /></a></p>
+
+<p>In this post, I reproduce the slides (badly, as powerpoint <em>export to GIF</em> function is poo), together with additional
+thoughts I didn’t have time to cover during my slot.</p>
+
+<h1 id="the-problem-of-the-monolith">The problem of the monolith</h1>
+
+<p><img src="/assets/images/Hackajob-slide24.gif" alt="" style="float:right; padding 0 20px 20px 0" /></p>
+
+<p>A monolithic platform such as <a href="https://docs.oracle.com/cd/E35319_01/Platform.10-2/ATGMultiApp/html/s0202architecturediagram01.html">Oracle e‑commerce ATG</a>
+will always, sooner or later, lead to spaghetti logic.</p>
+
+<p>A single codebase will cause well intentioned engineers
+to apply <a href="https://www.martinfowler.com/ieeeSoftware/repetition.pdf">DRY</a> principles, 
+and shared components which will eventually cause logically independent business concerns
+to become coupled through shared code artefacts.</p>
+
+<p>Eventually, on a large codebase such as the <a href="https://www.very.co.uk/">Very Group websites</a> 
+and underlying business systems, this coupling makes it near impossible to experiment or accelerate 
+the deployment of new features, as every single code change risks impacting other unrelated features.</p>
+
+<p>Releases have to be batched, with sufficient time in between
+to allow for regression testing. Automating these tests
+is itself difficult as each combination of features causes
+ an explosion in the number of regression tests required.</p>
+
+<p>All of this is incompatible with moderns ways of developing and deploying
+software, which privilege small and frequent feature
+releases with quick customer feedback loops to adjust the direction of travel
+before prioritising the next feature.</p>
+
+<h1 id="breaking-down-the-monolith---bit-by-bit">Breaking down the monolith - bit by bit</h1>
+
+<p><img src="/assets/images/Hackajob-slide26.gif" alt="" style="float:right; padding 0 20px 20px 0" /></p>
+
+<p>We do not have the luxury of recreating our platform from scratch.
+We must break the monolith down into its constituent parts before we can start replacing these, one by one, like the planks of Theseus’ ship, without impacting our customers’ experience.</p>
+
+<h2 id="ship-of-theseus">Ship of Theseus</h2>
+
+<p><img src="/assets/images/Hackajob-slide25.gif" alt="" style="float:right; padding 0 20px 20px 0" /></p>
+
+<p>This thought experiment from the philosophers of ancient Greece asks whether 
+an object that has had all of its components replaced remains fundamentally 
+the same object.</p>
+
+<p>Putting aside the philosophical question, we will inspire
+ourselves from that approach and replace our monolith not 
+through one big bang all or nothing approach, but very gradually,
+plank by plank, so that our customers will at all time
+remain unaware of the transformation.</p>
+
+<p>Unfortunately, by definition, a monolith is not made of
+individual components, so, how will we identify the bits 
+we can replace?</p>
+
+<p>We will slice and dice the monolith 
+along logical boundaries that might not exist in
+the codebase but are meaningful to our team.</p>
+
+<h2 id="logically-distinct-customer-journeys">Logically distinct customer journeys</h2>
+
+<p><img src="/assets/images/Hackajob-slide27.gif" alt="" style="float:right; padding 0 20px 20px 0" /></p>
+
+<p>Our engineering squads are already organised along the journeys 
+our customers take through our website.
+The presentation and business logic associated with let’s say product discovery
+(browsing for and eventually selecting a specific product)
+is logically distinct from customer onboarding (creating an account)
+or account management.</p>
+
+<p>These journeys are therefore an easy way to slice through the responsibilities of our monolith.</p>
+
+<h2 id="logically-distinct-architecture-layers">Logically distinct architecture layers</h2>
+
+<p><img src="/assets/images/Hackajob-slide28.gif" alt="" style="float:right; padding 0 20px 20px 0" /></p>
+
+<p>Although monolithic, our platform is layered, with distinct areas of the codebase dealing with front end, business logic and integration with other systems.
+Again, the codebase itself will have undesirable dependencies,
+but these architectural layers are logically independent and another easy way to slice through the monolith.</p>
+
+<h2 id="logically-distinct-bounded-contexts">Logically distinct bounded contexts</h2>
+
+<p><img src="/assets/images/Hackajob-slide29-30.gif" alt="" style="float:right; padding 0 20px 20px 0" /></p>
+
+<p>We now look at our entire solution, or rather the problems we are solving with that solution.
+According to Domain Driven Design (DDD) This ‘problem domain’ can be broken down into subdomains that are either
+<a href="https://blog.jonathanoliver.com/ddd-strategic-design-core-supporting-and-generic-subdomains/">core, generic or supporting</a>:</p>
+
+<ul>
+  <li>
+    <p>The <strong>core</strong> domain is what truly differentiates us from our competitors, 
+our bread and butter, our Unique Selling Point (USP). This is what matters to us as an organisation and where we want to put in all our efforts.</p>
+
+    <p>Our core problem here at the Very Group is how to provide the best digital customer experience, across multi channels,
+and make it as easy as possible to find and buy the right product, at the right price, with, if required,
+financial options, while meeting all our compliance requirements.</p>
+  </li>
+  <li>
+    <p>On the other hand, many problems in our domain are quite <strong>generic</strong> across our industry and actually quite difficult 
+to solve in any way that would differentiate us from our competitors.</p>
+
+    <p>Instead, we are better off partnering with 3rd parties who are happy to treat these problems as their core domain and for us to simply consume those 3rd parties’ solution to these problems.</p>
+  </li>
+  <li>
+    <p>finally, <strong>supporting</strong> sub domains are problems that we must solve in order to address our core problems, 
+but will not in themselves differentiate us from our competitors.</p>
+
+    <p>Within these domains, we can now identify problem area that are specific enough from other problem areas. Given problem X, let’s say
+“data associated with a customer”, we can clearly state that it belongs in the “<em>customer</em>” problem area, and not the “<em>shopping cart</em>” one.</p>
+  </li>
+</ul>
+
+<p>We can draw a clear boundary around each of these problem areas, and deal with each independently from others.</p>
+
+<p>This is of course a gross over-simplification of what Domain Driven Design calls “<a href="https://www.martinfowler.com/bliki/BoundedContext.html"><em>Bounded Contexts</em></a>”, see <a href="https://www.dddcommunity.org/book/evans_2003/">Eric Evans’ original book</a> or the much
+more actionable <a href="https://www.dddcommunity.org/book/implementing-domain-driven-design-by-vaughn-vernon/">follow-up by his colleague Vaugh Vernon</a> for a much
+better explanation.</p>
+
+<h2 id="strangler-fig-pattern">Strangler fig pattern</h2>
+
+<p><img src="/assets/images/Hackajob-slide31.gif" alt="" style="float:right; padding 0 20px 20px 0" /></p>
+
+<p>We have now sliced and diced our monolith into bounded contexts,
+mapped these to our customer journeys and architecture layers
+and decided whether they address a core, generic or supporting
+problem. We now need to start reimplementing them away from
+the monolith, and introduce them into the overall solution
+without the customer being aware.</p>
+
+<p>We will achieve this by leveraging the <a href="https://docs.microsoft.com/en-us/azure/architecture/patterns/strangler-fig">Strangler Fig pattern,</a>
+and introducing <a href="https://en.wikipedia.org/wiki/Facade_pattern">façade</a> components in front of our monolith, 
+tasked with shunting traffic away from the monolith
+toward our new components as and when these become available.</p>
+
+<p>As we reimplement more and more of our solution on our
+new architecture, the façade will shunt more and more
+requests away from the monolith, until eventually we will
+be able to remove it and the façade altogether.</p>
+
+<p>Again this is a gross over simplification of the <a href="https://martinfowler.com/articles/break-monolith-into-microservices.html">full decomposition process</a>. There will
+be multiple façades, between architecture layers, and
+where our customer journeys are not truly independent,
+each trying to expose a nice clean interface over the spaghetti 
+logic underneath it.</p>
+
+<h1 id="mach-target-architecture">MACH target architecture</h1>
+
+<p>Once we have a strategy to break up the monolith, we can target a modern, non-monolithic, <em>composable</em> architecture.</p>
+
+<p>MACH is a <a href="https://machalliance.org/">cute acronym coined in the retail industry to market SaaS platforms</a> that can be composed into best-of-breed e-commerce solutions.</p>
+
+<p>It stands for <strong>M</strong>icroservices, <strong>A</strong>PI-first, <strong>C</strong>loud native SaaS and <strong>H</strong>eadless components and is very much the pattern you’d use, regardless of industry, to build a modern business application</p>
+
+<h2 id="microservices">Microservices</h2>
+
+<p><img src="/assets/images/Hackajob-slide33.gif" alt="" style="float:right; padding 0 20px 20px 0" /></p>
+
+<p>Microservices are the technical implementation of the bounded contexts we mentioned earlier:</p>
+
+<p>Having identified tightly defined problems areas with
+a clear boundary between what does and doesn’t pertain to a specific problem,
+we can design and implement specific solutions to these specific problems.
+These solutions should each be applications in their own right,
+managed entirely separately from each other, truly independently.</p>
+
+<p>Instead of one big monolithic solution to all our problems, we will
+have much smaller (hence the <em>micro-</em> prefix) individual solutions to individual problems.</p>
+
+<p>NB: Yet another over-simplification of what is an <a href="https://martinfowler.com/articles/microservices.html">architecture style in its own right</a>.</p>
+
+<h2 id="apis-and-events">APIs and Events</h2>
+
+<p><img src="/assets/images/Hackajob-slide34.gif" alt="" style="float:right; padding 0 20px 20px 0" /></p>
+
+<p>To be truly independent from each other, microservices should only communicate (exchange data) via APIs or events.
+APIs, Application Programming Interfaces, are basically an agreed contract between a service and its clients, that defines every single detail of the communication, from the protocol, to the data exchanged, the format that data will take, how errors will be returned, etc…</p>
+
+<p>Having agreed on that contract, both sides, service and clients, can implement it whichever way they see fit, independently from each other, using whatever technology or framework they prefer.</p>
+
+<p>APIs do however imply a client-service relationship whereas the client calls the service’s API and expects a response.
+Even an <em>asynchronous</em> API will follow that pattern, but broken over 2 separate exchange, one for the request from the client, which is immediately acknowledged by the service, and a later one for the response, from the service to the client, which is also acknowledged by the client.</p>
+
+<p>If either side is not present, or fails during the interaction, the communication will fail.</p>
+
+<p>Events, on the other hand, remove that runtime dependency, by totally decoupling the event <em>publisher</em> from its eventual <em>consumers</em>.
+Events are fired into the ether (actually a bus or hub built into the overall platform to be shared across components) without knowing, or caring as to who will consume them, or when. The 2 sides of the communication do not even need to be running at the same time : the publisher might run just long enough to fire an event and then stop, naturally or catastrophically, without it affecting the consumers.</p>
+
+<p><em>This is a very bad explanation - I need to rewrite this bit.</em></p>
+
+<p>From a MACH architecture point of view however, what matters is that APIs and Events allow microservices to be developed, deployed and managed independently of each other.</p>
+
+<h2 id="cloud-native-components-and-technologies">Cloud native components and technologies</h2>
+
+<p><img src="/assets/images/Hackajob-slide35.gif" alt="" style="float:right; padding 0 20px 20px 0" /></p>
+
+<p><em>Cloud native</em> can mean different things to different people, or in different contexts. On the one hand, you have the <a href="https://github.com/cncf/toc/blob/main/DEFINITION.md">definition from the Cloud Native Computing Foundation</a>:</p>
+
+<p>“<em>Cloud native technologies empower organizations to build and run scalable applications in modern, dynamic environments such as public, private, and hybrid clouds. Containers, service meshes, microservices, immutable infrastructure, and declarative APIs exemplify this approach.</em>”, and its infamous ‘<a href="https://landscape.cncf.io/">cloud native landscape</a>’.</p>
+
+<p>On the other, we have MACH’s definition:</p>
+
+<p>“<em>Software as a Service developed, designed and deployed as cloud-native applications are composed of several independent services. The independence of each service introduces the ability to maintain and scale, in isolation, horizontally rather than vertically.</em>”.</p>
+
+<p>Personally, I like to think of cloud native as leveraging <em>value-added</em> services from the cloud, i.e. work on the right hand-side of this diagram, from SaaS to PaaS:</p>
+
+<p><img src="/assets/images/hackajob-cloudnative.png" alt="" /></p>
+
+<p><strong>SaaS</strong>: 3rd party software incorporated into our architecture to provide <em>generic domain</em> functionality, should be consumed ‘as a Service’, meaning via APIs or events, and have near zero infrastructure footprint.</p>
+
+<p><strong>FaaS</strong>: the code we implement to provide <em>core domain</em> functionality, should be, as much as possible, be implemented as <a href="https://en.wikipedia.org/wiki/Function_as_a_service"><em>Functions</em></a>, allowing us to concentrate on our core problem and leave all the “<em><a href="https://www.fugue.co/blog/2017-08-30-fugue-reduces-undifferentiated-heavy-lifting.html">undifferentiated heavy lifting</a></em> of triggering, running and scaling (up or down) that code to our cloud provider.</p>
+
+<p><strong>PaaS</strong>: the platform we deploy and run our software on should itself be accessed ‘as a Service’. Storage, queues, event infrastructure, load-balancing, monitoring, alerting, security, and all those other myriad concerns, should again be managed on our behalf by the cloud provider, with as much complexity as possible entirely hidden or abstracted away from us, to again, let us concentrate on our core domain.</p>
+
+<p>During the Hackajob presentation, an attendee asked about <em>multi-cloud</em>, meaning the ability to deploy our software on any or all the available cloud vendors.
+It is important to note that “<em>multi-cloud</em>” is only possible if building on the left hand-side of the diagram above, limiting yourself to <em>Infrastructure as a Service</em> (<strong>IaaS</strong>) or <em>Containers as a Service</em> (<strong>CaaS</strong>) and is actually the polar opposite of <em>leveraging value-added services</em>.</p>
+
+<p>To be truly <em>Cloud Native</em> means working together, and trusting your cloud and SaaS provider, and believing they are much much better than you at running infrastructure at scale.</p>
+
+<h2 id="headless-components-and-services">Headless components and services</h2>
+
+<p><img src="/assets/images/Hackajob-slide36.gif" alt="" style="float:right; padding 0 20px 20px 0" /></p>
+
+<p>In order to keep control of all aspect of our Customers experience, it is essential that all the components we incorporate into our solution remain completely Headless, meaning have no user interface, and do not impose any specific user workflows.</p>
+
+<p>As stated above, all interactions must be ‘as a Service’, i.e. via APIs or events, and these must not convey any element of user interaction, be it user messages or any sort of content formatting, and make no assumption as to the user journey that led to these interactions, or whether there is indeed an actual user involved.</p>
+
+<h1 id="technologies-behind-our-transformation">Technologies behind our transformation</h1>
+
+<p>I am not actually going to expand on these much more here, give myself some material for future blogs.</p>
+
+<p><img src="/assets/images/Hackajob-slide37.gif" alt="" style="float:right; padding 0 20px 20px 0" /></p>
+
+<h2 id="saas-partners">SaaS partners</h2>
+<ul>
+  <li><a href="https://amplience.com/"><strong>Amplience</strong> – Content Management Service</a></li>
+  <li><a href="https://commercetools.com"><strong>Commercetools</strong> – e-commerce engine</a></li>
+</ul>
+
+<h2 id="aws-paas-value-added-services">AWS PaaS value-added services</h2>
+<ul>
+  <li><a href="https://docs.aws.amazon.com/lambda/"><strong>Lambda functions</strong> – business logic</a></li>
+  <li><a href="https://aws.amazon.com/api-gateway/"><strong>API Gateway</strong> – REST APIs</a></li>
+  <li><a href="https://aws.amazon.com/api-gateway/"><strong>EventBridge</strong> – events driven services</a></li>
+  <li><a href="https://aws.amazon.com/step-functions"><strong>Step Functions</strong> – orchestration &amp; integration</a></li>
+  <li><a href="https://aws.amazon.com/elasticache"><strong>ElastiCache</strong> – Redis &amp; Memcached</a></li>
+  <li><a href="https://aws.amazon.com/dynamodb/"><strong>DynamoDb</strong> – NoSQL data storage</a></li>
+</ul>
+
+<h2 id="dcx-technology-stack">DCX technology stack</h2>
+<ul>
+  <li>Javascript + typescript – development language</li>
+  <li>React + fastify - web UI</li>
+  <li>Kotlin &amp; swift -  native apps</li>
+  <li>Storybook – UI Development</li>
+  <li>Node.js – microservices</li>
+  <li>Open API, Supertest &amp; PACT – API design &amp; testing</li>
+  <li>Lighthouse &amp; cypress – end-to-end testing</li>
+  <li>Elastic - monitoring (logs &amp; APM &amp; RUM)</li>
+  <li>Terraform -  Infrastructure as Code</li>
+  <li>Fastlane – app release management</li>
+  <li>Gitlab &amp; Jenkins – CI/CD pipelines</li>
+</ul>
+
+        </div>
+
+        
+          <div class="page-share">
+  <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Ffranck-chester.github.io%2F%2F2022%2F06%2F06%2Fmonolith-to-mach.html" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="btn btn--facebook btn--small"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i> <span>Share</span></a>
+  <a href="https://twitter.com/intent/tweet?text=From+monolithic+to+MACH+architecture%20https%3A%2F%2Ffranck-chester.github.io%2F%2F2022%2F06%2F06%2Fmonolith-to-mach.html" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="btn btn--twitter btn--small"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i> <span>Tweet</span></a>
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=https%3A%2F%2Ffranck-chester.github.io%2F%2F2022%2F06%2F06%2Fmonolith-to-mach.html" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="btn btn--linkedin btn--small"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i> <span>LinkedIn</span></a>
+  <a href="https://reddit.com/submit?title=From+monolithic+to+MACH+architecture&url=https%3A%2F%2Ffranck-chester.github.io%2F%2F2022%2F06%2F06%2Fmonolith-to-mach.html" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="btn btn--reddit btn--small"><i class="fab fa-fw fa-reddit" aria-hidden="true"></i> <span>Reddit</span></a>
+</div>
+
+        
+
+        
+
+        <nav class="page-pagination" role="navigation">
+  
+    <a class="page-previous" href="/2021/11/10/Terraform-CDK-part-2.html">
+      <h4 class="page-pagination-label">Previous</h4>
+      <span class="page-pagination-title">
+        <i class="fas fa-arrow-left"></i> Terraform CDK - part 2
+
+      </span>
+    </a>
+  
+
+  
+</nav>
+
+      </div>
+    </div>
+  </article>
+</main>
+
+
+    <footer id="footer" class="site-footer">
+  <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+<div class="social-icons"><a class="social-icon" href="https://github.com/franck-chester/franck-chester.github.io"><i class="fab fa-github-square fa-2x" title="GitHub"></i></a></div><div class="copyright">
+    
+      <p><a href="https://github.com/franck-chester/franck-chester.github.io/actions/workflows/jekyll.yaml"><img src="https://github.com/franck-chester/franck-chester.github.io/actions/workflows/jekyll.yaml/badge.svg" alt="Build and deploy Jekyll site to GitHub Pages" /></a><br />
+© Franck-Chester. Powered by <a href="https://jekyllrb.com">Jekyll</a> &amp; <a href="So Simple">So Simple</a>.</p>
+
+    
+  </div>
+</footer>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+  <script src="/assets/js/main.min.js"></script>
+  <script src="https://use.fontawesome.com/releases/v5.0.12/js/all.js"></script>
+
+<script type="text/javascript">
+    var mpq = [];
+    mpq.push(["init", ""]);
+    (function(){var b,a,e,d,c;b=document.createElement("script");b.type="text/javascript";
+    b.async=true;b.src=(document.location.protocol==="https:"?"https:":"http:")+
+    "//api.mixpanel.com/site_media/js/api/mixpanel.js";a=document.getElementsByTagName("script")[0];
+    a.parentNode.insertBefore(b,a);e=function(f){return function(){mpq.push(
+    [f].concat(Array.prototype.slice.call(arguments,0)))}};d=["init","track","track_links",
+    "track_forms","register","register_once","identify","name_tag","set_config"];for(c=0;c<
+    d.length;c++){mpq[d[c]]=e(d[c])}})();
+</script>
+
+  </body>
+
+</html>

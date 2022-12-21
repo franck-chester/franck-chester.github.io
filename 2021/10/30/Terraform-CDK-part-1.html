@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<!--
+    So Simple Jekyll Theme 3.2.0
+    Copyright 2013-2019 Michael Rose - mademistakes.com | @mmistakes
+    Free for personal and commercial use under the MIT license
+    https://github.com/mmistakes/so-simple-theme/blob/master/LICENSE
+-->
+<html lang="en-US" class="no-js">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  
+
+  
+    
+    <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Terraform CDK - part 1 | Franck’s stuff</title>
+<meta name="generator" content="Jekyll v4.3.1" />
+<meta property="og:title" content="Terraform CDK - part 1" />
+<meta name="author" content="Franck" />
+<meta property="og:locale" content="en_GB" />
+<meta name="description" content="In this post I start building infrastructure components in my AWS sandbox, using the recently released Terraform Cloud Development Kit (CDK). I am going to keep it very basic, simply create an IAM role and policy, just to get myself going. What I am going to do however is dig into each little command and instructions I found in various tutorials, to make sure I understand the magic they hide from me." />
+<meta property="og:description" content="In this post I start building infrastructure components in my AWS sandbox, using the recently released Terraform Cloud Development Kit (CDK). I am going to keep it very basic, simply create an IAM role and policy, just to get myself going. What I am going to do however is dig into each little command and instructions I found in various tutorials, to make sure I understand the magic they hide from me." />
+<link rel="canonical" href="https://franck-chester.github.io//2021/10/30/Terraform-CDK-part-1.html" />
+<meta property="og:url" content="https://franck-chester.github.io//2021/10/30/Terraform-CDK-part-1.html" />
+<meta property="og:site_name" content="Franck’s stuff" />
+<meta property="og:image" content="https://franck-chester.github.io//assets/images/2021-10-30-code.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-10-30T00:00:00+00:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://franck-chester.github.io//assets/images/2021-10-30-code.png" />
+<meta property="twitter:title" content="Terraform CDK - part 1" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Franck"},"dateModified":"2021-10-30T00:00:00+00:00","datePublished":"2021-10-30T00:00:00+00:00","description":"In this post I start building infrastructure components in my AWS sandbox, using the recently released Terraform Cloud Development Kit (CDK). I am going to keep it very basic, simply create an IAM role and policy, just to get myself going. What I am going to do however is dig into each little command and instructions I found in various tutorials, to make sure I understand the magic they hide from me.","headline":"Terraform CDK - part 1","image":"https://franck-chester.github.io//assets/images/2021-10-30-code.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://franck-chester.github.io//2021/10/30/Terraform-CDK-part-1.html"},"url":"https://franck-chester.github.io//2021/10/30/Terraform-CDK-part-1.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+  
+
+  <script>
+    /* Cut the mustard */
+    if ( 'querySelector' in document && 'addEventListener' in window ) {
+      document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + 'js';
+    }
+  </script>
+
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="/assets/css/skins/default.css">
+  
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,700,700i|Lora:400,400i,700,700i">
+  <link rel="alternate" type="application/atom+xml" title="Franck&#39;s stuff" href="/feed.xml">
+<!-- start custom head snippets -->
+
+<!-- insert favicons. use http://realfavicongenerator.net/ -->
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/images/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon-16x16.png">
+<link rel="manifest" href="/assets/images/site.webmanifest">
+<link rel="mask-icon" href="/assets/images/safari-pinned-tab.svg" color="#5bbad5">
+<link rel="shortcut icon" href="/assets/images/favicon.ico">
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="msapplication-config" content="/assets/images/browserconfig.xml">
+<meta name="theme-color" content="#ffffff">
+<!-- end custom head snippets -->
+
+</head>
+
+
+  <body class="layout--post  terraform-cdk-part-1">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#primary-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+  <div class="navigation-wrapper">
+    <a href="#menu-toggle" id="menu-toggle">Menu</a>
+    <nav id="primary-nav" class="site-nav animated drop">
+      <ul>
+<li><a href="/posts/">Posts</a></li>
+<li><a href="/links/">Links</a></li>
+<li><a href="/tags/">Tags</a></li>
+<li><a href="/search/">Search</a></li>
+<li><a href="/">About</a></li>
+</ul>
+    </nav>
+  </div><!-- /.navigation-wrapper -->
+
+
+    <header class="masthead">
+  <div class="wrap">
+    
+    
+    
+  </div>
+</header><!-- /.masthead -->
+
+
+    <main id="main" class="main-content" aria-label="Content">
+  <article class="h-entry">
+    
+  
+  
+  
+
+  <div class="page-image">
+    <img src="/assets/images/2021-10-30-code.png" class="entry-feature-image u-photo" alt="Terraform CDK - part 1" style="margin-top: 0;">
+    
+  </div>
+
+
+    <div class="page-wrapper">
+      <header class="page-header">
+        
+        
+          <h1 id="page-title" class="page-title p-name">Terraform CDK - part 1
+</h1>
+        
+      </header>
+
+      <div class="page-sidebar">
+        <div class="page-author h-card p-author">
+<img src="/assets/images/franck.png" class="author-avatar u-photo" alt="Franck"><div class="author-info">
+<div class="author-name">
+        <em>by</em> <span class="p-name">Franck</span>
+      </div>
+<ul class="author-links"><li class="author-link">
+            <a class="u-url" rel="me" href="https://github.com/franck-chester"><i class="fab fa-github-square fa-lg" title="GitHub"></i></a>
+          </li></ul>
+    <time class="page-date dt-published" datetime="2021-10-30T00:00:00+00:00"><a class="u-url" href="">2021-10-30</a>
+</time>
+
+  </div>
+</div>
+
+        
+
+        
+  <h3 class="page-taxonomies-title">Tags</h3>
+  
+  <ul class="page-taxonomies">
+<li class="page-taxonomy"><a href="/tags/#cdktf" title="Pages tagged cdktf" rel="tag">cdktf</a></li>
+<li class="page-taxonomy"><a href="/tags/#iac" title="Pages tagged iac" rel="tag">iac</a></li>
+<li class="page-taxonomy"><a href="/tags/#terraform" title="Pages tagged terraform" rel="tag">terraform</a></li>
+  </ul>
+
+
+      </div>
+
+      <div class="page-content">
+        <div class="e-content">
+          <p>In this post I start building infrastructure components in my AWS sandbox, using <a href="https://aws.amazon.com/blogs/developer/introducing-the-cloud-development-kit-for-terraform-preview/">the recently released Terraform Cloud Development Kit (CDK)</a>.
+I am going to keep it very basic, simply create an IAM role and policy, just to get myself going. What I am going to do however is dig into each little command and instructions I found in various tutorials, to make sure I understand the magic they hide from me.</p>
+
+<p>This builds up from my previous post: <a href="/2021/10/01/Scripting-access-to-my-AWS-sandbox.html">Scripting access to my AWS sandbox</a>.
+Again, do note that I run a windows machine and use the powershell terminal.</p>
+
+<h1 id="terraform">Terraform</h1>
+
+<p>Terraform itself is a very popular, very much de-facto standard, open standard ‘<a href="https://www.martinfowler.com/bliki/InfrastructureAsCode.html">Infrastructure as Code</a>’ (IaC) tool, created by <a href="https://www.hashicorp.com/">Hashicorp</a> for provisioning cloud infrastructures.</p>
+
+<p>It uses configuration files, written in <a href="https://github.com/hashicorp/hcl">Hashicorp Configuration Language</a> to describe what we want our infrastructure to look like.
+When executed, Terraform will compare the actual infrastructure with that desired end state, and programmatically create or destroy resources to match.
+Where resources have dependencies on each other, it is smart enough to create (and later destroy) them in the right order.</p>
+
+<p>These files can be source controlled and code reviewed, and the execution of terraform entirely automated, thus ensuring consistency and reproducibility between deployments, even across multiple environments, eliminating human error and greatly reducing the time it takes to setup infrastructure.</p>
+
+<p>Terraform uses the concept of <a href="https://www.terraform.io/docs/language/providers/index.html">providers</a>, , that implement a standard interface over the target infrastructure components API and can then be configured via HCL.</p>
+
+<p>I got quite adept at terraforming in my previous role, including creating my own <a href="https://www.hashicorp.com/blog/writing-custom-terraform-providers">custom provider in Go</a> to workaround a then shortcoming in the <a href="https://registry.terraform.io/providers/DataDog/datadog/latest/docs">Datadog official provider</a>.</p>
+
+<p>HCL is great but quickly becomes a pain to work with when your target infrastructure is dynamic. As soon as you need to loop or assert, you find yourself hacking and/or writing hard to read and maintain HCL. It is also, a very ugly language to work with.</p>
+
+<h1 id="terraform-cdk">Terraform CDK</h1>
+
+<p><a href="https://aws.amazon.com/blogs/developer/introducing-the-cloud-development-kit-for-terraform-preview/">Announced in summer 2020</a>, Terraform Cloud Development Kit is a <a href="https://www.terraform.io/docs/cdktf/index.html">programmatic layer used to generate HCL configurations</a>.</p>
+
+<p>This brings a host of advantages.</p>
+<ol>
+  <li>You get to pick and leverage your development language of choice.</li>
+  <li>You can use said language to create abstraction over your infrastructure, so that instead of referring the an ‘EC2 instance’ your code can refer to ‘NGNIX server’</li>
+  <li>You have (or at least eventually will get) more say over your IaC workflow, generate your HCL configuration from programmatic triggers, maybe pull data from external APIs to decide what to build or destroy, etc.</li>
+</ol>
+
+<p>It also brings a lot of pain, mainly because it <a href="https://www.terraform.io/docs/cdktf/concepts/cdktf-architecture.html">adds a few more layers</a> between your and the actual HCL files that act as the source of truth for your infrastructure. Throughout the course of writing this post, I had to fight issues with <a href="https://www.typescriptlang.org/">typescript</a>, <a href="https://nodejs.org/en/about/">node.js</a>, the terraform CDK, the <a href="https://www.terraform.io/docs/cdktf/cli-reference/cli-configuration.html">terraform CDK command line interface (CLI)</a> and the <a href="https://www.terraform.io/docs/language/syntax/configuration.html">generated HCL itself</a>. Great learning exercise, but could be a pain in production.</p>
+
+<p>To be fair, most of this pain is down to 1) my being new to typescript and node.js, and 2) the Terraform CDK still being in development, and <a href="https://www.terraform.io/docs/cdktf/index.html#project-maturity-and-production-readiness">admittedly not ready for production</a>.</p>
+
+<p>In fact, as I spread my exploration over a few hours every friday evening, I was (un)lucky enough to hit a few releases and breaking changes. I have now learned to check the <a href="https://github.com/hashicorp/terraform-cdk/blob/main/CHANGELOG.md">changelog</a> before starting each experiment.</p>
+
+<h1 id="installing-the-terraform-cdk">Installing the Terraform CDK</h1>
+
+<p>Download <strong>nodejs</strong> installer from <a href="https://nodejs.org/en/">https://nodejs.org/en/</a> or use chocolatey</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt; choco install nodejs-lts
+</code></pre></div></div>
+
+<p>Download the <strong>yarn package manager</strong> from <a href="https://classic.yarnpkg.com/en/docs/install#windows-stable">https://classic.yarnpkg.com</a>, or use chocolatey</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt; choco install yarn
+</code></pre></div></div>
+
+<p>Install the <strong>CDK for Terraform</strong> globally:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&gt; npm install -g cdktf-cli
+</code></pre></div></div>
+
+<p>Finally<sup id="fnref:1" role="doc-noteref"><a href="#fn:1" class="footnote" rel="footnote">1</a></sup>, install typescript itself, globallu:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm install -g typescript
+</code></pre></div></div>
+
+<h2 id="cdk-terraform-project-initialisation">CDK Terraform project initialisation</h2>
+
+<p>We create a new empty folder (<code class="language-plaintext highlighter-rouge">day03</code>) and run the <a href="https://www.terraform.io/docs/cdktf/cli-reference/commands.html#init"><code class="language-plaintext highlighter-rouge">cdktf init</code> command</a> to initialise a brand new project:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>day03&gt; cdktf init --template=typescript --local
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Newer version of Terraform CDK is available [0.6.3] - Upgrade recommended
+Note: By supplying '--local' option you have chosen local storage mode for storing the state of your stack.
+This means that your Terraform state file will be stored locally on disk in a file 'terraform.&lt;STACK NAME&gt;.tfstate' in the root of your project.
+? projectName: day03
+? projectDescription: Day 3 of my playing with the sandbox: let's terraform something...
+npm notice created a lockfile as package-lock.json. You should commit this file.
++ constructs@10.0.0
++ cdktf@0.6.2
+added 51 packages from 26 contributors and audited 51 packages in 29.859s       
+
+5 packages are looking for funding
+  run `npm fund` for details      
+
+found 0 vulnerabilities
+
+npm WARN optional SKIPPING OPTIONAL DEPENDENCY: fsevents@^2.3.2 (node_modules\jest-haste-map\node_modules\fsevents):
+npm WARN notsup SKIPPING OPTIONAL DEPENDENCY: Unsupported platform for fsevents@2.3.2: wanted {"os":"darwin","arch":"any"} (current: {"os":"win32","arch":"x64"})
++ ts-jest@27.0.5
++ jest@27.2.4
++ @types/jest@27.0.2
++ @types/node@16.10.2
++ typescript@4.4.3
+added 332 packages from 296 contributors and audited 385 packages in 97.719s
+
+29 packages are looking for funding
+  run `npm fund` for details       
+
+found 0 vulnerabilities
+
+========================================================================================================    
+
+  Your cdktf typescript project is ready!
+
+  cat help                Print this message
+
+  Compile:
+    npm run get           Import/update Terraform providers and modules (you should check-in this directory)
+    npm run compile       Compile typescript code to javascript (or "npm run watch")
+    npm run watch         Watch for changes and compile typescript in the background
+    npm run build         Compile typescript
+
+  Synthesize:
+    cdktf synth [stack]   Synthesize Terraform resources from stacks to cdktf.out/ (ready for 'terraform apply')
+
+  Diff:
+    cdktf diff [stack]    Perform a diff (terraform plan) for the given stack
+
+  Deploy:
+    cdktf deploy [stack]  Deploy the given stack
+
+  Destroy:
+    cdktf destroy [stack] Destroy the stack
+
+  Test:
+    npm run test        Runs unit tests (edit __tests__/main-test.ts to add your own tests)
+    npm run test:watch  Watches the tests and reruns them on change
+
+  Upgrades:
+    npm run upgrade        Upgrade cdktf modules to latest version
+    npm run upgrade:next   Upgrade cdktf modules to latest "@next" version (last commit)
+
+ Use Prebuilt Providers:
+
+  You can add one or multiple of the prebuilt providers listed below:
+
+  npm install @cdktf/provider-aws
+  npm install @cdktf/provider-google
+  npm install @cdktf/provider-azurerm
+  npm install @cdktf/provider-docker
+  npm install @cdktf/provider-github
+  npm install @cdktf/provider-null
+
+  You can also build any module or provider locally. Learn more https://cdk.tf/modules-and-providers
+
+========================================================================================================
+</code></pre></div></div>
+
+<p>Turns out I’m already out of date<sup id="fnref:2" role="doc-noteref"><a href="#fn:2" class="footnote" rel="footnote">2</a></sup> so need to <a href="https://github.com/hashicorp/terraform-cdk/blob/main/docs/upgrade-guide/upgrading-to-0.6.md">upgrade to v0.6.03</a> with <code class="language-plaintext highlighter-rouge">npm run upgrade</code>, which execute the <a href="https://docs.npmjs.com/cli/v7/commands/npm-run-script">run-script command</a> the upgrade script defined in the <code class="language-plaintext highlighter-rouge">package.json</code> file : <code class="language-plaintext highlighter-rouge">npm i cdktf@latest cdktf-cli@latest</code> .</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>day03&gt; npm run upgrade
+
+&gt; day03@1.0.0 upgrade C:\_workspaces\tvg-sandbox\day03
+&gt; npm i cdktf@latest cdktf-cli@latest
+
+
+&gt; core-js-pure@3.18.1 postinstall C:\_workspaces\tvg-sandbox\day03\node_modules\core-js-pure
+&gt; node -e "try{require('./postinstall')}catch(e){}"
+
+&gt; @apollo/protobufjs@1.2.2 postinstall C:\_workspaces\tvg-sandbox\day03\node_modules\@apollo\protobufjs
+&gt; node scripts/postinstall
+
+npm WARN optional SKIPPING OPTIONAL DEPENDENCY: fsevents@2.3.2 (node_modules\fsevents):
+npm WARN notsup SKIPPING OPTIONAL DEPENDENCY: Unsupported platform for fsevents@2.3.2: wanted {"os":"darwin","arch":"any"} (current: {"os":"win32","arch":"x64"})
++ cdktf-cli@0.6.3
++ cdktf@0.6.3
+added 418 packages from 308 contributors, updated 50 packages and audited 803 packages in 235.981s
+
+97 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+</code></pre></div></div>
+
+<p>As I am targetting my AWS sandbox, I need to install the <a href="https://github.com/hashicorp/cdktf-provider-aws">AWS pre-built provider</a>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>day03&gt;  npm install @cdktf/provider-aws
+
+npm WARN optional SKIPPING OPTIONAL DEPENDENCY: fsevents@2.3.2 (node_modules\fsevents):
+npm WARN notsup SKIPPING OPTIONAL DEPENDENCY: Unsupported platform for fsevents@2.3.2: wanted {"os":"darwin","arch":"any"} (current: {"os":"win32","arch":"x64"})
++ @cdktf/provider-aws@2.0.11
+added 1 package from 1 contributor and audited 805 packages in 45.086s
+
+97 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+</code></pre></div></div>
+
+<p>Now, I got very confused at that point, and I am going to blame the docs and various examples for it.</p>
+
+<p><code class="language-plaintext highlighter-rouge">@cdktf/provider-aws</code> is a ‘<a href="https://www.terraform.io/docs/cdktf/concepts/providers-and-resources.html#install-pre-built-providers">pre-built provider</a>’ - that is, already in node.js format, installed in the standard <code class="language-plaintext highlighter-rouge">node_modules</code> folder, and imported from <code class="language-plaintext highlighter-rouge">@cdktf/</code>, e.g. <code class="language-plaintext highlighter-rouge">import { AwsProvider} from '@cdktf/provider-aws';</code></p>
+
+<p>Other types of providers, such as the <a href="https://registry.terraform.io/providers/hashicorp/archive/latest/docs">Archive provider</a> need to be generated locally first:</p>
+
+<ol>
+  <li>add the provider to the <code class="language-plaintext highlighter-rouge">cdktf.json file</code> - for example
+    <div class="language-plaintext highlighter-rouge">
+<div class="highlight"><pre class="highlight"><code> "terraformProviders": [
+ "hashicorp/archive@~&gt;2.2.0"
+ ]
+</code></pre></div>    </div>
+  </li>
+  <li>run <a href="https://www.terraform.io/docs/cdktf/cli-reference/commands.html#get"><code class="language-plaintext highlighter-rouge">cdktf get</code></a>. This will
+    <ul>
+      <li>pull the provider from the terraform registry,</li>
+      <li>generate the typescript constructs for that provider, that is the code that when executed will synthesise the proper terraform constructs for that provider.</li>
+    </ul>
+  </li>
+</ol>
+
+<p>These constructs get generated in the <code class="language-plaintext highlighter-rouge">.gen</code> folder and are imported from <code class="language-plaintext highlighter-rouge">./.gen/providers/</code>, e.g. <code class="language-plaintext highlighter-rouge">import { ArchiveProvider, DataArchiveFile } from "./.gen/providers/archive"</code>. A lot, if not most of the examples out there still use a local AWS provider, rather than the prebuilt one. 
+This initially caused me to both install the pre-built modules, then build a local copy as well, and ignore the pre-built one.</p>
+
+<h2 id="create-an-execution-role">Create an execution role</h2>
+
+<p>My aim is eventually to port the infrastructure elements of the <a href="https://docs.aws.amazon.com/lambda/latest/dg/services-apigateway-tutorial.html">API gateway tutorial</a> to the Terraform CDK. The first step is to create an <a href="https://docs.aws.amazon.com/lambda/latest/dg/lambda-intro-execution-role.html">execution role</a>.</p>
+
+<p><em>This AWS Identity and Access Management (IAM) role uses a custom policy to give your Lambda function permission to access the required AWS resources. Note that you must first create the policy and then create the execution role.</em></p>
+
+<h2 id="code-the-execution-role">Code the execution role</h2>
+<p>I edit the generated <code class="language-plaintext highlighter-rouge">main.ts</code> file to import the AWS provider and IAM resources from the pre-built provider in stalled earlier:</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">AwsProvider</span><span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@cdktf/provider-aws</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">IAM</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@cdktf/provider-aws</span><span class="dl">'</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>I can now control click on the type and find the constructor definition:</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cm">/**
+* Create a new {@link https://www.terraform.io/docs/providers/aws/r/iam_policy.html aws_iam_policy} Resource.
+*
+* @param scope The scope in which to define this construct.
+* @param id The scoped construct ID.
+* @stability stable
+*/</span>
+<span class="kd">constructor</span><span class="p">(</span><span class="nx">scope</span><span class="p">:</span> <span class="nx">Construct</span><span class="p">,</span> <span class="nx">id</span><span class="p">:</span> <span class="kr">string</span><span class="p">,</span> <span class="nx">config</span><span class="p">:</span> <span class="nx">IamPolicyConfig</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>which I use to guess the following code:</p>
+
+<p><code class="language-plaintext highlighter-rouge">main.ts</code>:</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">Construct</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">constructs</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">App</span><span class="p">,</span> <span class="nx">TerraformStack</span><span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">cdktf</span><span class="dl">'</span><span class="p">;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">AwsProvider</span><span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@cdktf/provider-aws</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="k">import</span> <span class="p">{</span> <span class="nx">IAM</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@cdktf/provider-aws</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="kd">class</span> <span class="nx">MyStack</span> <span class="kd">extends</span> <span class="nx">TerraformStack</span> <span class="p">{</span>
+  <span class="kd">constructor</span><span class="p">(</span><span class="nx">scope</span><span class="p">:</span> <span class="nx">Construct</span><span class="p">,</span> <span class="nx">id</span><span class="p">:</span> <span class="kr">string</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">super</span><span class="p">(</span><span class="nx">scope</span><span class="p">,</span> <span class="nx">id</span><span class="p">)</span>
+
+    <span class="k">new</span> <span class="nx">AwsProvider</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="dl">'</span><span class="s1">aws</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+      <span class="na">region</span><span class="p">:</span> <span class="dl">'</span><span class="s1">eu-west-1</span><span class="dl">'</span><span class="p">,</span>
+      <span class="na">profile</span><span class="p">:</span> <span class="dl">"</span><span class="s2">franck-iac</span><span class="dl">"</span>
+    <span class="p">})</span>
+
+    <span class="kd">const</span> <span class="nx">policy</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="dl">"</span><span class="s2">Version</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">2012-10-17</span><span class="dl">"</span><span class="p">,</span>
+      <span class="dl">"</span><span class="s2">Statement</span><span class="dl">"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="dl">"</span><span class="s2">Sid</span><span class="dl">"</span><span class="p">:</span> <span class="dl">""</span><span class="p">,</span>
+          <span class="dl">"</span><span class="s2">Resource</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">*</span><span class="dl">"</span><span class="p">,</span>
+          <span class="dl">"</span><span class="s2">Action</span><span class="dl">"</span><span class="p">:</span> <span class="p">[</span>
+            <span class="dl">"</span><span class="s2">logs:CreateLogGroup</span><span class="dl">"</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">logs:CreateLogStream</span><span class="dl">"</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">logs:PutLogEvents</span><span class="dl">"</span>
+          <span class="p">],</span>
+          <span class="dl">"</span><span class="s2">Effect</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Allow</span><span class="dl">"</span>
+        <span class="p">}</span>
+      <span class="p">]</span>
+    <span class="p">};</span>
+
+    <span class="k">new</span> <span class="nx">IAM</span><span class="p">.</span><span class="nx">IamPolicy</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="dl">'</span><span class="s1">lambda_apigateway_policy</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+      <span class="na">name</span><span class="p">:</span><span class="dl">'</span><span class="s1">lambda_apigateway_policy</span><span class="dl">'</span><span class="p">,</span>
+      <span class="na">description</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Access rights for my API Gateway lambda, as per https://docs.aws.amazon.com/lambda/latest/dg/services-apigateway-tutorial.html#services-apigateway-tutorial-role</span><span class="dl">'</span><span class="p">,</span>
+      <span class="na">policy</span><span class="p">:</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">policy</span><span class="p">)</span>
+    <span class="p">});</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kd">const</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">App</span><span class="p">()</span>
+<span class="k">new</span> <span class="nx">MyStack</span><span class="p">(</span><span class="nx">app</span><span class="p">,</span> <span class="dl">"</span><span class="s2">day03</span><span class="dl">"</span><span class="p">);</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">synth</span><span class="p">();</span>
+
+</code></pre></div></div>
+
+<h3 id="generate-the-hcl-for-the-execution-role">Generate the HCL for the execution role</h3>
+
+<p>I can execute the above <code class="language-plaintext highlighter-rouge">main.ts</code> file with the <a href="https://www.terraform.io/docs/cdktf/cli-reference/commands.html#synth">(<code class="language-plaintext highlighter-rouge">cdktf synth</code>)</a> command to <a href="https://www.terraform.io/docs/cdktf/concepts/cdktf-architecture.html#terraform">generate (aka synthesise)</a> the equivalent terraform configuration files:</p>
+
+<p><code class="language-plaintext highlighter-rouge">cdktf.out\stacks\day03\cdk.tf.json</code>:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"//"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"metadata"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"0.7.0"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"stackName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"day03"</span><span class="p">,</span><span class="w">
+      </span><span class="nl">"backend"</span><span class="p">:</span><span class="w"> </span><span class="s2">"local"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="nl">"terraform"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"required_providers"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"aws"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"~&gt; 3.0"</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"source"</span><span class="p">:</span><span class="w"> </span><span class="s2">"aws"</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="nl">"provider"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"aws"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+      </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"profile"</span><span class="p">:</span><span class="w"> </span><span class="s2">"franck-iac"</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"region"</span><span class="p">:</span><span class="w"> </span><span class="s2">"eu-west-1"</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">]</span><span class="w">
+  </span><span class="p">},</span><span class="w">
+  </span><span class="nl">"resource"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"aws_iam_policy"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"lambda_apigateway_policy"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"description"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Access rights for my API Gateway lambda, as per https://docs.aws.amazon.com/lambda/latest/dg/services-apigateway-tutorial.html#services-apigateway-tutorial-role"</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"lambda_apigateway_policy"</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"policy"</span><span class="p">:</span><span class="w"> </span><span class="s2">"{</span><span class="se">\"</span><span class="s2">Version</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">2012-10-17</span><span class="se">\"</span><span class="s2">,</span><span class="se">\"</span><span class="s2">Statement</span><span class="se">\"</span><span class="s2">:[{</span><span class="se">\"</span><span class="s2">Sid</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"\"</span><span class="s2">,</span><span class="se">\"</span><span class="s2">Resource</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">*</span><span class="se">\"</span><span class="s2">,</span><span class="se">\"</span><span class="s2">Action</span><span class="se">\"</span><span class="s2">:[</span><span class="se">\"</span><span class="s2">logs:CreateLogGroup</span><span class="se">\"</span><span class="s2">,</span><span class="se">\"</span><span class="s2">logs:CreateLogStream</span><span class="se">\"</span><span class="s2">,</span><span class="se">\"</span><span class="s2">logs:PutLogEvents</span><span class="se">\"</span><span class="s2">],</span><span class="se">\"</span><span class="s2">Effect</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">Allow</span><span class="se">\"</span><span class="s2">}]}"</span><span class="p">,</span><span class="w">
+        </span><span class="nl">"//"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+          </span><span class="nl">"metadata"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="nl">"path"</span><span class="p">:</span><span class="w"> </span><span class="s2">"day03/lambda_apigateway_policy"</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"uniqueId"</span><span class="p">:</span><span class="w"> </span><span class="s2">"lambda_apigateway_policy"</span><span class="w">
+          </span><span class="p">}</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+      </span><span class="p">}</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<h3 id="plan-and-apply-the-generated-configuration">Plan and apply the generated configuration</h3>
+
+<p>The generated terraform configuration results in the following <a href="https://www.terraform.io/docs/cli/commands/plan.html">terraform plan (<code class="language-plaintext highlighter-rouge">cdktf plan</code>)</a>:</p>
+
+<div class="language-terraform highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">&gt;</span> <span class="nx">cdktf</span> <span class="nx">plan</span> 
+<span class="nx">Stack</span><span class="err">:</span> <span class="nx">day03</span>
+<span class="nx">Resources</span>
+ <span class="err">+</span> <span class="nx">AWS_IAM_POLICY</span>       <span class="nx">lambda</span><span class="err">-</span><span class="nx">apigateway</span><span class="err">-</span><span class="nx">p</span> <span class="nx">aws_iam_policy</span><span class="err">.</span><span class="nx">lambda</span><span class="err">-</span><span class="nx">apigateway</span><span class="err">-</span><span class="nx">policy</span>
+
+<span class="nx">Diff</span><span class="err">:</span> <span class="mi">1</span> <span class="nx">to</span> <span class="nx">create</span><span class="err">,</span> <span class="mi">0</span> <span class="nx">to</span> <span class="nx">update</span><span class="err">,</span> <span class="mi">0</span> <span class="nx">to</span> <span class="nx">delete</span><span class="err">.</span>
+</code></pre></div></div>
+
+<p>We are starting from a blank sandbox and therefore we should only need to create one new resource, for the policy.</p>
+
+<p>Let’s go wild and apply this to the sandbox</p>
+
+<div class="language-terraform highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">&gt;</span> <span class="nx">cdktf</span> <span class="nx">apply</span>
+<span class="err">⠇</span> <span class="nx">Deploying</span> <span class="nx">Stack</span><span class="err">:</span> <span class="nx">day03</span>
+<span class="nx">Resources</span>
+ <span class="err">⠼</span> <span class="nx">AWS_IAM_POLICY</span>       <span class="nx">lambda</span><span class="err">-</span><span class="nx">apigateway</span><span class="err">-</span><span class="nx">p</span> <span class="nx">aws_iam_policy</span><span class="err">.</span><span class="nx">lambda</span><span class="err">-</span><span class="nx">apigateway</span><span class="err">-</span><span class="nx">policy</span>
+
+<span class="nx">Summary</span><span class="err">:</span> <span class="mi">0</span> <span class="nx">created</span><span class="err">,</span> <span class="mi">0</span> <span class="nx">updated</span><span class="err">,</span> <span class="mi">0</span> <span class="nx">destroyed</span><span class="err">.</span>
+<span class="p">[</span><span class="mi">2021</span><span class="err">-</span><span class="mi">10</span><span class="err">-</span><span class="mi">29</span><span class="nx">T13</span><span class="err">:</span><span class="mi">41</span><span class="err">:</span><span class="mf">41.946</span><span class="p">]</span> <span class="p">[</span><span class="nx">ERROR</span><span class="p">]</span> <span class="nx">default</span> <span class="err">-</span> <span class="err">╷</span>
+<span class="err">│</span> <span class="nx">Error</span><span class="err">:</span> <span class="nx">error</span> <span class="nx">creating</span> <span class="nx">IAM</span> <span class="nx">policy</span> <span class="nx">lambda</span><span class="err">-</span><span class="nx">apigateway</span><span class="err">-</span><span class="nx">policy</span><span class="err">:</span> <span class="nx">AccessDenied</span><span class="err">:</span> <span class="nx">User</span><span class="err">:</span> <span class="nx">arn</span><span class="err">:</span><span class="nx">aws</span><span class="err">:</span><span class="nx">iam</span><span class="err">::</span><span class="mi">012345678910</span><span class="err">:</span><span class="nx">user</span><span class="err">/</span><span class="nx">franck</span><span class="err">-</span><span class="nx">iac</span> <span class="nx">is</span> <span class="nx">not</span> <span class="nx">authorized</span> <span class="nx">to</span> <span class="nx">perform</span><span class="err">:</span> <span class="nx">iam</span><span class="err">:</span><span class="nx">CreatePolicy</span> <span class="nx">on</span> <span class="k">resource</span><span class="err">:</span> <span class="nx">policy</span> <span class="nx">lambda</span><span class="err">-</span><span class="nx">apigateway</span><span class="err">-</span><span class="nx">policy</span>
+</code></pre></div></div>
+
+<p>This <code class="language-plaintext highlighter-rouge">AccessDenied</code> error makes sense, the IAM policy I attached to my IaC user is a dummy one (see <a href="/2021/10/01/Scripting-access-to-my-AWS-sandbox.html">first post in the series</a>), I haven’t actually tailored it to this project.</p>
+
+<h2 id="revisit-our-terraforms-aws-profile-access-rights">Revisit our Terraform’s AWS profile access rights</h2>
+
+<p>Now, sticking with a <a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html#grant-least-privilege">least privilege</a> approach with AWS can be a struggle.
+I usually do as <a href="https://aws.amazon.com/blogs/security/techniques-for-writing-least-privilege-iam-policies/">this blog</a> suggests and use the console.</p>
+
+<p>Here, given the error message <code class="language-plaintext highlighter-rouge">iam:CreatePolicy</code>, let’s navigate to the IAM service, and look under either ‘write’ (usually associated with access right for the creation of stuff) and ‘permission management’. Bingo, it’s under the latter:</p>
+
+<p><img src="/assets/images/2021-10-30-IAMPolicy-createPolicy.png" alt="screenshot IAM console"></p>
+
+<p>Now, add a resource. The console is quite emphatic that a specific resource should be specified, and quite right too: <code class="language-plaintext highlighter-rouge">*</code> is the root of all evil.
+Here, we do not have a specific resource, but we can specify will will only create policy in the current account.</p>
+
+<p>Let’s recreate our <code class="language-plaintext highlighter-rouge">iac-policy.json</code> file as:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="nl">"Version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2012-10-17"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"Statement"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+            </span><span class="nl">"Sid"</span><span class="p">:</span><span class="w"> </span><span class="s2">"IaC01"</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"Effect"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Allow"</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"Action"</span><span class="p">:</span><span class="w"> </span><span class="s2">"iam:CreatePolicy"</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"Resource"</span><span class="p">:</span><span class="w"> </span><span class="s2">"arn:aws:iam::012345678910:policy/*"</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>This gives our IaC user the right to create a new policy in our account, and our account only.
+I can use <a href="/2021/10/01/Scripting-access-to-my-AWS-sandbox.html">my handy <code class="language-plaintext highlighter-rouge">update-policy.ps1</code> script</a>) to easily update my IaC user’s right with this policy.</p>
+
+<p>Let’s try again:</p>
+
+<div class="language-terraform highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">&gt;</span> <span class="nx">cdktf</span> <span class="nx">apply</span>
+<span class="err">...</span>
+<span class="nx">AccessDenied</span><span class="err">:</span> <span class="nx">User</span><span class="err">:</span> <span class="nx">arn</span><span class="err">:</span><span class="nx">aws</span><span class="err">:</span><span class="nx">iam</span><span class="err">::</span><span class="mi">012345678910</span><span class="err">:</span><span class="nx">user</span><span class="err">/</span><span class="nx">franck</span><span class="err">-</span><span class="nx">iac</span> <span class="nx">is</span> <span class="nx">not</span> <span class="nx">authorized</span> <span class="nx">to</span> <span class="nx">perform</span><span class="err">:</span> <span class="nx">iam</span><span class="err">:</span><span class="nx">GetPolicy</span> <span class="nx">on</span> <span class="k">resource</span><span class="err">:</span> <span class="nx">policy</span> <span class="nx">arn</span><span class="err">:</span><span class="nx">aws</span><span class="err">:</span><span class="nx">iam</span><span class="err">::</span><span class="mi">012345678910</span><span class="err">:</span><span class="nx">policy</span><span class="err">/</span><span class="nx">lambda</span><span class="err">-</span><span class="nx">apigateway</span><span class="err">-</span><span class="nx">policy</span>
+</code></pre></div></div>
+
+<p>Getting there. For the lack of comprehensive documentation, I am going to go a few rounds like this, allowing additional IAM action in IaC user policy one by one.
+The advantage is that I can check the <a href="https://docs.aws.amazon.com/service-authorization/latest/reference/list_identityandaccessmanagement.html">IAM actions</a> individually to understand what is going on under the hood. The disadvantage is that the process is slow and painful.</p>
+
+<p>I have yet to find a smarter way to do this, and I am not on my own - as per this <a href="https://github.com/hashicorp/terraform/issues/2834">terraform issue</a>, and <a href="https://stackoverflow.com/questions/51273227/whats-the-most-efficient-way-to-determine-the-minimum-aws-permissions-necessary">stackoverflow</a>.
+I will, one day, experiment with <a href="https://github.com/iann0036/iamlive">iamlive</a>, which would theoretically allow me to execute my terraform configuration with a super -user, log the corresponding access rights and then add these to my IaC user policy.</p>
+
+<p>Anyway, my <code class="language-plaintext highlighter-rouge">iac-policy.json</code> ends up looking like this :</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="nl">"Version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2012-10-17"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"Statement"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+            </span><span class="nl">"Sid"</span><span class="p">:</span><span class="w"> </span><span class="s2">"IaC01"</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"Effect"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Allow"</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"Action"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+                </span><span class="s2">"iam:CreatePolicy"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"iam:GetPolicy"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"iam:GetPolicyVersion"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"iam:ListPolicyVersions"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"iam:DeletePolicy"</span><span class="w">
+            </span><span class="p">],</span><span class="w">
+            </span><span class="nl">"Resource"</span><span class="p">:</span><span class="w"> </span><span class="s2">"arn:aws:iam::012345678910:policy/*"</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<h2 id="success">Success</h2>
+
+<div class="language-terraform highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">&gt;</span> <span class="nx">cdktf</span> <span class="nx">apply</span>
+<span class="nx">Deploying</span> <span class="nx">Stack</span><span class="err">:</span> <span class="nx">day03</span>
+<span class="nx">Resources</span>
+ <span class="err">✔</span> <span class="nx">AWS_IAM_POLICY</span>       <span class="nx">lambda_apigateway_policy</span> <span class="nx">aws_iam_policy</span><span class="err">.</span><span class="nx">lambda_apigateway_policy</span>
+
+<span class="nx">Summary</span><span class="err">:</span> <span class="mi">1</span> <span class="nx">created</span><span class="err">,</span> <span class="mi">0</span> <span class="nx">updated</span><span class="err">,</span> <span class="mi">0</span> <span class="nx">destroyed</span><span class="err">.</span>
+</code></pre></div></div>
+
+<p>Hurrah!: Let’s peek at the IAM console… Result: we have terraformed a policy via the CDK! <img class="emoji" title=":smile:" alt=":smile:" src="https://github.githubassets.com/images/icons/emoji/unicode/1f604.png" height="20" width="20"></p>
+
+<p><img src="/assets/images/2021-10-30-newly_created_policy.png" alt="screenshot IAM console"></p>
+
+<h2 id="create-the-role">Create the role</h2>
+
+<p>Add this to <code class="language-plaintext highlighter-rouge">main.ts</code>:</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">lambda_assume_role_policy</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="dl">"</span><span class="s2">Version</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">2012-10-17</span><span class="dl">"</span><span class="p">,</span>
+      <span class="dl">"</span><span class="s2">Statement</span><span class="dl">"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="dl">"</span><span class="s2">Effect</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Allow</span><span class="dl">"</span><span class="p">,</span>
+          <span class="dl">"</span><span class="s2">Principal</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="dl">"</span><span class="s2">Service</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">lambda.amazonaws.com</span><span class="dl">"</span>
+          <span class="p">},</span>
+          <span class="dl">"</span><span class="s2">Action</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">sts:AssumeRole</span><span class="dl">"</span>
+        <span class="p">}</span>
+      <span class="p">]</span>
+    <span class="p">};</span>
+
+<span class="k">new</span> <span class="nx">IAM</span><span class="p">.</span><span class="nx">IamRole</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="dl">'</span><span class="s1">lambda-apigateway-role</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+  <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">lambda-apigateway-role</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">assumeRolePolicy</span><span class="p">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">lambda_assume_role_policy</span><span class="p">)</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<div class="language-terraform highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">Error</span><span class="err">:</span> <span class="nx">error</span> <span class="nx">creating</span> <span class="nx">IAM</span> <span class="nx">Role</span> <span class="err">(</span><span class="nx">lambda</span><span class="err">-</span><span class="nx">apigateway</span><span class="err">-</span><span class="nx">role</span><span class="err">):</span> <span class="nx">AccessDenied</span><span class="err">:</span> <span class="nx">User</span><span class="err">:</span> <span class="nx">arn</span><span class="err">:</span><span class="nx">aws</span><span class="err">:</span><span class="nx">iam</span><span class="err">::</span><span class="mi">012345678910</span><span class="err">:</span><span class="nx">user</span><span class="err">/</span><span class="nx">franck</span><span class="err">-</span><span class="nx">iac</span> <span class="nx">is</span> <span class="nx">not</span> <span class="nx">authorized</span> <span class="nx">to</span> <span class="nx">perform</span><span class="err">:</span> <span class="nx">iam</span><span class="err">:</span><span class="nx">CreateRole</span> <span class="nx">on</span> <span class="k">resource</span><span class="err">:</span> <span class="nx">arn</span><span class="err">:</span><span class="nx">aws</span><span class="err">:</span><span class="nx">iam</span><span class="err">::</span><span class="mi">012345678910</span><span class="err">:</span><span class="nx">role</span><span class="err">/</span><span class="nx">lambda</span><span class="err">-</span><span class="nx">apigateway</span><span class="err">-</span><span class="nx">role</span>
+</code></pre></div></div>
+
+<p>Here we go again… After a few tries and errors, these are the access rights we need to add to the IaC role.
+Note that I add them to <code class="language-plaintext highlighter-rouge">iac-policy.json</code> as a separate <a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_elements_statement.html">policy statement</a>, to try and keep track of what right is used for what.</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="nl">"Sid"</span><span class="p">:</span><span class="w"> </span><span class="s2">"IaC02"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"Effect"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Allow"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"Action"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+        </span><span class="s2">"iam:CreateRole"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"iam:GetRole"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"iam:ListRolePolicies"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"iam:ListAttachedRolePolicies"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"iam:ListInstanceProfilesForRole"</span><span class="p">,</span><span class="w">
+        </span><span class="s2">"iam:DeleteRole"</span><span class="w">
+    </span><span class="p">],</span><span class="w">
+    </span><span class="nl">"Resource"</span><span class="p">:</span><span class="w"> </span><span class="s2">"arn:aws:iam::012345678910:role/*"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-terraform highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">&gt;</span> <span class="nx">cdktf</span> <span class="nx">apply</span>
+<span class="nx">Deploying</span> <span class="nx">Stack</span><span class="err">:</span> <span class="nx">day03</span>
+<span class="nx">Resources</span>
+ <span class="err">✔</span> <span class="nx">AWS_IAM_ROLE</span>         <span class="nx">lambda</span><span class="err">-</span><span class="nx">apigateway</span><span class="err">-</span><span class="nx">role</span> <span class="nx">aws_iam_role</span><span class="err">.</span><span class="nx">lambda</span><span class="err">-</span><span class="nx">apigateway</span><span class="err">-</span><span class="nx">role</span>
+
+<span class="nx">Summary</span><span class="err">:</span> <span class="mi">1</span> <span class="nx">created</span><span class="err">,</span> <span class="mi">0</span> <span class="nx">updated</span><span class="err">,</span> <span class="mi">0</span> <span class="nx">destroyed</span><span class="err">.</span>
+</code></pre></div></div>
+
+<p>Our code didn’t change the policy, therefore it hasn’t been updated or destroyed.
+The role itself is new, therefore has been created as a new resource, which can can see in the IAM console:</p>
+
+<p><img src="/assets/images/2021-10-30-IAMPolicy-createRole.png" alt="screenshot IAM console"></p>
+
+<h2 id="cleanup">Cleanup</h2>
+
+<p>When experimenting in the cloud is it good practice to clean up as soon as we’re done, and save ourselves money. Doesn’t really matter here, roles and policies don’t incur costs, but a good habit to get into.</p>
+
+<div class="language-terraform highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">&gt;</span> <span class="nx">cdktf</span> <span class="nx">destroy</span>
+<span class="nx">Destroying</span> <span class="nx">Stack</span><span class="err">:</span> <span class="nx">day03</span>
+<span class="nx">Resources</span>
+ <span class="err">✔</span> <span class="nx">AWS_IAM_POLICY</span>       <span class="nx">lambda_apigateway_policy</span> <span class="nx">aws_iam_policy</span><span class="err">.</span><span class="nx">lambda_apigateway_policy</span>
+
+ <span class="err">✔</span> <span class="nx">AWS_IAM_ROLE</span>         <span class="nx">lambda</span><span class="err">-</span><span class="nx">apigateway</span><span class="err">-</span><span class="nx">role</span> <span class="nx">aws_iam_role</span><span class="err">.</span><span class="nx">lambda</span><span class="err">-</span><span class="nx">apigateway</span><span class="err">-</span><span class="nx">role</span>
+
+<span class="nx">Summary</span><span class="err">:</span> <span class="mi">2</span> <span class="nx">destroyed</span><span class="err">.</span>
+</code></pre></div></div>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="err">&gt;</span><span class="w"> </span><span class="o">.</span><span class="n">\teardown.ps1</span><span class="w">
+</span><span class="nx">Delete</span><span class="w"> </span><span class="nx">Access</span><span class="w"> </span><span class="nx">Key</span><span class="w"> </span><span class="nx">for</span><span class="w"> </span><span class="nx">IaC</span><span class="w"> </span><span class="nx">user</span><span class="w"> </span><span class="s1">'franck-iac'</span><span class="w"> </span><span class="o">...</span><span class="w">
+</span><span class="n">Detach</span><span class="w"> </span><span class="nx">policy</span><span class="w">  </span><span class="nx">to</span><span class="w"> </span><span class="nx">user</span><span class="w"> </span><span class="s1">'franck-iac'</span><span class="o">...</span><span class="w">
+</span><span class="n">Delete</span><span class="w"> </span><span class="nx">IaC</span><span class="w"> </span><span class="nx">user</span><span class="w"> </span><span class="s1">'franck-iac'</span><span class="w"> </span><span class="o">...</span><span class="w">
+</span><span class="n">Delete</span><span class="w"> </span><span class="nx">access</span><span class="w"> </span><span class="nx">policy</span><span class="w"> </span><span class="s1">'franck-iac'</span><span class="w"> </span><span class="o">...</span><span class="w">
+</span><span class="n">Sandbox</span><span class="w"> </span><span class="nx">IaC</span><span class="w"> </span><span class="nx">user</span><span class="w"> </span><span class="nx">teardown</span><span class="w"> </span><span class="nx">complete</span><span class="w"> </span><span class="o">...</span><span class="w">
+</span></code></pre></div></div>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>This is all very basic but I now have a good understanding of the Terraform CDK and its foibles. I have also tested my developer workflow, and exercised my IaC scripts.</p>
+
+<p>I will continue<sup id="fnref:3" role="doc-noteref"><a href="#fn:3" class="footnote" rel="footnote">3</a></sup> this experiment in a <a href="/2021/11/10/Terraform-CDK-part-2.html">later post</a>, deploy a lambda function, configure the API Gateway to invoke it, etc.</p>
+
+<div class="footnotes" role="doc-endnotes">
+  <ol>
+    <li id="fn:1" role="doc-endnote">
+      <p>This step is undocumented elsewhere, and maybe not actually required.
+However, what was meant to be a quick experiment with the CDK ended up spread over 5 attempts: Things went very wrong, I kept hitting <code class="language-plaintext highlighter-rouge">MODULE_NOT_FOUND</code> errors when running <code class="language-plaintext highlighter-rouge">cdktf synth</code>. The code and all paths were fine, I and <a href="https://code.visualstudio.com/docs">vscode</a> could see all the modules, but <code class="language-plaintext highlighter-rouge">cdktf synth</code> kept failing.
+On what was actually Day 07, I decided to ignored the <code class="language-plaintext highlighter-rouge">cdktf</code> commands and compile the typescript code directly (<code class="language-plaintext highlighter-rouge">tsc --build --clean</code>, <code class="language-plaintext highlighter-rouge">tsc --build --verbose</code>), which required me to install typescript (<code class="language-plaintext highlighter-rouge">npm install -g typescript</code>), which then somehow got rid of my <code class="language-plaintext highlighter-rouge">MODULE_NOT_FOUND</code> errors.
+I am therefore going to assume that installing typescript separately is a pre-requisite to using the terraform CDK. 
+I won’t know for sure until retry it all on a clean machine, maybe spin a container for it. <a href="#fnref:1" class="reversefootnote" role="doc-backlink">↩</a></p>
+    </li>
+    <li id="fn:2" role="doc-endnote">
+      <p>A few weeks elapsed between my installing the tooling and actually trying to use it <a href="#fnref:2" class="reversefootnote" role="doc-backlink">↩</a></p>
+    </li>
+    <li id="fn:3" role="doc-endnote">
+      <p>and <strong>TIDY UP</strong>, as I have now spotted inconsistencies in my naming terraform resources (<a href="https://www.terraform-best-practices.com/naming">should use underscore rather than hyphens</a>). <a href="#fnref:3" class="reversefootnote" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</div>
+
+        </div>
+
+        
+          <div class="page-share">
+  <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Ffranck-chester.github.io%2F%2F2021%2F10%2F30%2FTerraform-CDK-part-1.html" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="btn btn--facebook btn--small"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i> <span>Share</span></a>
+  <a href="https://twitter.com/intent/tweet?text=Terraform+CDK+-+part+1%20https%3A%2F%2Ffranck-chester.github.io%2F%2F2021%2F10%2F30%2FTerraform-CDK-part-1.html" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="btn btn--twitter btn--small"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i> <span>Tweet</span></a>
+  <a href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3A%2F%2Ffranck-chester.github.io%2F%2F2021%2F10%2F30%2FTerraform-CDK-part-1.html" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="btn btn--linkedin btn--small"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i> <span>LinkedIn</span></a>
+  <a href="https://reddit.com/submit?title=Terraform+CDK+-+part+1&amp;url=https%3A%2F%2Ffranck-chester.github.io%2F%2F2021%2F10%2F30%2FTerraform-CDK-part-1.html" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="btn btn--reddit btn--small"><i class="fab fa-fw fa-reddit" aria-hidden="true"></i> <span>Reddit</span></a>
+</div>
+
+        
+
+        
+
+        <nav class="page-pagination" role="navigation">
+  
+    <a class="page-previous" href="/2021/10/22/Architecture-descriptions-in-the-cloud.html">
+      <h4 class="page-pagination-label">Previous</h4>
+      <span class="page-pagination-title">
+        <i class="fas fa-arrow-left"></i> Architecture descriptions in the cloud
+
+      </span>
+    </a>
+  
+
+  
+    <a class="page-next" href="/2021/11/10/Terraform-CDK-part-2.html">
+      <h4 class="page-pagination-label">Next</h4>
+      <span class="page-pagination-title">
+        Terraform CDK - part 2
+ <i class="fas fa-arrow-right"></i>
+      </span>
+    </a>
+  
+</nav>
+
+      </div>
+    </div>
+  </article>
+</main>
+
+
+    <footer id="footer" class="site-footer">
+  <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+<div class="social-icons"><a class="social-icon" href="https://github.com/franck-chester/franck-chester.github.io"><i class="fab fa-github-square fa-2x" title="GitHub"></i></a></div>
+<div class="copyright">
+    
+      <p><a href="https://github.com/franck-chester/franck-chester.github.io/actions/workflows/jekyll.yaml"><img src="https://github.com/franck-chester/franck-chester.github.io/actions/workflows/jekyll.yaml/badge.svg" alt="Build and deploy Jekyll site to GitHub Pages"></a><br>
+© Franck-Chester. Powered by <a href="https://jekyllrb.com">Jekyll</a> &amp; <a href="So%20Simple">So Simple</a>.</p>
+
+    
+  </div>
+</footer>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+  <script src="/assets/js/main.min.js"></script>
+  <script src="https://use.fontawesome.com/releases/v5.0.12/js/all.js"></script>
+
+<script type="text/javascript">
+    var mpq = [];
+    mpq.push(["init", ""]);
+    (function(){var b,a,e,d,c;b=document.createElement("script");b.type="text/javascript";
+    b.async=true;b.src=(document.location.protocol==="https:"?"https:":"http:")+
+    "//api.mixpanel.com/site_media/js/api/mixpanel.js";a=document.getElementsByTagName("script")[0];
+    a.parentNode.insertBefore(b,a);e=function(f){return function(){mpq.push(
+    [f].concat(Array.prototype.slice.call(arguments,0)))}};d=["init","track","track_links",
+    "track_forms","register","register_once","identify","name_tag","set_config"];for(c=0;c<
+    d.length;c++){mpq[d[c]]=e(d[c])}})();
+</script>
+
+  </body>
+
+</html>

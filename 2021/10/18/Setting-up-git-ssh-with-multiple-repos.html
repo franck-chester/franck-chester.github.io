@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<!--
+    So Simple Jekyll Theme 3.2.0
+    Copyright 2013-2019 Michael Rose - mademistakes.com | @mmistakes
+    Free for personal and commercial use under the MIT license
+    https://github.com/mmistakes/so-simple-theme/blob/master/LICENSE
+-->
+<html lang="en-US" class="no-js">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  
+
+  
+    
+    <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Configuring Git to use the proper SSH key across multiple remote repositories | Franck’s stuff</title>
+<meta name="generator" content="Jekyll v4.3.1" />
+<meta property="og:title" content="Configuring Git to use the proper SSH key across multiple remote repositories" />
+<meta name="author" content="Franck" />
+<meta property="og:locale" content="en_GB" />
+<meta name="description" content="The new job uses both GitLab and BitBucket, and mandates SSH to access both." />
+<meta property="og:description" content="The new job uses both GitLab and BitBucket, and mandates SSH to access both." />
+<link rel="canonical" href="https://franck-chester.github.io//2021/10/18/Setting-up-git-ssh-with-multiple-repos.html" />
+<meta property="og:url" content="https://franck-chester.github.io//2021/10/18/Setting-up-git-ssh-with-multiple-repos.html" />
+<meta property="og:site_name" content="Franck’s stuff" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-10-18T00:00:00+00:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Configuring Git to use the proper SSH key across multiple remote repositories" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Franck"},"dateModified":"2021-10-18T00:00:00+00:00","datePublished":"2021-10-18T00:00:00+00:00","description":"The new job uses both GitLab and BitBucket, and mandates SSH to access both.","headline":"Configuring Git to use the proper SSH key across multiple remote repositories","mainEntityOfPage":{"@type":"WebPage","@id":"https://franck-chester.github.io//2021/10/18/Setting-up-git-ssh-with-multiple-repos.html"},"url":"https://franck-chester.github.io//2021/10/18/Setting-up-git-ssh-with-multiple-repos.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+  
+
+  <script>
+    /* Cut the mustard */
+    if ( 'querySelector' in document && 'addEventListener' in window ) {
+      document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + 'js';
+    }
+  </script>
+
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="/assets/css/skins/default.css">
+  
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,700,700i|Lora:400,400i,700,700i">
+  <link rel="alternate" type="application/atom+xml" title="Franck&#39;s stuff" href="/feed.xml">
+<!-- start custom head snippets -->
+
+<!-- insert favicons. use http://realfavicongenerator.net/ -->
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/images/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon-16x16.png">
+<link rel="manifest" href="/assets/images/site.webmanifest">
+<link rel="mask-icon" href="/assets/images/safari-pinned-tab.svg" color="#5bbad5">
+<link rel="shortcut icon" href="/assets/images/favicon.ico">
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="msapplication-config" content="/assets/images/browserconfig.xml">
+<meta name="theme-color" content="#ffffff">
+<!-- end custom head snippets -->
+
+</head>
+
+
+  <body class="layout--post  configuring-git-to-use-the-proper-ssh-key-across-multiple-remote-repositories">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#primary-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+  <div class="navigation-wrapper">
+    <a href="#menu-toggle" id="menu-toggle">Menu</a>
+    <nav id="primary-nav" class="site-nav animated drop">
+      <ul><li><a href="/posts/">Posts</a></li><li><a href="/links/">Links</a></li><li><a href="/tags/">Tags</a></li><li><a href="/search/">Search</a></li><li><a href="/">About</a></li></ul>
+    </nav>
+  </div><!-- /.navigation-wrapper -->
+
+
+    <header class="masthead">
+  <div class="wrap">
+    
+    
+    
+      
+        <div class="site-title animated fadeIn"><a href="/">Franck's stuff</a></div>
+      
+      <p class="site-description animated fadeIn" itemprop="description">This is where I document and comment on those titbits I keep stumbling on during my day job, and my evening browsing</p>
+    
+  </div>
+</header><!-- /.masthead -->
+
+
+    <main id="main" class="main-content" aria-label="Content">
+  <article class="h-entry">
+    
+
+    <div class="page-wrapper">
+      <header class="page-header">
+        
+        
+          <h1 id="page-title" class="page-title p-name">Configuring Git to use the proper SSH key across multiple remote repositories
+</h1>
+        
+      </header>
+
+      <div class="page-sidebar">
+        <div class="page-author h-card p-author"><img src="/assets/images/franck.png" class="author-avatar u-photo" alt="Franck"><div class="author-info"><div class="author-name">
+        <em>by</em> <span class="p-name">Franck</span>
+      </div><ul class="author-links"><li class="author-link">
+            <a class="u-url" rel="me" href="https://github.com/franck-chester"><i class="fab fa-github-square fa-lg" title="GitHub"></i></a>
+          </li></ul>
+    <time class="page-date dt-published" datetime="2021-10-18T00:00:00+00:00"><a class="u-url" href="">2021-10-18</a>
+</time>
+
+  </div>
+</div>
+
+        
+
+        
+  <h3 class="page-taxonomies-title">Tags</h3>
+  
+  <ul class="page-taxonomies"><li class="page-taxonomy"><a href="/tags/#git" title="Pages tagged git" rel="tag">git</a></li><li class="page-taxonomy"><a href="/tags/#ssh" title="Pages tagged ssh" rel="tag">ssh</a></li>
+  </ul>
+
+
+      </div>
+
+      <div class="page-content">
+        <div class="e-content">
+          <p>The new job uses both GitLab and BitBucket, and mandates SSH to access both.</p>
+
+<p>Turns out this requires additional steps that weren’t documented.</p>
+
+<p>After setting up SSH for bitbucket, my SSH connection was fine:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>PS C:\_workspaces&gt; ssh-add -l
+3072 SHA256:XBzl9AbCdEfGhIjKlMnOPCm3VfP9Z9M9/iB8dG7dw24 acme\franck@HALL-9001 (RSA)
+
+PS C:\_workspaces&gt; ssh -T git@bitbucket.org
+authenticated via ssh key.
+
+You can use git to connect to Bitbucket. Shell access is disabled
+</code></pre></div></div>
+
+<p>But I was actually unable to clone a repo:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>PS C:\_workspaces&gt; git clone git@bitbucket.org:acme/emar-superduperapp_ios.git
+Cloning into 'emar-superduperapp_ios'...
+git@bitbucket.org: Permission denied (publickey).
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+
+</code></pre></div></div>
+
+<p>First of all, what to do when git misbehave? Turn on tracing:</p>
+
+<p>See this SO, <a href="https://stackoverflow.com/questions/6178401/how-can-i-debug-git-git-shell-related-problems">How can I debug git/git-shell related problems?</a> and the <a href="https://git-scm.com/book/en/v2/Git-Internals-Environment-Variables#Debugging">official doc</a></p>
+
+<p>Here, the option that helped was to turn SSH tracing on:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$</span><span class="nn">Env</span><span class="p">:</span><span class="nv">GIT_SSH_COMMAND</span><span class="o">=</span><span class="s2">"ssh -v"</span><span class="w">
+</span></code></pre></div></div>
+
+<p>I can now compare what happens when I SSH directly:</p>
+<div class="language-ssh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">PS</span> C:<span class="err">\</span>_workspaces&gt; ssh -vT git@bitbucket.org
+<span class="k">OpenSSH</span>_for_Windows_8.1p1, LibreSSL <span class="m">3</span>.0.2
+<span class="k">debug1</span>: Connecting to bitbucket.org [104.192.141.1] port <span class="m">22</span>.
+<span class="k">debug1</span>: Connection established.
+<span class="k">debug1</span>: identity file C:<span class="err">\\</span>Users<span class="err">\\</span>franck/.ssh/id_rsa type <span class="m">0</span>
+<span class="k">debug1</span>: identity file C:<span class="err">\\</span>Users<span class="err">\\</span>franck/.ssh/id_rsa-cert type -1
+<span class="k">debug1</span>: identity file C:<span class="err">\\</span>Users<span class="err">\\</span>franck/.ssh/id_dsa type -1
+<span class="k">debug1</span>: identity file C:<span class="err">\\</span>Users<span class="err">\\</span>franck/.ssh/id_dsa-cert type -1
+<span class="k">debug1</span>: identity file C:<span class="err">\\</span>Users<span class="err">\\</span>franck/.ssh/id_ecdsa type -1
+<span class="k">debug1</span>: identity file C:<span class="err">\\</span>Users<span class="err">\\</span>franck/.ssh/id_ecdsa-cert type -1
+<span class="k">debug1</span>: identity file C:<span class="err">\\</span>Users<span class="err">\\</span>franck/.ssh/id_ed25519 type -1
+<span class="k">debug1</span>: identity file C:<span class="err">\\</span>Users<span class="err">\\</span>franck/.ssh/id_ed25519-cert type -1
+<span class="k">debug1</span>: identity file C:<span class="err">\\</span>Users<span class="err">\\</span>franck/.ssh/id_xmss type -1
+<span class="k">debug1</span>: identity file C:<span class="err">\\</span>Users<span class="err">\\</span>franck/.ssh/id_xmss-cert type -1
+<span class="k">debug1</span>: Local version string SSH-2.0-OpenSSH_for_Windows_8.1
+<span class="k">debug1</span>: Remote protocol version <span class="m">2</span>.0, remote software version conker_df6142773d <span class="m">0</span>c1acfdf8d93
+<span class="k">debug1</span>: <span class="no">no</span> match: conker_df6142773d <span class="m">0</span>c1acfdf8d93
+<span class="k">debug1</span>: Authenticating to bitbucket.org:22 as 'git'
+<span class="k">debug1</span>: SSH2_MSG_KEXINIT sent
+<span class="k">debug1</span>: SSH2_MSG_KEXINIT received
+<span class="k">debug1</span>: kex: algorithm: curve25519-sha256@libssh.org
+<span class="k">debug1</span>: kex: host key algorithm: ssh-rsa
+<span class="k">debug1</span>: kex: server-&gt;client cipher: chacha20-poly1305@openssh.com MAC: &lt;implicit&gt; compression: <span class="no">none</span>
+<span class="k">debug1</span>: kex: client-&gt;server cipher: chacha20-poly1305@openssh.com MAC: &lt;implicit&gt; compression: <span class="no">none</span>
+<span class="k">debug1</span>: expecting SSH2_MSG_KEX_ECDH_REPLY
+<span class="k">debug1</span>: Server host key: ssh-rsa SHA256:zzZyXwVuTsRqPoNmLkkJYKwbHaxvSc0ojez9YXaGp1A
+<span class="k">debug1</span>: Host 'bitbucket.org' is known and matches the RSA host key.
+<span class="k">debug1</span>: Found key in C:<span class="err">\\</span>Users<span class="err">\\</span>franck/.ssh/known_hosts:4
+<span class="k">debug1</span>: rekey out after <span class="m">134217728</span> blocks
+<span class="k">debug1</span>: SSH2_MSG_NEWKEYS sent
+<span class="k">debug1</span>: expecting SSH2_MSG_NEWKEYS
+<span class="k">debug1</span>: SSH2_MSG_NEWKEYS received
+<span class="k">debug1</span>: rekey in after <span class="m">134217728</span> blocks
+<span class="k">debug1</span>: Will attempt key: acme<span class="err">\\</span>franck@HALL-9001 RSA SHA256:XBzl9AbCdEfGhIjKlMnOPCm3VfP9Z9M9/iB8dG7dw24 agent
+<span class="k">debug1</span>: Will attempt key: C:<span class="err">\\</span>Users<span class="err">\\</span>franck/.ssh/id_rsa RSA SHA256:WvJsAbCdEfGhIjKlMnOP0YBFy1XWm2/P6jCL7cBmQU4
+<span class="k">debug1</span>: Will attempt key: C:<span class="err">\\</span>Users<span class="err">\\</span>franck/.ssh/id_dsa
+<span class="k">debug1</span>: Will attempt key: C:<span class="err">\\</span>Users<span class="err">\\</span>franck/.ssh/id_ecdsa
+<span class="k">debug1</span>: Will attempt key: C:<span class="err">\\</span>Users<span class="err">\\</span>franck/.ssh/id_ed25519
+<span class="k">debug1</span>: Will attempt key: C:<span class="err">\\</span>Users<span class="err">\\</span>franck/.ssh/id_xmss
+<span class="k">debug1</span>: SSH2_MSG_SERVICE_ACCEPT received
+<span class="k">debug1</span>: Authentications that can continue: publickey
+<span class="k">debug1</span>: Next authentication method: publickey
+<span class="k">debug1</span>: Offering public key: acme<span class="err">\\</span>franck@HALL-9001 RSA SHA256:XBzl9AbCdEfGhIjKlMnOPCm3VfP9Z9M9/iB8dG7dw24 agent
+<span class="k">debug1</span>: Server accepts key: acme<span class="err">\\</span>franck@HALL-9001 RSA SHA256:XBzl9AbCdEfGhIjKlMnOPCm3VfP9Z9M9/iB8dG7dw24 agent
+<span class="k">debug1</span>: Authentication succeeded (publickey).
+<span class="k">Authenticated</span> to bitbucket.org ([104.192.141.1]:22).
+<span class="k">debug1</span>: channel <span class="m">0</span>: new [client-session]
+<span class="k">debug1</span>: Entering interactive session.
+<span class="k">debug1</span>: pledge: network
+<span class="k">debug1</span>: client_input_channel_req: channel <span class="m">0</span> rtype exit-status reply <span class="m">0</span>
+<span class="k">authenticated</span> via ssh key.
+
+<span class="k">You</span> can use git to connect to Bitbucket. Shell access is disabled
+<span class="k">debug1</span>: channel <span class="m">0</span>: free: client-session, nchannels <span class="m">1</span>
+<span class="k">Transferred</span>: sent <span class="m">3008</span>, received <span class="m">1912</span> bytes, in <span class="m">0</span>.2 seconds
+<span class="err">.</span><span class="k">0</span>
+</code></pre></div></div>
+
+<p>To what happens when I connect via git:</p>
+
+<div class="language-ssh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">PS</span> C:<span class="err">\</span>_workspaces&gt; <span class="err">$</span>Env:GIT_SSH_COMMAND="ssh -v"
+<span class="k">PS</span> C:<span class="err">\</span>_workspaces&gt; git clone git@bitbucket.org:acme/emar-superduperapp_ios.git
+<span class="k">11</span>:00:04.773743 exec-cmd.c:237          trace: resolved executable dir: C:/Program Files/Git/mingw64/bin
+<span class="k">11</span>:00:04.776745 git.c:455               trace: built-in: git clone git@bitbucket.org:acme/emar-superduperapp_ios.git
+<span class="k">Cloning</span> into 'emar-superduperapp_ios'...
+<span class="k">11</span>:00:04.940743 run-command.c:666       trace: run_command: unset GIT_DIR<span class="err">;</span> GIT_PROTOCOL=version=2 'ssh -v' -o SendEnv=GIT_PROTOCOL git@bitbucket.org 'git-upload-pack '<span class="err">\</span>''acme/emar-superduperapp_ios.git'<span class="err">\</span>'''
+<span class="k">OpenSSH</span>_8.7p1, OpenSSL <span class="m">1</span>.1.1k  <span class="m">25</span> Mar <span class="m">2021</span>
+<span class="k">debug1</span>: Reading configuration data /etc/ssh/ssh_config
+<span class="k">debug1</span>: Connecting to bitbucket.org [104.192.141.1] port <span class="m">22</span>.
+<span class="k">debug1</span>: Connection established.
+<span class="k">debug1</span>: identity file /c/Users/franck/.ssh/id_rsa type <span class="m">0</span>
+<span class="k">debug1</span>: identity file /c/Users/franck/.ssh/id_rsa-cert type -1
+<span class="k">debug1</span>: identity file /c/Users/franck/.ssh/id_dsa type -1
+<span class="k">debug1</span>: identity file /c/Users/franck/.ssh/id_dsa-cert type -1
+<span class="k">debug1</span>: identity file /c/Users/franck/.ssh/id_ecdsa type -1
+<span class="k">debug1</span>: identity file /c/Users/franck/.ssh/id_ecdsa-cert type -1
+<span class="k">debug1</span>: identity file /c/Users/franck/.ssh/id_ecdsa_sk type -1
+<span class="k">debug1</span>: identity file /c/Users/franck/.ssh/id_ecdsa_sk-cert type -1
+<span class="k">debug1</span>: identity file /c/Users/franck/.ssh/id_ed25519 type -1
+<span class="k">debug1</span>: identity file /c/Users/franck/.ssh/id_ed25519-cert type -1
+<span class="k">debug1</span>: identity file /c/Users/franck/.ssh/id_ed25519_sk type -1
+<span class="k">debug1</span>: identity file /c/Users/franck/.ssh/id_ed25519_sk-cert type -1
+<span class="k">debug1</span>: identity file /c/Users/franck/.ssh/id_xmss type -1
+<span class="k">debug1</span>: identity file /c/Users/franck/.ssh/id_xmss-cert type -1
+<span class="k">debug1</span>: Local version string SSH-2.0-OpenSSH_8.7
+<span class="k">debug1</span>: Remote protocol version <span class="m">2</span>.0, remote software version conker_df6142773d <span class="m">396556</span>d9f365
+<span class="k">debug1</span>: compat_banner: <span class="no">no</span> match: conker_df6142773d <span class="m">396556</span>d9f365
+<span class="k">debug1</span>: Authenticating to bitbucket.org:22 as 'git'
+<span class="k">debug1</span>: load_hostkeys: fopen /c/Users/franck/.ssh/known_hosts2: No such file or directory
+<span class="k">debug1</span>: load_hostkeys: fopen /etc/ssh/ssh_known_hosts: No such file or directory
+<span class="k">debug1</span>: load_hostkeys: fopen /etc/ssh/ssh_known_hosts2: No such file or directory
+<span class="k">debug1</span>: SSH2_MSG_KEXINIT sent
+<span class="k">debug1</span>: SSH2_MSG_KEXINIT received
+<span class="k">debug1</span>: kex: algorithm: curve25519-sha256@libssh.org
+<span class="k">debug1</span>: kex: host key algorithm: ssh-rsa
+<span class="k">debug1</span>: kex: server-&gt;client cipher: chacha20-poly1305@openssh.com MAC: &lt;implicit&gt; compression: <span class="no">none</span>
+<span class="k">debug1</span>: kex: client-&gt;server cipher: chacha20-poly1305@openssh.com MAC: &lt;implicit&gt; compression: <span class="no">none</span>
+<span class="k">debug1</span>: expecting SSH2_MSG_KEX_ECDH_REPLY
+<span class="k">debug1</span>: SSH2_MSG_KEX_ECDH_REPLY received
+<span class="k">debug1</span>: Server host key: ssh-rsa SHA256:zzZyXwVuTsRqPoNmLkkJYKwbHaxvSc0ojez9YXaGp1A
+<span class="k">debug1</span>: load_hostkeys: fopen /c/Users/franck/.ssh/known_hosts2: No such file or directory
+<span class="k">debug1</span>: load_hostkeys: fopen /etc/ssh/ssh_known_hosts: No such file or directory
+<span class="k">debug1</span>: load_hostkeys: fopen /etc/ssh/ssh_known_hosts2: No such file or directory
+<span class="k">debug1</span>: Host 'bitbucket.org' is known and matches the RSA host key.
+<span class="k">debug1</span>: Found key in /c/Users/franck/.ssh/known_hosts:4
+<span class="k">debug1</span>: rekey out after <span class="m">134217728</span> blocks
+<span class="k">debug1</span>: SSH2_MSG_NEWKEYS sent
+<span class="k">debug1</span>: expecting SSH2_MSG_NEWKEYS
+<span class="k">debug1</span>: SSH2_MSG_NEWKEYS received
+<span class="k">debug1</span>: rekey in after <span class="m">134217728</span> blocks
+<span class="k">debug1</span>: Will attempt key: /c/Users/franck/.ssh/id_rsa RSA SHA256:WvJsAbCdEfGhIjKlMnOP0YBFy1XWm2/P6jCL7cBmQU4
+<span class="k">debug1</span>: Will attempt key: /c/Users/franck/.ssh/id_dsa
+<span class="k">debug1</span>: Will attempt key: /c/Users/franck/.ssh/id_ecdsa
+<span class="k">debug1</span>: Will attempt key: /c/Users/franck/.ssh/id_ecdsa_sk
+<span class="k">debug1</span>: Will attempt key: /c/Users/franck/.ssh/id_ed25519
+<span class="k">debug1</span>: Will attempt key: /c/Users/franck/.ssh/id_ed25519_sk
+<span class="k">debug1</span>: Will attempt key: /c/Users/franck/.ssh/id_xmss
+<span class="k">debug1</span>: SSH2_MSG_SERVICE_ACCEPT received
+<span class="k">debug1</span>: Authentications that can continue: publickey
+<span class="k">debug1</span>: Next authentication method: publickey
+<span class="k">debug1</span>: Offering public key: /c/Users/franck/.ssh/id_rsa RSA SHA256:WvJsAbCdEfGhIjKlMnOP0YBFy1XWm2/P6jCL7cBmQU4
+<span class="k">debug1</span>: Authentications that can continue: publickey
+<span class="k">debug1</span>: Trying private key: /c/Users/franck/.ssh/id_dsa
+<span class="k">debug1</span>: Trying private key: /c/Users/franck/.ssh/id_ecdsa
+<span class="k">debug1</span>: Trying private key: /c/Users/franck/.ssh/id_ecdsa_sk
+<span class="k">debug1</span>: Trying private key: /c/Users/franck/.ssh/id_ed25519
+<span class="k">debug1</span>: Trying private key: /c/Users/franck/.ssh/id_ed25519_sk
+<span class="k">debug1</span>: Trying private key: /c/Users/franck/.ssh/id_xmss
+<span class="k">debug1</span>: No more authentication methods to try.
+<span class="k">git</span>@bitbucket.org: Permission denied (publickey).
+<span class="k">fatal</span>: Could not read from remote repository.
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>debug1: Offering public key: /c/Users/franck/.ssh/id_rsa RSA SHA256:WvJsAbCdEfGhIjKlMnOP0YBFy1XWm2/P6jCL7cBmQU4
+</code></pre></div></div>
+<p>It is now obvious git is using the wrong key <code class="language-plaintext highlighter-rouge">SHA256:WvJsAbCdEfGhIjKlMnOP0YBFy1XWm2/P6jCL7cBmQU4</code> instead of <code class="language-plaintext highlighter-rouge">SHA256:XBzl9AbCdEfGhIjKlMnOPCm3VfP9Z9M9/iB8dG7dw24</code>. You can actually see the key is sourced from the default file <code class="language-plaintext highlighter-rouge">.ssh/id_rsa</code> (which is what I defaulted to when setting up SSH for github) instead of the correct <code class="language-plaintext highlighter-rouge">.ssh/bitbucket_id_rsa</code> I used when setting up SSH with bitbucket.</p>
+
+<p>How do I fix this? 
+I follow these instructions: <a href="https://www.section.io/engineering-education/using-multiple-ssh-keys-for-multiple-github-accounts/">Using Multiple SSH Keys for Multiple GitHub Accounts</a>, which tell me to <a href="https://linuxize.com/post/using-the-ssh-config-file/">setup the SSH config file</a></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># GitLab
+Host gitlab.intranet.com
+   HostName gitlab.intranet.com
+   User git
+   IdentityFile ~/.ssh/id_rsa
+   
+# BitBucket
+Host bitbucket.org
+   HostName bitbucket.org, 123.456.789.1
+   User git
+   IdentityFile ~/.ssh/bitbucket_id_rsa
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">Host</code> bit must match the name you access your repo under, i.e. the bit after the <code class="language-plaintext highlighter-rouge">@</code>. Took me a while to figure that out until I found this post : <a href="https://blog.bitsrc.io/how-to-use-multiple-git-accounts-378ead121235">How to configure multiple Git accounts in your computer</a> which made it a bit clearer.</p>
+
+<p>Twist to the tale: turns out all this had already been very clearly documented by my colleagues, and I had actually RTFM myself, but somehow felt the need to reinvent the wheel anyway.</p>
+
+<p>Still, now I now more about investigating git issues…</p>
+
+        </div>
+
+        
+          <div class="page-share">
+  <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Ffranck-chester.github.io%2F%2F2021%2F10%2F18%2FSetting-up-git-ssh-with-multiple-repos.html" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="btn btn--facebook btn--small"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i> <span>Share</span></a>
+  <a href="https://twitter.com/intent/tweet?text=Configuring+Git+to+use+the+proper+SSH+key+across+multiple+remote+repositories%20https%3A%2F%2Ffranck-chester.github.io%2F%2F2021%2F10%2F18%2FSetting-up-git-ssh-with-multiple-repos.html" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="btn btn--twitter btn--small"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i> <span>Tweet</span></a>
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=https%3A%2F%2Ffranck-chester.github.io%2F%2F2021%2F10%2F18%2FSetting-up-git-ssh-with-multiple-repos.html" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="btn btn--linkedin btn--small"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i> <span>LinkedIn</span></a>
+  <a href="https://reddit.com/submit?title=Configuring+Git+to+use+the+proper+SSH+key+across+multiple+remote+repositories&url=https%3A%2F%2Ffranck-chester.github.io%2F%2F2021%2F10%2F18%2FSetting-up-git-ssh-with-multiple-repos.html" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="btn btn--reddit btn--small"><i class="fab fa-fw fa-reddit" aria-hidden="true"></i> <span>Reddit</span></a>
+</div>
+
+        
+
+        
+
+        <nav class="page-pagination" role="navigation">
+  
+    <a class="page-previous" href="/2021/10/01/Scripting-access-to-my-AWS-sandbox.html">
+      <h4 class="page-pagination-label">Previous</h4>
+      <span class="page-pagination-title">
+        <i class="fas fa-arrow-left"></i> Scripting access to my AWS sandbox
+
+      </span>
+    </a>
+  
+
+  
+    <a class="page-next" href="/2021/10/22/Architecture-descriptions-in-the-cloud.html">
+      <h4 class="page-pagination-label">Next</h4>
+      <span class="page-pagination-title">
+        Architecture descriptions in the cloud
+ <i class="fas fa-arrow-right"></i>
+      </span>
+    </a>
+  
+</nav>
+
+      </div>
+    </div>
+  </article>
+</main>
+
+
+    <footer id="footer" class="site-footer">
+  <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+<div class="social-icons"><a class="social-icon" href="https://github.com/franck-chester/franck-chester.github.io"><i class="fab fa-github-square fa-2x" title="GitHub"></i></a></div><div class="copyright">
+    
+      <p><a href="https://github.com/franck-chester/franck-chester.github.io/actions/workflows/jekyll.yaml"><img src="https://github.com/franck-chester/franck-chester.github.io/actions/workflows/jekyll.yaml/badge.svg" alt="Build and deploy Jekyll site to GitHub Pages" /></a><br />
+© Franck-Chester. Powered by <a href="https://jekyllrb.com">Jekyll</a> &amp; <a href="So Simple">So Simple</a>.</p>
+
+    
+  </div>
+</footer>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+  <script src="/assets/js/main.min.js"></script>
+  <script src="https://use.fontawesome.com/releases/v5.0.12/js/all.js"></script>
+
+<script type="text/javascript">
+    var mpq = [];
+    mpq.push(["init", ""]);
+    (function(){var b,a,e,d,c;b=document.createElement("script");b.type="text/javascript";
+    b.async=true;b.src=(document.location.protocol==="https:"?"https:":"http:")+
+    "//api.mixpanel.com/site_media/js/api/mixpanel.js";a=document.getElementsByTagName("script")[0];
+    a.parentNode.insertBefore(b,a);e=function(f){return function(){mpq.push(
+    [f].concat(Array.prototype.slice.call(arguments,0)))}};d=["init","track","track_links",
+    "track_forms","register","register_once","identify","name_tag","set_config"];for(c=0;c<
+    d.length;c++){mpq[d[c]]=e(d[c])}})();
+</script>
+
+  </body>
+
+</html>

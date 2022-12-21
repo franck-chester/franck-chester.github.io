@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<!--
+    So Simple Jekyll Theme 3.2.0
+    Copyright 2013-2019 Michael Rose - mademistakes.com | @mmistakes
+    Free for personal and commercial use under the MIT license
+    https://github.com/mmistakes/so-simple-theme/blob/master/LICENSE
+-->
+<html lang="en-US" class="no-js">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  
+
+  
+    
+    <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Terraform CDK - part 2 | Franck’s stuff</title>
+<meta name="generator" content="Jekyll v4.3.1" />
+<meta property="og:title" content="Terraform CDK - part 2" />
+<meta name="author" content="Franck" />
+<meta property="og:locale" content="en_GB" />
+<meta name="description" content="It’s been 2 week since the previous post in this series and I am really starting to enjoy the Terraform CDK." />
+<meta property="og:description" content="It’s been 2 week since the previous post in this series and I am really starting to enjoy the Terraform CDK." />
+<link rel="canonical" href="https://franck-chester.github.io//2021/11/10/Terraform-CDK-part-2.html" />
+<meta property="og:url" content="https://franck-chester.github.io//2021/11/10/Terraform-CDK-part-2.html" />
+<meta property="og:site_name" content="Franck’s stuff" />
+<meta property="og:image" content="https://franck-chester.github.io//assets/images/2021-11-11-day04-tfgraph.svg" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-11-10T00:00:00+00:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://franck-chester.github.io//assets/images/2021-11-11-day04-tfgraph.svg" />
+<meta property="twitter:title" content="Terraform CDK - part 2" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Franck"},"dateModified":"2021-11-10T00:00:00+00:00","datePublished":"2021-11-10T00:00:00+00:00","description":"It’s been 2 week since the previous post in this series and I am really starting to enjoy the Terraform CDK.","headline":"Terraform CDK - part 2","image":"https://franck-chester.github.io//assets/images/2021-11-11-day04-tfgraph.svg","mainEntityOfPage":{"@type":"WebPage","@id":"https://franck-chester.github.io//2021/11/10/Terraform-CDK-part-2.html"},"url":"https://franck-chester.github.io//2021/11/10/Terraform-CDK-part-2.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+  
+
+  <script>
+    /* Cut the mustard */
+    if ( 'querySelector' in document && 'addEventListener' in window ) {
+      document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + 'js';
+    }
+  </script>
+
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="/assets/css/skins/default.css">
+  
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,700,700i|Lora:400,400i,700,700i">
+  <link rel="alternate" type="application/atom+xml" title="Franck&#39;s stuff" href="/feed.xml">
+<!-- start custom head snippets -->
+
+<!-- insert favicons. use http://realfavicongenerator.net/ -->
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/images/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon-16x16.png">
+<link rel="manifest" href="/assets/images/site.webmanifest">
+<link rel="mask-icon" href="/assets/images/safari-pinned-tab.svg" color="#5bbad5">
+<link rel="shortcut icon" href="/assets/images/favicon.ico">
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="msapplication-config" content="/assets/images/browserconfig.xml">
+<meta name="theme-color" content="#ffffff">
+<!-- end custom head snippets -->
+
+</head>
+
+
+  <body class="layout--post  terraform-cdk-part-2">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#primary-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+  <div class="navigation-wrapper">
+    <a href="#menu-toggle" id="menu-toggle">Menu</a>
+    <nav id="primary-nav" class="site-nav animated drop">
+      <ul>
+<li><a href="/posts/">Posts</a></li>
+<li><a href="/links/">Links</a></li>
+<li><a href="/tags/">Tags</a></li>
+<li><a href="/search/">Search</a></li>
+<li><a href="/">About</a></li>
+</ul>
+    </nav>
+  </div><!-- /.navigation-wrapper -->
+
+
+    <header class="masthead">
+  <div class="wrap">
+    
+    
+    
+  </div>
+</header><!-- /.masthead -->
+
+
+    <main id="main" class="main-content" aria-label="Content">
+  <article class="h-entry">
+    
+  
+  
+  
+
+  <div class="page-image">
+    <img src="/assets/images/2021-11-11-day04-tfgraph.svg" class="entry-feature-image u-photo" alt="Terraform CDK - part 2" style="margin-top: 0;">
+    
+  </div>
+
+
+    <div class="page-wrapper">
+      <header class="page-header">
+        
+        
+          <h1 id="page-title" class="page-title p-name">Terraform CDK - part 2
+</h1>
+        
+      </header>
+
+      <div class="page-sidebar">
+        <div class="page-author h-card p-author">
+<img src="/assets/images/franck.png" class="author-avatar u-photo" alt="Franck"><div class="author-info">
+<div class="author-name">
+        <em>by</em> <span class="p-name">Franck</span>
+      </div>
+<ul class="author-links"><li class="author-link">
+            <a class="u-url" rel="me" href="https://github.com/franck-chester"><i class="fab fa-github-square fa-lg" title="GitHub"></i></a>
+          </li></ul>
+    <time class="page-date dt-published" datetime="2021-11-10T00:00:00+00:00"><a class="u-url" href="">2021-11-10</a>
+</time>
+
+  </div>
+</div>
+
+        
+
+        
+  <h3 class="page-taxonomies-title">Tags</h3>
+  
+  <ul class="page-taxonomies">
+<li class="page-taxonomy"><a href="/tags/#cdktf" title="Pages tagged cdktf" rel="tag">cdktf</a></li>
+<li class="page-taxonomy"><a href="/tags/#iac" title="Pages tagged iac" rel="tag">iac</a></li>
+<li class="page-taxonomy"><a href="/tags/#terraform" title="Pages tagged terraform" rel="tag">terraform</a></li>
+  </ul>
+
+
+      </div>
+
+      <div class="page-content">
+        <div class="e-content">
+          <p>It’s been 2 week since the <a href="/2021/10/30/Terraform-CDK-part-1.html">previous post in this series</a> and I am really starting to enjoy the Terraform CDK.</p>
+
+<p>Now that I am more comfortable with it, and with Typescript, I have started organising my code in much more (imo) expressive blocks, which I will later be able to move to a reusable nodejs module, should I wish to.</p>
+
+<p>That said, this exercise is a painful (but useful) reminder of the chasm between the simplistic tutorials available on the web, and reality.
+If you, as I do, insist on not using the AWS console, and adhere to best practices such as least privilege and strict separation of infrastructure and code, there are quite a few hoops and loops needed to be jumped through.</p>
+
+<p>Anyway, where were we? Translating this tutorial - <a href="https://docs.aws.amazon.com/lambda/latest/dg/services-apigateway-tutorial.html">Using Lambda with API Gateway</a> - into Terraform CDK Typescript code.</p>
+
+<h2 id="create-the-function">Create the function</h2>
+
+<h3 id="separations-of-infrastructure-and-code-concerns">Separations of infrastructure and code concerns</h3>
+<p>I want to make sure I keep the code separate from the infrastructure, both in separate code repositories.
+I should deploy the infrastructure first, then the actual code that powers my lambda function.</p>
+
+<p>I still need to research whether this is actually best practice, but my gut feeling is that using terraform to deploy the code for each new release is the wrong way to go.
+My plan is therefore to deploy the lambda infrastructure with a <em>skeleton</em> implementation, and once that is in place, use the <a href="https://awscli.amazonaws.com/v2/documentation/api/2.0.33/reference/lambda/update-function-code.html"><code class="language-plaintext highlighter-rouge">update-function-code</code></a> CLI command to deploy each new version of the actual implementation.</p>
+
+<p>Also, my first attempt at terraforming the lambda function for this tutorial was based on using the <a href="https://registry.terraform.io/providers/hashicorp/archive/latest/docs">archive provider</a> to zip the source code before using the zip file as a parameter of the <a href="https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_function">lambda function resource</a>, very much like <a href="http://aws-cloud.guru/creating-aws-lambdas-through-terraform-using-archive_file/">this tutorial</a> and every other tutorial out there, including the API Gateway one I am trying to reproduce.</p>
+
+<p>Now, this was already a bad idea in standard terraform, as it intermingles infrastructure and code deployments, and seems somehow worse in the CDK, probably because it is hard to stop myself from using the CDK code, which is meant to generate the HCL files which then deploy the infrastructure, to zip and deploy the code itself, which is really a separate concern. I had a few goes at this in various formats but at the end of the day, it smells.</p>
+
+<p>So, I am going to create a <a href="https://aws.amazon.com/blogs/compute/new-deployment-options-for-aws-lambda/">S3 bucket for code deployment</a>, as part of my sandbox setup scripts, refer to it within my CDK code and later, when calling <a href="https://awscli.amazonaws.com/v2/documentation/api/2.0.33/reference/lambda/update-function-code.html"><code class="language-plaintext highlighter-rouge">update-function-code</code></a>.</p>
+
+<h3 id="use-iamlive-to-create-iac-user-iam-policy">Use iamlive to create IaC user IAM policy</h3>
+
+<p>I know from experience that creating a S3 bucket requires access rights to quite a few <a href="https://docs.aws.amazon.com/AmazonS3/latest/userguide/list_amazons3.html#amazons3-actions-as-permissions">Actions</a>. Rather than carry on with the painful one-at-a-time approach used in <a href="/2021/10/30/Terraform-CDK-part-1.html">part 1</a>, I am going to get smarter and use the <a href="https://github.com/iann0036/iamlive">iamlive utility</a>.</p>
+
+<p>I first clone the repository, build and install the utility.
+I then add this new powershell script - <code class="language-plaintext highlighter-rouge">iamlive.ps1</code> - to my setup folder:</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">param</span><span class="p">([</span><span class="n">switch</span><span class="p">]</span><span class="nv">$stop</span><span class="p">)</span><span class="w">
+
+</span><span class="kr">if</span><span class="p">(</span><span class="nv">$stop</span><span class="o">.</span><span class="nf">isPresent</span><span class="p">){</span><span class="w">
+    </span><span class="n">write-host</span><span class="w"> </span><span class="s2">"Stopping iamlive..."</span><span class="w">
+    </span><span class="n">Stop-Process</span><span class="w"> </span><span class="nt">-Name</span><span class="w"> </span><span class="s2">"iamlive"</span><span class="w">
+    </span><span class="nv">$</span><span class="nn">env</span><span class="p">:</span><span class="nv">AWS_CSM_ENABLED</span><span class="o">=</span><span class="bp">$false</span><span class="w">
+    </span><span class="n">write-host</span><span class="w"> </span><span class="s2">"Stopping iamlive: done"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span><span class="kr">else</span><span class="p">{</span><span class="w">
+    </span><span class="nv">$</span><span class="nn">env</span><span class="p">:</span><span class="nv">AWS_CSM_ENABLED</span><span class="o">=</span><span class="bp">$true</span><span class="w">
+    </span><span class="nv">$</span><span class="nn">env</span><span class="p">:</span><span class="nv">AWS_CSM_PORT</span><span class="o">=</span><span class="mi">31000</span><span class="w">
+    </span><span class="nv">$</span><span class="nn">env</span><span class="p">:</span><span class="nv">AWS_CSM_HOST</span><span class="o">=</span><span class="mf">127.0</span><span class="o">.</span><span class="nf">0</span><span class="o">.</span><span class="nf">1</span><span class="w">
+
+    </span><span class="n">write-host</span><span class="w"> </span><span class="s2">"Starting iamlive..."</span><span class="w">
+    </span><span class="n">Start-Process</span><span class="w"> </span><span class="nt">-FilePath</span><span class="w"> </span><span class="s2">"</span><span class="nv">$</span><span class="nn">env</span><span class="p">:</span><span class="nv">GOPATH</span><span class="s2">/bin/iamlive.exe"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>This will start iamlive in a separate terminal, and proxy all AWS SDK calls (as used by terraform) through the iamlive utility, which will <a href="https://raw.githubusercontent.com/iann0036/iamlive/main/iamlivecore/map.json">map them to the corresponding permissions</a>.</p>
+
+<p>I also modify my <code class="language-plaintext highlighter-rouge">main.ts</code> file to source the AWS profile from a <code class="language-plaintext highlighter-rouge">awsprofile</code> environmental variable. I would have preferred a command line parameter, but these are currently not easy to pass down to the app in all <a href="https://discuss.hashicorp.com/t/run-command-cdktf-deploy-with-parameters/14374/2"><code class="language-plaintext highlighter-rouge">cdktf</code> commands</a>.</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">constructor</span><span class="p">(</span><span class="nx">scope</span><span class="p">:</span> <span class="nx">Construct</span><span class="p">,</span> <span class="nx">id</span><span class="p">:</span> <span class="kr">string</span><span class="p">,</span> <span class="nx">profile</span><span class="p">:</span> <span class="kr">string</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">super</span><span class="p">(</span><span class="nx">scope</span><span class="p">,</span> <span class="nx">id</span><span class="p">)</span>
+
+    <span class="k">new</span> <span class="nx">AwsProvider</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="dl">'</span><span class="s1">aws</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+      <span class="na">region</span><span class="p">:</span> <span class="dl">'</span><span class="s1">eu-west-1</span><span class="dl">'</span><span class="p">,</span>
+      <span class="na">profile</span><span class="p">:</span> <span class="nx">profile</span>
+    <span class="p">})</span>
+
+<span class="p">...</span>
+
+<span class="kd">const</span> <span class="nx">profile</span> <span class="o">=</span> <span class="p">(</span><span class="dl">'</span><span class="s1">awsprofile</span><span class="dl">'</span> <span class="k">in</span> <span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">)</span> <span class="p">?</span> <span class="s2">`</span><span class="p">${</span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">awsprofile</span><span class="p">}</span><span class="s2">`</span> <span class="p">:</span> <span class="dl">'</span><span class="s1">franck-iac</span><span class="dl">'</span><span class="p">;</span>
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">`Using AWS profile </span><span class="p">${</span><span class="nx">profile</span><span class="p">}</span><span class="s2">`</span><span class="p">)</span>
+
+<span class="kd">const</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">App</span><span class="p">()</span>
+
+<span class="k">new</span> <span class="nx">MyStack</span><span class="p">(</span><span class="nx">app</span><span class="p">,</span> <span class="dl">"</span><span class="s2">day04</span><span class="dl">"</span><span class="p">,</span> <span class="nx">profile</span><span class="p">);</span>
+<span class="nx">app</span><span class="p">.</span><span class="nx">synth</span><span class="p">();</span>
+</code></pre></div></div>
+
+<p>I then execute <code class="language-plaintext highlighter-rouge">cdktf apply</code> with my admin profile, and get a nice policy in the terminal running <code class="language-plaintext highlighter-rouge">iamlive</code>:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="nl">"Version"</span><span class="p">:</span><span class="w"> </span><span class="s2">"2012-10-17"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"Statement"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+            </span><span class="nl">"Effect"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Allow"</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"Action"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+                </span><span class="s2">"ec2:DescribeAccountAttributes"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"s3:ListBucket"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"iam:GetPolicy"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"iam:GetRole"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"iam:GetPolicyVersion"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"iam:ListRolePolicies"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"iam:ListAttachedRolePolicies"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"s3:GetBucketAcl"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"s3:GetBucketCORS"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"s3:GetBucketWebsite"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"s3:GetBucketVersioning"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"s3:GetAccelerateConfiguration"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"s3:GetBucketRequestPayment"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"s3:GetBucketLogging"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"s3:GetLifecycleConfiguration"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"s3:GetReplicationConfiguration"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"s3:GetEncryptionConfiguration"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"s3:GetBucketObjectLockConfiguration"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"s3:GetBucketTagging"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"s3:DeleteBucket"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"s3:CreateBucket"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"s3:PutBucketTagging"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"s3:PutBucketVersioning"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"iam:ListPolicyVersions"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"iam:ListInstanceProfilesForRole"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"iam:DeletePolicy"</span><span class="p">,</span><span class="w">
+                </span><span class="s2">"iam:DeleteRole"</span><span class="w">
+            </span><span class="p">],</span><span class="w">
+            </span><span class="nl">"Resource"</span><span class="p">:</span><span class="w"> </span><span class="s2">"*"</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">]</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>I follow this with <code class="language-plaintext highlighter-rouge">cdktf destroy</code>, again with my admin profile, which updates the policy displayed in the terminal with the additional actions required to delete the infrastructure.</p>
+
+<p>I can now incorporate the missing actions in the IaC user policy.</p>
+
+<p>I’ve also installed the <a href="https://github.com/fvclaus/vsc-sort-json-array#sort-json-array">sort json array vscode extension</a>, to keep my <code class="language-plaintext highlighter-rouge">iac-policy.json</code> file tidy, and easily compare the output from iamlive to it, and identify what needs adding.</p>
+
+<p>Although this works remarkably well, it is far from perfect and can still miss some actions, probably because the iamlive <a href="https://raw.githubusercontent.com/iann0036/iamlive/main/iamlivecore/map.json">map</a> is incomplete or out of date. For example, it output the v1 permissions for the APIGateway, and completely missed the <code class="language-plaintext highlighter-rouge">s3:DeleteObject</code> and <code class="language-plaintext highlighter-rouge">s3:DeleteObjectVersion</code>, causing me quite a bit of faffing to identify the correct policy using the tried and tested combination of IAM console and documentation <a href="https://docs.aws.amazon.com/service-authorization/latest/reference/reference_policies_actions-resources-contextkeys.html">(Actions, resources, and condition keys for AWS services)</a>. The policy also needs the actions associated with updates, otherwise small updates to the CDK code will fail without destroying the stack entirely first before reapplying it.</p>
+
+<p>Finally, I will need to revisit this again later as this is still not a <a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html#grant-least-privilege">least privilege</a> policy, as it still enables my IaC user to delete resources it hasn’t created.
+My next move, in a future experiment, will be <a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/access_iam-tags.html">using tags</a>.</p>
+
+<h3 id="creating-a-s3-bucket-for-lambda-code-deployment">Creating a S3 bucket for lambda code deployment</h3>
+
+<p>Not much to say, we simply use the <a href="https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket">S3 Bucket resource</a>, making sure to set 
+<code class="language-plaintext highlighter-rouge">forceDestroy: true</code> to ensure <a href="https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket#force_destroy">all objects (including any locked objects) are from the bucket before destroying it</a> <sup id="fnref:1" role="doc-noteref"><a href="#fn:1" class="footnote" rel="footnote">1</a></sup> - otherwise we wouldn’t be able to tear down this infrastructure.</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">S3</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@cdktf/provider-aws</span><span class="dl">'</span><span class="p">;</span>
+
+<span class="p">...</span>
+
+<span class="kd">const</span> <span class="nx">sourceBucket</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">S3</span><span class="p">.</span><span class="nx">S3Bucket</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="dl">'</span><span class="s1">lambda_source_bucket</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="na">bucket</span><span class="p">:</span> <span class="dl">'</span><span class="s1">franck-iac-lambda-source-bucket</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">acl</span><span class="p">:</span> <span class="dl">'</span><span class="s1">private</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">tags</span><span class="p">:</span> <span class="nx">tags</span><span class="p">,</span>
+    <span class="na">versioning</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">enabled</span><span class="p">:</span> <span class="kc">false</span>
+    <span class="p">},</span>
+    <span class="na">forceDestroy</span><span class="p">:</span> <span class="kc">true</span>
+  <span class="p">});</span>
+</code></pre></div></div>
+
+<h3 id="upload-placeholder-lambda-source-code-to-s3-bucket">Upload placeholder lambda source code to S3 Bucket</h3>
+
+<p>We cannot create a lambda function without code behind it, but we can point the lambda to a barebone implementation which we’ll later override with the actual code <sup id="fnref:2" role="doc-noteref"><a href="#fn:2" class="footnote" rel="footnote">2</a></sup>.</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">exports</span><span class="p">.</span><span class="nx">handler</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="nx">context</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">Received event:</span><span class="dl">'</span><span class="p">,</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="mi">2</span><span class="p">));</span>
+    <span class="kd">const</span> <span class="nx">responseBody</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="dl">"</span><span class="s2">warning</span><span class="dl">"</span><span class="p">:</span><span class="dl">"</span><span class="s2">Placeholder code - function not yet implemented</span><span class="dl">"</span><span class="p">,</span>
+        <span class="dl">"</span><span class="s2">event</span><span class="dl">"</span><span class="p">:</span><span class="nx">event</span>
+    <span class="p">}</span>
+    <span class="kd">var</span> <span class="nx">response</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="dl">"</span><span class="s2">statusCode</span><span class="dl">"</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+        <span class="dl">"</span><span class="s2">headers</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="dl">"</span><span class="s2">Content-Type</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">application/json</span><span class="dl">"</span>
+        <span class="p">},</span>
+        <span class="dl">"</span><span class="s2">body</span><span class="dl">"</span><span class="p">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">responseBody</span><span class="p">),</span>
+        <span class="dl">"</span><span class="s2">isBase64Encoded</span><span class="dl">"</span><span class="p">:</span> <span class="kc">false</span>
+    <span class="p">};</span>
+    <span class="nx">callback</span><span class="p">(</span><span class="kc">null</span><span class="p">,</span> <span class="nx">response</span><span class="p">);</span>
+<span class="p">};</span>
+</code></pre></div></div>
+
+<p>We do this with a combination of Terraform assets and S3 Bucket object, as <a href="https://www.terraform.io/docs/cdktf/concepts/assets.html#usage-example">per this example</a>.</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">sourceAsset</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">TerraformAsset</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="dl">"</span><span class="s2">lambda_asset</span><span class="dl">"</span><span class="p">,</span> <span class="p">{</span>
+    <span class="na">path</span><span class="p">:</span> <span class="nx">path</span><span class="p">.</span><span class="nx">resolve</span><span class="p">(</span><span class="nx">__dirname</span><span class="p">,</span> <span class="dl">"</span><span class="s2">src</span><span class="dl">"</span><span class="p">),</span>
+    <span class="na">type</span><span class="p">:</span> <span class="nx">AssetType</span><span class="p">.</span><span class="nx">ARCHIVE</span><span class="p">,</span> 
+<span class="p">});</span>
+
+<span class="kd">const</span> <span class="nx">sourceBucketObject</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">S3</span><span class="p">.</span><span class="nx">S3BucketObject</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="dl">"</span><span class="s2">lambda_archive</span><span class="dl">"</span><span class="p">,</span> <span class="p">{</span>
+    <span class="na">bucket</span><span class="p">:</span> <span class="nx">sourceBucket</span><span class="p">.</span><span class="nx">bucket</span><span class="o">!</span><span class="p">,</span>   <span class="c1">// exclamation mark is non-null-assertion-operator</span>
+    <span class="na">key</span><span class="p">:</span> <span class="nx">sourceAsset</span><span class="p">.</span><span class="nx">fileName</span><span class="p">,</span>
+    <span class="na">source</span><span class="p">:</span> <span class="nx">sourceAsset</span><span class="p">.</span><span class="nx">path</span><span class="p">,</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>NB: when using one resource’s attribute to set another’s, we often hit this error <code class="language-plaintext highlighter-rouge">Type 'string | undefined' is not assignable to type 'string'</code>.
+To work around this, we simply use the typescript <a href="https://www.typescriptlang.org/docs/handbook/release-notes/typescript-2-0.html#non-null-assertion-operator">non-null assertion operator (!)</a>.</p>
+
+<h3 id="creating-a-lambda-function-sourced-from-a-s3-bucket">Creating a Lambda function sourced from a S3 Bucket</h3>
+
+<p>First import the <a href="https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lambda_function"><code class="language-plaintext highlighter-rouge">LambdaFunction</code></a> type from the AWS provider.
+Here we are hitting the <a href="https://github.com/hashicorp/terraform-cdk/blob/main/docs/upgrade-guide/upgrading-to-0.7.md#aws-provider-has-namespaced-resources">recently introduced namespaces</a>. For IAM and S3, these looked fine, but for lambda functions, we would end up referring to <code class="language-plaintext highlighter-rouge">LambdaFunction.LambdaFunction</code> in our code, which would be pants. We therefore <a href="https://www.typescriptlang.org/docs/handbook/namespaces.html#aliases">alias the type</a></p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">import</span> <span class="p">{</span> <span class="nx">LambdaFunction</span> <span class="k">as</span> <span class="nx">LambdaFunctionNS</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">@cdktf/provider-aws</span><span class="dl">'</span><span class="p">;</span>
+<span class="kd">const</span> <span class="p">{</span> <span class="nx">LambdaFunction</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">LambdaFunctionNS</span><span class="p">.</span><span class="nx">LambdaFunction</span><span class="p">;</span>
+
+<span class="p">...</span>
+
+<span class="kd">const</span> <span class="nx">lambda</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">LambdaFunction</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="dl">'</span><span class="s1">lambda</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="na">functionName</span><span class="p">:</span> <span class="dl">'</span><span class="s1">LambdaFunctionOverHttps</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">description</span><span class="p">:</span> <span class="dl">'</span><span class="s1">as per https://docs.aws.amazon.com/lambda/latest/dg/services-apigateway-tutorial.html</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">s3Bucket</span><span class="p">:</span> <span class="nx">sourceBucket</span><span class="p">.</span><span class="nx">bucket</span><span class="o">!</span><span class="p">,</span>
+    <span class="na">s3Key</span><span class="p">:</span> <span class="nx">sourceBucketObject</span><span class="p">.</span><span class="nx">key</span><span class="p">,</span>
+    <span class="na">role</span><span class="p">:</span> <span class="nx">LambdaApiGatewayRole</span><span class="p">.</span><span class="nx">arn</span><span class="p">,</span>
+    <span class="na">runtime</span><span class="p">:</span> <span class="dl">'</span><span class="s1">nodejs12.x</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">handler</span><span class="p">:</span> <span class="dl">'</span><span class="s1">index.handler</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">tags</span><span class="p">:</span> <span class="nx">tags</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<p>We point the lambda at the S3 bucket and object created earlier, from where it will load our skeleton implementation.</p>
+
+<h3 id="deploy-to-the-sandbox">Deploy to the sandbox</h3>
+
+<div class="language-terraform highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">Deploying</span> <span class="nx">Stack</span><span class="err">:</span> <span class="nx">day04</span>
+<span class="nx">Resources</span>
+ <span class="err">✔</span> <span class="nx">AWS_IAM_POLICY</span>       <span class="nx">lambda_apigateway_p</span> <span class="nx">aws_iam_policy</span><span class="err">.</span><span class="nx">lambda_apigateway_policy</span>
+                        <span class="nx">olicy</span>
+ <span class="err">✔</span> <span class="nx">AWS_IAM_ROLE</span>         <span class="nx">lambda</span><span class="err">-</span><span class="nx">apigateway</span><span class="err">-</span><span class="nx">r</span> <span class="nx">aws_iam_role</span><span class="err">.</span><span class="nx">lambda_apigateway_role</span>
+                        <span class="nx">ole</span>                       
+ <span class="err">✔</span> <span class="nx">AWS_LAMBDA_FUNCTION</span>  <span class="nx">lambda</span>              <span class="nx">aws_lambda_function</span><span class="err">.</span><span class="nx">lambda</span>
+ <span class="err">✔</span> <span class="nx">AWS_S3_BUCKET</span>        <span class="nx">lambda_source_bucke</span> <span class="nx">aws_s3_bucket</span><span class="err">.</span><span class="nx">lambda_source_bucket</span>
+                        <span class="nx">t</span>
+ <span class="err">✔</span> <span class="nx">AWS_S3_BUCKET_OBJECT</span> <span class="nx">lambda_archive</span>      <span class="nx">aws_s3_bucket_object</span><span class="err">.</span><span class="nx">lambda_archive</span>
+
+<span class="nx">Summary</span><span class="err">:</span> <span class="mi">5</span> <span class="nx">created</span><span class="err">,</span> <span class="mi">0</span> <span class="nx">updated</span><span class="err">,</span> <span class="mi">0</span> <span class="nx">destroyed</span><span class="err">.</span>
+</code></pre></div></div>
+
+<p>Success.</p>
+
+<h2 id="test-the-lambda">Test the lambda</h2>
+
+<p>The tutorial and a lot of examples out there are out of date, <a href="https://docs.aws.amazon.com/cli/latest/userguide/cliv2-migration.html#cliv2-migration-binaryparam">CLI v2 defaults to base 64 input</a>.</p>
+
+<p>You can either add a –cli-binary-format raw-in-base64-out argument to the command:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>aws lambda invoke --profile admin-sandbox --function-name LambdaFunctionOverHttps --payload file://tests/helloworld.json --cli-binary-format raw-in-base64-out tests/output.txt 
+</code></pre></div></div>
+
+<p>OR specify the file with <code class="language-plaintext highlighter-rouge">fileb://</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> aws lambda invoke --profile admin-sandbox --function-name LambdaFunctionOverHttps --payload fileb://tests/helloworld.json  tests/output.txt
+</code></pre></div></div>
+
+<p>Either way, with <code class="language-plaintext highlighter-rouge">tests/helloworld.json</code> set to:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="nl">"Hello"</span><span class="p">:</span><span class="w"> </span><span class="s2">"world"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+<p>Both call result in a success response :</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="nl">"StatusCode"</span><span class="p">:</span><span class="w"> </span><span class="mi">200</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"ExecutedVersion"</span><span class="p">:</span><span class="w"> </span><span class="s2">"$LATEST"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>with <code class="language-plaintext highlighter-rouge">tests/output.txt</code>:</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="nl">"statusCode"</span><span class="p">:</span><span class="w"> </span><span class="mi">200</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"headers"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"Content-Type"</span><span class="p">:</span><span class="w"> </span><span class="s2">"application/json"</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="nl">"body"</span><span class="p">:</span><span class="w"> </span><span class="s2">"{</span><span class="se">\"</span><span class="s2">warning</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">Placeholder code - function not yet implemented</span><span class="se">\"</span><span class="s2">,</span><span class="se">\"</span><span class="s2">event</span><span class="se">\"</span><span class="s2">:{</span><span class="se">\"</span><span class="s2">Hello</span><span class="se">\"</span><span class="s2">:</span><span class="se">\"</span><span class="s2">world</span><span class="se">\"</span><span class="s2">}}"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"isBase64Encoded"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>which matches what we expect - success.</p>
+
+<h2 id="create-a-rest-api-using-api-gateway">Create a REST API using API Gateway</h2>
+
+<p>We need to mix and match and translate these 3 terraform HCL examples into their CDK equivalent</p>
+<ul>
+  <li><a href="https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/api_gateway_deployment#terraform-resources">api_gateway_deployment</a></li>
+  <li><a href="https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/api_gateway_integration#lambda-integration">api_gateway_integration</a></li>
+  <li><a href="https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/api_gateway_account#example-usage">api_gateway_account</a></li>
+</ul>
+
+<p>This will:</p>
+<ul>
+  <li>create a REST API</li>
+  <li>define a resource that can be manipulated via it</li>
+  <li>define an integration to our lambda function to handle operations against that resource</li>
+  <li>deploy and configure that REST API as ‘stage’ v1</li>
+  <li>configure our API Gateway account so that it can log to cloudwatch</li>
+</ul>
+
+<p>Worth noting as well that one thing I forgot to do in my <a href="/2021/10/30/Terraform-CDK-part-1.html">previous post</a> was to attach the policy to the role.
+Most examples use inline policies, but I prefer to <a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_managed-vs-inline.html#choosing-managed-or-inline">use managed ones</a> for consistency.</p>
+
+<p>Finally, we use a <a href="https://www.terraform.io/docs/language/values/outputs.html">terraform output</a> to display the deployed API URL on the console</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">restApi</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">APIGateway</span><span class="p">.</span><span class="nx">ApiGatewayRestApi</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="dl">'</span><span class="s1">api_gateway</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">DynamoDBOperations</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">description</span><span class="p">:</span> <span class="dl">'</span><span class="s1">as per https://docs.aws.amazon.com/lambda/latest/dg/services-apigateway-tutorial.html</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">tags</span><span class="p">:</span> <span class="nx">tags</span><span class="p">,</span>
+    <span class="na">endpointConfiguration</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">types</span><span class="p">:</span> <span class="p">[</span><span class="dl">'</span><span class="s1">REGIONAL</span><span class="dl">'</span><span class="p">]</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+
+<span class="kd">const</span> <span class="nx">apiGatewayResource</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">APIGateway</span><span class="p">.</span><span class="nx">ApiGatewayResource</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="dl">'</span><span class="s1">api_gateway_resource</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="na">parentId</span><span class="p">:</span> <span class="nx">restApi</span><span class="p">.</span><span class="nx">rootResourceId</span><span class="p">,</span>
+    <span class="na">pathPart</span><span class="p">:</span> <span class="dl">"</span><span class="s2">dynamodbmanager</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">restApiId</span><span class="p">:</span> <span class="nx">restApi</span><span class="p">.</span><span class="nx">id</span>
+<span class="p">});</span>
+
+<span class="kd">const</span> <span class="nx">apiGatewayMethod</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">APIGateway</span><span class="p">.</span><span class="nx">ApiGatewayMethod</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="dl">'</span><span class="s1">api_gateway_method_post</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="na">authorization</span><span class="p">:</span> <span class="dl">"</span><span class="s2">NONE</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">httpMethod</span><span class="p">:</span> <span class="dl">"</span><span class="s2">POST</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">resourceId</span><span class="p">:</span> <span class="nx">apiGatewayResource</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span>
+    <span class="na">restApiId</span><span class="p">:</span> <span class="nx">restApi</span><span class="p">.</span><span class="nx">id</span>
+<span class="p">});</span>
+
+<span class="kd">const</span> <span class="nx">apiGatewayMethodIntegration</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">APIGateway</span><span class="p">.</span><span class="nx">ApiGatewayIntegration</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="dl">'</span><span class="s1">api_gateway_integration</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="na">type</span><span class="p">:</span> <span class="dl">'</span><span class="s1">AWS_PROXY</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">httpMethod</span><span class="p">:</span> <span class="nx">apiGatewayMethod</span><span class="p">.</span><span class="nx">httpMethod</span><span class="p">,</span> <span class="c1">// the method to use when calling the API Gateway endpoint</span>
+    <span class="na">integrationHttpMethod</span><span class="p">:</span> <span class="dl">'</span><span class="s1">POST</span><span class="dl">'</span><span class="p">,</span>              <span class="c1">//  the method used by API Gateway to call the backend (it should always be POST for Lambda)</span>
+    <span class="na">resourceId</span><span class="p">:</span> <span class="nx">apiGatewayResource</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span>
+    <span class="na">restApiId</span><span class="p">:</span> <span class="nx">restApi</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span>
+    <span class="na">uri</span><span class="p">:</span> <span class="nx">lambda</span><span class="p">.</span><span class="nx">invokeArn</span><span class="p">,</span>
+    <span class="na">credentials</span><span class="p">:</span> <span class="nx">credentials</span><span class="p">.</span><span class="nx">arn</span>
+<span class="p">});</span>
+
+<span class="kd">const</span> <span class="nx">apiGatewayDeployment</span><span class="o">=</span> <span class="k">new</span> <span class="nx">APIGateway</span><span class="p">.</span><span class="nx">ApiGatewayDeployment</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="dl">'</span><span class="s1">api_gateway_deployment</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="na">restApiId</span><span class="p">:</span> <span class="nx">restApi</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span>
+    <span class="na">triggers</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">redeployment</span><span class="p">:</span> <span class="nx">Fn</span><span class="p">.</span><span class="nx">sha1</span><span class="p">(</span><span class="nx">Fn</span><span class="p">.</span><span class="nx">jsonencode</span><span class="p">([</span><span class="nx">apiGatewayResource</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span> <span class="nx">apiGatewayMethod</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span> <span class="nx">apiGatewayMethodIntegration</span><span class="p">.</span><span class="nx">id</span><span class="p">]))</span>
+    <span class="p">},</span>
+    <span class="na">lifecycle</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">createBeforeDestroy</span><span class="p">:</span> <span class="kc">true</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+
+<span class="kd">const</span> <span class="nx">apiGatewayDeploymentStage</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">APIGateway</span><span class="p">.</span><span class="nx">ApiGatewayStage</span><span class="p">(</span><span class="nx">stack</span><span class="p">,</span> <span class="dl">'</span><span class="s1">api_gateway_stage</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="na">deploymentId</span><span class="p">:</span> <span class="nx">apiGatewayDeployment</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span>
+    <span class="na">restApiId</span><span class="p">:</span> <span class="nx">apiGatewayDeployment</span><span class="p">.</span><span class="nx">restApiId</span><span class="p">,</span>
+    <span class="na">stageName</span><span class="p">:</span> <span class="dl">'</span><span class="s1">v1</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">tags</span><span class="p">:</span> <span class="nx">tags</span>
+<span class="p">});</span>
+
+<span class="k">new</span> <span class="nx">APIGateway</span><span class="p">.</span><span class="nx">ApiGatewayMethodSettings</span><span class="p">(</span><span class="nx">stack</span><span class="p">,</span> <span class="dl">'</span><span class="s1">api-gateway-method-settings</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="na">restApiId</span><span class="p">:</span> <span class="nx">apiGatewayDeployment</span><span class="p">.</span><span class="nx">restApiId</span><span class="p">,</span>
+    <span class="na">stageName</span><span class="p">:</span> <span class="nx">apiGatewayDeploymentStage</span><span class="p">.</span><span class="nx">stageName</span><span class="p">,</span>
+    <span class="na">methodPath</span><span class="p">:</span> <span class="dl">"</span><span class="s2">*/*</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">settings</span><span class="p">:</span> <span class="p">{</span>
+        <span class="na">metricsEnabled</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+        <span class="na">dataTraceEnabled</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span>
+        <span class="na">loggingLevel</span><span class="p">:</span> <span class="dl">'</span><span class="s1">INFO</span><span class="dl">'</span><span class="p">,</span>
+        <span class="na">throttlingRateLimit</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+        <span class="na">throttlingBurstLimit</span><span class="p">:</span> <span class="mi">50</span>
+    <span class="p">}</span>
+<span class="p">});</span>
+
+<span class="kd">const</span> <span class="nx">apiGatewayPolicy</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">IAM</span><span class="p">.</span><span class="nx">IamPolicy</span><span class="p">(</span><span class="nx">stack</span><span class="p">,</span> <span class="dl">'</span><span class="s1">api_gateway_policy</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">api_gateway_policy</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">description</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Access rights for my API Gateway - mainly read and write cloudwatch logs</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">policy</span><span class="p">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span>
+      <span class="dl">"</span><span class="s2">Version</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">2012-10-17</span><span class="dl">"</span><span class="p">,</span>
+      <span class="dl">"</span><span class="s2">Statement</span><span class="dl">"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+          <span class="dl">"</span><span class="s2">Effect</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Allow</span><span class="dl">"</span><span class="p">,</span>
+          <span class="dl">"</span><span class="s2">Action</span><span class="dl">"</span><span class="p">:</span> <span class="p">[</span>
+            <span class="dl">"</span><span class="s2">logs:CreateLogGroup</span><span class="dl">"</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">logs:CreateLogStream</span><span class="dl">"</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">logs:DescribeLogGroups</span><span class="dl">"</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">logs:DescribeLogStreams</span><span class="dl">"</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">logs:PutLogEvents</span><span class="dl">"</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">logs:GetLogEvents</span><span class="dl">"</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">logs:FilterLogEvents</span><span class="dl">"</span>
+          <span class="p">],</span>
+          <span class="dl">"</span><span class="s2">Resource</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">*</span><span class="dl">"</span>
+        <span class="p">}</span>
+      <span class="p">]</span>
+    <span class="p">}),</span>
+    <span class="na">tags</span><span class="p">:</span> <span class="nx">tags</span>
+  <span class="p">});</span>
+
+<span class="kd">const</span> <span class="nx">apiGatewayRole</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">IAM</span><span class="p">.</span><span class="nx">IamRole</span><span class="p">(</span><span class="nx">stack</span><span class="p">,</span> <span class="dl">'</span><span class="s1">apigateway_role</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">apigateway_role</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">description</span><span class="p">:</span> <span class="dl">'</span><span class="s1">IAM role for the API Gateway</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">assumeRolePolicy</span><span class="p">:</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">({</span>
+        <span class="dl">"</span><span class="s2">Version</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">2012-10-17</span><span class="dl">"</span><span class="p">,</span>
+        <span class="dl">"</span><span class="s2">Statement</span><span class="dl">"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="dl">"</span><span class="s2">Effect</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">Allow</span><span class="dl">"</span><span class="p">,</span>
+            <span class="dl">"</span><span class="s2">Principal</span><span class="dl">"</span><span class="p">:</span> <span class="p">{</span>
+            <span class="dl">"</span><span class="s2">Service</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">apigateway.amazonaws.com</span><span class="dl">"</span>
+            <span class="p">},</span>
+            <span class="dl">"</span><span class="s2">Action</span><span class="dl">"</span><span class="p">:</span> <span class="dl">"</span><span class="s2">sts:AssumeRole</span><span class="dl">"</span>
+        <span class="p">}</span>
+        <span class="p">]</span>
+    <span class="p">})</span>
+<span class="p">});</span>
+
+<span class="k">new</span> <span class="nx">IAM</span><span class="p">.</span><span class="nx">IamRolePolicyAttachment</span><span class="p">(</span><span class="nx">stack</span><span class="p">,</span> <span class="dl">'</span><span class="s1">apigateway_role_policy_attachment</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="na">role</span><span class="p">:</span> <span class="nx">apiGatewayRole</span><span class="p">.</span><span class="nx">name</span><span class="o">!</span><span class="p">,</span>
+    <span class="na">policyArn</span><span class="p">:</span> <span class="nx">apiGatewayPolicy</span><span class="p">.</span><span class="nx">arn</span>
+<span class="p">});</span>
+
+<span class="k">return</span> <span class="k">new</span> <span class="nx">APIGateway</span><span class="p">.</span><span class="nx">ApiGatewayAccount</span><span class="p">(</span><span class="nx">stack</span><span class="p">,</span> <span class="dl">'</span><span class="s1">api_gateway_account</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="na">cloudwatchRoleArn</span><span class="p">:</span> <span class="nx">apiGatewayRole</span><span class="p">.</span><span class="nx">arn</span>
+<span class="p">});</span>
+
+<span class="k">new</span> <span class="nx">TerraformOutput</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="dl">"</span><span class="s2">invoke-url</span><span class="dl">"</span><span class="p">,</span> <span class="p">{</span>
+    <span class="na">description</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Invoke URL for the API</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">value</span><span class="p">:</span> <span class="nx">apiGatewayDeploymentStage</span><span class="p">.</span><span class="nx">invokeUrl</span>
+<span class="p">});</span>
+
+</code></pre></div></div>
+
+<h2 id="deploy-to-the-sandbox-1">Deploy to the sandbox</h2>
+
+<div class="language-terraform highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">Deploying</span> <span class="nx">Stack</span><span class="err">:</span> <span class="nx">day04</span>
+<span class="nx">Resources</span>
+ <span class="err">✔</span> <span class="nx">AWS_API_GATEWAY_ACCO</span> <span class="nx">api_gateway_account</span> <span class="nx">aws_api_gateway_account</span><span class="err">.</span><span class="nx">api_gateway_acc</span>
+   <span class="nx">UNT</span>                                      <span class="nx">ount</span>
+ <span class="err">✔</span> <span class="nx">AWS_API_GATEWAY_DEPL</span> <span class="nx">api_gateway_deploym</span> <span class="nx">aws_api_gateway_deployment</span><span class="err">.</span><span class="nx">api_gateway_</span>
+   <span class="nx">OYMENT</span>               <span class="nx">ent</span>                 <span class="nx">deployment</span>
+ <span class="err">✔</span> <span class="nx">AWS_API_GATEWAY_INTE</span> <span class="nx">api_gateway_method_</span> <span class="nx">aws_api_gateway_integration</span><span class="err">.</span><span class="nx">api_gateway</span>
+   <span class="nx">GRATION</span>              <span class="nx">post_integration_dy</span> <span class="nx">_method_post_integration_dynamodbmanage</span>
+                        <span class="nx">namodbmanager</span>       <span class="nx">r</span>
+ <span class="err">✔</span> <span class="nx">AWS_API_GATEWAY_METH</span> <span class="nx">api_gateway_method_</span> <span class="nx">aws_api_gateway_method</span><span class="err">.</span><span class="nx">api_gateway_meth</span>
+   <span class="nx">OD</span>                   <span class="nx">post_dynamodbmanage</span> <span class="nx">od_post_dynamodbmanager</span>
+                        <span class="nx">r</span>
+ <span class="err">✔</span> <span class="nx">AWS_API_GATEWAY_METH</span> <span class="nx">api</span><span class="err">-</span><span class="nx">gateway</span><span class="err">-</span><span class="nx">method</span><span class="err">-</span> <span class="nx">aws_api_gateway_method_settings</span><span class="err">.</span><span class="nx">api</span><span class="err">-</span><span class="nx">gat</span>
+   <span class="nx">OD_SETTINGS</span>          <span class="nx">settings</span>            <span class="nx">eway</span><span class="err">-</span><span class="nx">method</span><span class="err">-</span><span class="nx">settings</span>
+ <span class="err">✔</span> <span class="nx">AWS_API_GATEWAY_RESO</span> <span class="nx">api_gateway_resourc</span> <span class="nx">aws_api_gateway_resource</span><span class="err">.</span><span class="nx">api_gateway_re</span>
+   <span class="nx">URCE</span>                 <span class="nx">e_dynamodbmanager</span>   <span class="nx">source_dynamodbmanager</span>
+ <span class="err">✔</span> <span class="nx">AWS_API_GATEWAY_REST</span> <span class="nx">api_gateway_rest_ap</span> <span class="nx">aws_api_gateway_rest_api</span><span class="err">.</span><span class="nx">api_gateway_re</span>
+   <span class="nx">_API</span>                 <span class="nx">i_dynamodbmanager</span>   <span class="nx">st_api_dynamodbmanager</span>
+ <span class="err">✔</span> <span class="nx">AWS_API_GATEWAY_STAG</span> <span class="nx">api_gateway_stage</span>   <span class="nx">aws_api_gateway_stage</span><span class="err">.</span><span class="nx">api_gateway_stage</span>
+   <span class="nx">E</span>
+ <span class="err">✔</span> <span class="nx">AWS_IAM_POLICY</span>       <span class="nx">api_gateway_policy</span>  <span class="nx">aws_iam_policy</span><span class="err">.</span><span class="nx">api_gateway_policy</span>
+ <span class="err">✔</span> <span class="nx">AWS_IAM_POLICY</span>       <span class="nx">lambda_apigateway_p</span> <span class="nx">aws_iam_policy</span><span class="err">.</span><span class="nx">lambda_apigateway_policy</span>
+                        <span class="nx">olicy</span>
+ <span class="err">✔</span> <span class="nx">AWS_IAM_POLICY</span>       <span class="nx">rest_api_policy_TfT</span> <span class="nx">aws_iam_policy</span><span class="err">.</span><span class="nx">rest_api_policy_TfTokenT</span>
+                        <span class="nx">okenTOKEN9</span>          <span class="nx">OKEN9</span>
+ <span class="err">✔</span> <span class="nx">AWS_IAM_ROLE</span>         <span class="nx">apigateway_role</span>     <span class="nx">aws_iam_role</span><span class="err">.</span><span class="nx">apigateway_role</span>
+ <span class="err">✔</span> <span class="nx">AWS_IAM_ROLE</span>         <span class="nx">lambda_apigateway_r</span> <span class="nx">aws_iam_role</span><span class="err">.</span><span class="nx">lambda_apigateway_role</span>
+                        <span class="nx">ole</span>
+ <span class="err">✔</span> <span class="nx">AWS_IAM_ROLE</span>         <span class="nx">rest_api_role_TfTok</span> <span class="nx">aws_iam_role</span><span class="err">.</span><span class="nx">rest_api_role_TfTokenTOKEN</span>
+                        <span class="nx">enTOKEN11</span>           <span class="mi">11</span>
+ <span class="err">✔</span> <span class="nx">AWS_IAM_ROLE_POLICY_</span> <span class="nx">apigateway_role_pol</span> <span class="nx">aws_iam_role_policy_attachment</span><span class="err">.</span><span class="nx">apigatew</span>
+   <span class="nx">ATTACHMENT</span>           <span class="nx">icy_attachment</span>      <span class="nx">ay_role_policy_attachment</span>
+ <span class="err">✔</span> <span class="nx">AWS_IAM_ROLE_POLICY_</span> <span class="nx">lambda_apigateway_r</span> <span class="nx">aws_iam_role_policy_attachment</span><span class="err">.</span><span class="nx">lambda_a</span>
+   <span class="nx">ATTACHMENT</span>           <span class="nx">ole_policy_attachme</span> <span class="nx">pigateway_role_policy_attachment</span>
+                        <span class="nx">nt</span>
+ <span class="err">✔</span> <span class="nx">AWS_IAM_ROLE_POLICY_</span> <span class="nx">rest_api_role_polic</span> <span class="nx">aws_iam_role_policy_attachment</span><span class="err">.</span><span class="nx">rest_api</span>
+   <span class="nx">ATTACHMENT</span>           <span class="nx">y_attachment_TfToke</span> <span class="nx">_role_policy_attachment_TfTokenTOKEN12</span>
+                        <span class="nx">nTOKEN12</span>
+ <span class="err">✔</span> <span class="nx">AWS_LAMBDA_FUNCTION</span>  <span class="nx">lambda</span>              <span class="nx">aws_lambda_function</span><span class="err">.</span><span class="nx">lambda</span>
+ <span class="err">✔</span> <span class="nx">AWS_S3_BUCKET</span>        <span class="nx">lambda_source_bucke</span> <span class="nx">aws_s3_bucket</span><span class="err">.</span><span class="nx">lambda_source_bucket</span>
+                        <span class="nx">t</span>
+ <span class="err">✔</span> <span class="nx">AWS_S3_BUCKET_OBJECT</span> <span class="nx">lambda_archive</span>      <span class="nx">aws_s3_bucket_object</span><span class="err">.</span><span class="nx">lambda_archive</span>
+
+<span class="nx">Summary</span><span class="err">:</span> <span class="mi">20</span> <span class="nx">created</span><span class="err">,</span> <span class="mi">0</span> <span class="nx">updated</span><span class="err">,</span> <span class="mi">0</span> <span class="nx">destroyed</span><span class="err">.</span>
+
+<span class="nx">Output</span><span class="err">:</span> <span class="nx">invoke</span><span class="err">-</span><span class="nx">url</span> <span class="err">=</span> <span class="nx">https</span><span class="err">:</span><span class="c1">//ruwqixs5g5.execute-api.eu-west-1.amazonaws.com/v1</span>
+</code></pre></div></div>
+
+<p>Looking good! 20 terraform resources though, for a simple API!</p>
+
+<h2 id="invoke-our-newly-deployed-api">Invoke our newly deployed API</h2>
+
+<p>I am a big fan of the vscode <a href="https://marketplace.visualstudio.com/items?itemName=humao.rest-client">REST client extension</a> - much easier than the bloat of <a href="https://www.postman.com/product/what-is-postman/">postman</a></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>POST https://ruwqixs5g5.execute-api.eu-west-1.amazonaws.com/v1/dynamodbmanager
+Content-Type: application/json
+
+{
+     "hello": "world"
+}
+</code></pre></div></div>
+<p>results in</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>HTTP/1.1 200 OK
+Date: Wed, 10 Nov 2021 22:02:33 GMT
+Content-Type: application/json
+Content-Length: 1738
+Connection: close
+x-amzn-RequestId: 9de3e048-306f-4ada-8e8b-cd7dd2d71d2e
+x-amz-apigw-id: Im8rAFZIjoEFuOw=
+X-Amzn-Trace-Id: Root=1-618c4179-18f4fd98090a20d23b2638d3;Sampled=0
+
+{
+  "warning": "Placeholder code - function not yet implemented",
+  "event": {
+    "resource": "/dynamodbmanager",
+    "path": "/dynamodbmanager",
+    "httpMethod": "POST",
+    "headers": {
+      "accept-encoding": "gzip, deflate",
+      "content-type": "application/json",
+      "Host": "ruwqixs5g5.execute-api.eu-west-1.amazonaws.com",
+      "User-Agent": "vscode-restclient",
+      "X-Amzn-Trace-Id": "Root=1-618c4179-18f4fd98090a20d23b2638d3",
+      "X-Forwarded-For": "98.76.54.32",
+      "X-Forwarded-Port": "443",
+      "X-Forwarded-Proto": "https"
+    },
+    "multiValueHeaders": {
+      "accept-encoding": [
+        "gzip, deflate"
+      ],
+      "content-type": [
+        "application/json"
+      ],
+      "Host": [
+        "ruwqixs5g5.execute-api.eu-west-1.amazonaws.com"
+      ],
+      "User-Agent": [
+        "vscode-restclient"
+      ],
+      "X-Amzn-Trace-Id": [
+        "Root=1-618c4179-18f4fd98090a20d23b2638d3"
+      ],
+      "X-Forwarded-For": [
+        "98.76.54.32"
+      ],
+      "X-Forwarded-Port": [
+        "443"
+      ],
+      "X-Forwarded-Proto": [
+        "https"
+      ]
+    },
+    "queryStringParameters": null,
+    "multiValueQueryStringParameters": null,
+    "pathParameters": null,
+    "stageVariables": null,
+    "requestContext": {
+      "resourceId": "hagmic",
+      "resourcePath": "/dynamodbmanager",
+      "httpMethod": "POST",
+      "extendedRequestId": "Im8rAFZIjoEFuOw=",
+      "requestTime": "10/Nov/2021:22:02:33 +0000",
+      "path": "/v1/dynamodbmanager",
+      "accountId": "012345678910",
+      "protocol": "HTTP/1.1",
+      "stage": "v1",
+      "domainPrefix": "ruwqixs5g5",
+      "requestTimeEpoch": 1636581753401,
+      "requestId": "9de3e048-306f-4ada-8e8b-cd7dd2d71d2e",
+      "identity": {
+        "cognitoIdentityPoolId": null,
+        "accountId": null,
+        "cognitoIdentityId": null,
+        "caller": null,
+        "sourceIp": "12.34.56.78",
+        "principalOrgId": null,
+        "accessKey": null,
+        "cognitoAuthenticationType": null,
+        "cognitoAuthenticationProvider": null,
+        "userArn": null,
+        "userAgent": "vscode-restclient",
+        "user": null
+      },
+      "domainName": "ruwqixs5g5.execute-api.eu-west-1.amazonaws.com",
+      "apiId": "ruwqixs5g5"
+    },
+    "body": "{\r\n     \"hello\": \"world\"\r\n}",
+    "isBase64Encoded": false
+  }
+}
+
+</code></pre></div></div>
+
+<p>Again, result!</p>
+
+<h2 id="refactor-the-code">Refactor the code</h2>
+
+<p>So far, we have not really leveraged the move from HCL to a strongly typed language (typescript).</p>
+
+<p>Let’s do that now - group related resources in their own functions, and start using self-descriptive names for functions and variables to make it all easier to understand.</p>
+
+<p>And, while we are at it, mostly for the fun of it, because strictly speaking we have no need for it yet, let’s add some logic to enable us to define multiple methods on an resource, not just POST, but GET, PUT and DELETE as well, to cover all aspects of <a href="https://en.wikipedia.org/wiki/Create,_read,_update_and_delete">CRUD</a></p>
+
+<p>For example:</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">function</span> <span class="nx">defineRestApiResourceDeployment</span><span class="p">(</span>
+    <span class="nx">stack</span><span class="p">:</span> <span class="nx">TerraformStack</span><span class="p">,</span> 
+    <span class="nx">resourceName</span><span class="p">:</span> <span class="kr">string</span><span class="p">,</span> 
+    <span class="nx">lambdas</span><span class="p">:</span> <span class="p">{</span> 
+        <span class="nl">create</span><span class="p">?:</span> <span class="nx">LambdaFunction</span><span class="p">,</span> 
+        <span class="nx">read</span><span class="p">?:</span> <span class="nx">LambdaFunction</span><span class="p">,</span> 
+        <span class="nx">update</span><span class="p">?:</span> <span class="nx">LambdaFunction</span><span class="p">,</span> 
+        <span class="k">delete</span><span class="p">?:</span> <span class="nx">LambdaFunction</span> 
+    <span class="p">},</span> 
+    <span class="nx">credentials</span><span class="p">:</span> <span class="nx">IAM</span><span class="p">.</span><span class="nx">IamRole</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="kd">const</span> <span class="nx">restApi</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">APIGateway</span><span class="p">.</span><span class="nx">ApiGatewayRestApi</span><span class="p">(</span><span class="nx">stack</span><span class="p">,</span> <span class="s2">`api_gateway_rest_api_</span><span class="p">${</span><span class="nx">resourceName</span><span class="p">}</span><span class="s2">`</span><span class="p">,</span> <span class="p">{</span>
+        <span class="na">name</span><span class="p">:</span> <span class="nx">resourceName</span><span class="p">,</span>
+        <span class="na">description</span><span class="p">:</span> <span class="dl">'</span><span class="s1">as per https://docs.aws.amazon.com/lambda/latest/dg/services-apigateway-tutorial.html</span><span class="dl">'</span><span class="p">,</span>
+        <span class="na">tags</span><span class="p">:</span> <span class="nx">tags</span><span class="p">,</span>
+        <span class="na">endpointConfiguration</span><span class="p">:</span> <span class="p">{</span>
+            <span class="na">types</span><span class="p">:</span> <span class="p">[</span><span class="dl">'</span><span class="s1">REGIONAL</span><span class="dl">'</span><span class="p">]</span>
+        <span class="p">}</span>
+    <span class="p">});</span>
+
+    <span class="kd">const</span> <span class="nx">apiGatewayResource</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">APIGateway</span><span class="p">.</span><span class="nx">ApiGatewayResource</span><span class="p">(</span><span class="nx">stack</span><span class="p">,</span> <span class="s2">`api_gateway_resource_</span><span class="p">${</span><span class="nx">resourceName</span><span class="p">}</span><span class="s2">`</span><span class="p">,</span> <span class="p">{</span>
+        <span class="na">parentId</span><span class="p">:</span> <span class="nx">restApi</span><span class="p">.</span><span class="nx">rootResourceId</span><span class="p">,</span>
+        <span class="na">pathPart</span><span class="p">:</span> <span class="nx">resourceName</span><span class="p">,</span>
+        <span class="na">restApiId</span><span class="p">:</span> <span class="nx">restApi</span><span class="p">.</span><span class="nx">id</span>
+    <span class="p">});</span>
+
+    <span class="kd">const</span> <span class="nx">redeploymentTriggerElements</span> <span class="o">=</span> <span class="p">[</span><span class="nx">apiGatewayResource</span><span class="p">.</span><span class="nx">id</span><span class="p">];</span>
+    <span class="kd">const</span> <span class="nx">defineMethodForResource</span> <span class="o">=</span> <span class="p">(</span><span class="nx">method</span><span class="p">:</span> <span class="kr">string</span><span class="p">,</span> <span class="nx">lambda</span><span class="p">:</span> <span class="nx">LambdaFunction</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">apiGatewayMethod</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">APIGateway</span><span class="p">.</span><span class="nx">ApiGatewayMethod</span><span class="p">(</span><span class="nx">stack</span><span class="p">,</span> <span class="s2">`api_gateway_method_</span><span class="p">${</span><span class="nx">method</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">()}</span><span class="s2">_</span><span class="p">${</span><span class="nx">resourceName</span><span class="p">}</span><span class="s2">`</span><span class="p">,</span> <span class="p">{</span>
+        <span class="na">authorization</span><span class="p">:</span> <span class="dl">"</span><span class="s2">NONE</span><span class="dl">"</span><span class="p">,</span>
+        <span class="na">httpMethod</span><span class="p">:</span> <span class="nx">method</span><span class="p">.</span><span class="nx">toUpperCase</span><span class="p">(),</span>
+        <span class="na">resourceId</span><span class="p">:</span> <span class="nx">apiGatewayResource</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span>
+        <span class="na">restApiId</span><span class="p">:</span> <span class="nx">restApi</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span>
+    <span class="p">});</span>
+
+    <span class="kd">const</span> <span class="nx">apiGatewayMethodIntegration</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">APIGateway</span><span class="p">.</span><span class="nx">ApiGatewayIntegration</span><span class="p">(</span><span class="nx">stack</span><span class="p">,</span> <span class="s2">`api_gateway_method_post_integration_</span><span class="p">${</span><span class="nx">resourceName</span><span class="p">}</span><span class="s2">`</span><span class="p">,</span> <span class="p">{</span>
+        <span class="na">type</span><span class="p">:</span> <span class="dl">'</span><span class="s1">AWS_PROXY</span><span class="dl">'</span><span class="p">,</span>
+        <span class="na">httpMethod</span><span class="p">:</span> <span class="nx">apiGatewayMethod</span><span class="p">.</span><span class="nx">httpMethod</span><span class="p">,</span>
+        <span class="na">integrationHttpMethod</span><span class="p">:</span> <span class="dl">'</span><span class="s1">POST</span><span class="dl">'</span><span class="p">,</span>
+        <span class="na">resourceId</span><span class="p">:</span> <span class="nx">apiGatewayResource</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span>
+        <span class="na">restApiId</span><span class="p">:</span> <span class="nx">restApi</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span>
+        <span class="na">uri</span><span class="p">:</span> <span class="nx">lambda</span><span class="p">.</span><span class="nx">invokeArn</span><span class="p">,</span>
+        <span class="na">credentials</span><span class="p">:</span> <span class="nx">credentials</span><span class="p">.</span><span class="nx">arn</span>
+    <span class="p">});</span>
+
+    <span class="nx">redeploymentTriggerElements</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="nx">apiGatewayMethod</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span> <span class="nx">apiGatewayMethodIntegration</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
+    <span class="p">}</span> <span class="c1">// defineRestApiResourceDeployment()</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="nx">lambdas</span><span class="p">.</span><span class="nx">create</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">defineMethodForResource</span><span class="p">(</span><span class="dl">"</span><span class="s2">POST</span><span class="dl">"</span><span class="p">,</span> <span class="nx">lambdas</span><span class="p">.</span><span class="nx">create</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">lambdas</span><span class="p">.</span><span class="nx">read</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">defineMethodForResource</span><span class="p">(</span><span class="dl">"</span><span class="s2">GET</span><span class="dl">"</span><span class="p">,</span> <span class="nx">lambdas</span><span class="p">.</span><span class="nx">create</span><span class="o">!</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">lambdas</span><span class="p">.</span><span class="nx">update</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">defineMethodForResource</span><span class="p">(</span><span class="dl">"</span><span class="s2">PUT</span><span class="dl">"</span><span class="p">,</span> <span class="nx">lambdas</span><span class="p">.</span><span class="nx">create</span><span class="o">!</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">lambdas</span><span class="p">.</span><span class="k">delete</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">defineMethodForResource</span><span class="p">(</span><span class="dl">"</span><span class="s2">DELETE</span><span class="dl">"</span><span class="p">,</span> <span class="nx">lambdas</span><span class="p">.</span><span class="nx">create</span><span class="o">!</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="kd">const</span> <span class="nx">deployment</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">APIGateway</span><span class="p">.</span><span class="nx">ApiGatewayDeployment</span><span class="p">(</span><span class="nx">stack</span><span class="p">,</span> <span class="dl">'</span><span class="s1">api_gateway_deployment</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+        <span class="na">restApiId</span><span class="p">:</span> <span class="nx">restApi</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span>
+        <span class="na">triggers</span><span class="p">:</span> <span class="p">{</span>
+            <span class="na">redeployment</span><span class="p">:</span> <span class="nx">Fn</span><span class="p">.</span><span class="nx">sha1</span><span class="p">(</span><span class="nx">Fn</span><span class="p">.</span><span class="nx">jsonencode</span><span class="p">(</span><span class="nx">redeploymentTriggerElements</span><span class="p">))</span>
+        <span class="p">},</span>
+        <span class="na">lifecycle</span><span class="p">:</span> <span class="p">{</span>
+            <span class="na">createBeforeDestroy</span><span class="p">:</span> <span class="kc">true</span>
+        <span class="p">}</span>
+    <span class="p">});</span>
+
+    <span class="k">return</span> <span class="nx">deployment</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>If we do this for all resources, our stack definition becomes much more legible (imo):</p>
+
+<div class="language-typescript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">class</span> <span class="nx">ApiGatewayTutorialStack</span> <span class="kd">extends</span> <span class="nx">TerraformStack</span> <span class="p">{</span>
+    <span class="kd">constructor</span><span class="p">(</span><span class="nx">scope</span><span class="p">:</span> <span class="nx">Construct</span><span class="p">,</span> <span class="nx">id</span><span class="p">:</span> <span class="kr">string</span><span class="p">,</span> <span class="nx">profile</span><span class="p">:</span> <span class="kr">string</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">super</span><span class="p">(</span><span class="nx">scope</span><span class="p">,</span> <span class="nx">id</span><span class="p">)</span>
+
+        <span class="k">new</span> <span class="nx">AwsProvider</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="dl">'</span><span class="s1">aws</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span>
+            <span class="na">region</span><span class="p">:</span> <span class="dl">'</span><span class="s1">eu-west-1</span><span class="dl">'</span><span class="p">,</span>
+            <span class="na">profile</span><span class="p">:</span> <span class="nx">profile</span>
+        <span class="p">})</span>
+
+        <span class="nx">defineApiGatewayAccount</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+
+        <span class="kd">const</span> <span class="nx">lambdaApiGatewayRole</span> <span class="o">=</span> <span class="nx">defineApiGatewayRole</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+        <span class="kd">const</span> <span class="nx">sourceBucket</span> <span class="o">=</span> <span class="nx">defineSourceS3Bucket</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="dl">'</span><span class="s1">franck-iac-lambda-source-bucket</span><span class="dl">'</span><span class="p">);</span>
+        <span class="kd">const</span> <span class="nx">sourceBucketObjectForLambdaSkeleton</span> <span class="o">=</span> <span class="nx">defineSourceBucketObjectForLambdaSkeleton</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">sourceBucket</span><span class="p">);</span>
+        <span class="kd">const</span> <span class="nx">lambdaFunctionForPostMethod</span> <span class="o">=</span> <span class="nx">defineLambdaFunctionForPostMethod</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">sourceBucket</span><span class="p">,</span> <span class="nx">sourceBucketObjectForLambdaSkeleton</span><span class="p">,</span> <span class="nx">lambdaApiGatewayRole</span><span class="p">);</span>
+
+        <span class="kd">const</span> <span class="nx">restApiCredentials</span> <span class="o">=</span> <span class="nx">defineRestApiCredentials</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">lambdaFunctionForPostMethod</span><span class="p">);</span>
+        <span class="kd">const</span> <span class="nx">restApiDeployment</span> <span class="o">=</span> <span class="nx">defineRestApiResourceDeployment</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="dl">'</span><span class="s1">dynamodbmanager</span><span class="dl">'</span><span class="p">,</span> <span class="p">{</span> <span class="na">create</span><span class="p">:</span> <span class="nx">lambdaFunctionForPostMethod</span> <span class="p">},</span> <span class="nx">restApiCredentials</span><span class="p">);</span>
+        <span class="kd">const</span> <span class="nx">apiGatewayDeploymentStage</span> <span class="o">=</span> <span class="nx">defineApigatewayDeploymentStage</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="dl">'</span><span class="s1">v1</span><span class="dl">'</span><span class="p">,</span> <span class="nx">restApiDeployment</span><span class="p">);</span>
+
+        <span class="c1">// output the API URL</span>
+        <span class="k">new</span> <span class="nx">TerraformOutput</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="dl">"</span><span class="s2">invoke-url</span><span class="dl">"</span><span class="p">,</span> <span class="p">{</span>
+            <span class="na">description</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Invoke URL for the API</span><span class="dl">'</span><span class="p">,</span>
+            <span class="na">value</span><span class="p">:</span> <span class="nx">apiGatewayDeploymentStage</span><span class="p">.</span><span class="nx">invokeUrl</span>
+        <span class="p">});</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Eventually, these functions could be moved to a <a href="https://www.typescriptlang.org/docs/handbook/modules.html">typescript module</a> and reused across stacks.</p>
+
+<p>The world is my oyster.</p>
+
+<p>You can see the final code <a href="https://github.com/franck-chester/franck-chester.github.io/blob/main/assets/files/2021-11-11-main.ts">here</a> 
+and compare it to the <a href="https://github.com/franck-chester/franck-chester.github.io/blob/main/assets/files/2021-11-11-cdk.tf.json">generated HCL</a>.
+My IaC user policy is <a href="https://github.com/franck-chester/franck-chester.github.io/blob/main/assets/files/2021-11-11-iac-policy.json">here</a>.</p>
+
+<h2 id="terraform-graph">Terraform graph</h2>
+<p>I would really like a pretty picture to accompany this blog, so I am going to try terraform built in <a href="https://www.terraform.io/docs/cli/commands/graph.html">graph function</a>.</p>
+
+<p>I start by installing graphviz with chocolatey <code class="language-plaintext highlighter-rouge">choco install graphviz</code></p>
+
+<p>I can then navigate to the generated terraform files folder <code class="language-plaintext highlighter-rouge">\day04\cdktf.out\stacks\day04</code> 
+and execute <code class="language-plaintext highlighter-rouge">&gt; terraform graph | dot -Tsvg &gt; ../../../../docs/day04.svg</code></p>
+
+<p>which gives me this <code class="language-plaintext highlighter-rouge">day04.svg</code> file:</p>
+
+<p><img src="/assets/images/2021-11-11-day04-tfgraph.svg" alt=""></p>
+
+<p>Which is useful but quite ugly <img class="emoji" title=":frowning_face:" alt=":frowning_face:" src="https://github.githubassets.com/images/icons/emoji/unicode/2639.png" height="20" width="20"></p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>I can see the benefits of using the terraform CDK to generate my Infrastructure as Code files. Using a strongly typed language allows for a much more legibility and flexibility than HCL</p>
+
+<p>Next on my list are tags:
+1) use them <a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/access_iam-tags.html">to tighten my IAM policies</a>
+2) check whether the terraform CDK allow, like the AWS one, tagging at <a href="https://docs.aws.amazon.com/cdk/latest/guide/tagging.html">construct level</a></p>
+
+<p>and of course actually deploying the code for my lambda, and complete the tutorial by creating a dynamoDB table to manipulate via my API.</p>
+
+<hr>
+<div class="footnotes" role="doc-endnotes">
+  <ol>
+    <li id="fn:1" role="doc-endnote">
+      <p>see also this blog <a href="https://dev.to/ericksoen/teaching-terraform-from-the-ground-up-benchmarking-s3-forcedestroy-2nlf">Benchmarking S3 force_destroy</a> <a href="#fnref:1" class="reversefootnote" role="doc-backlink">↩</a></p>
+    </li>
+    <li id="fn:2" role="doc-endnote">
+      <p>Interestingly, unless I am horribly mistaken, the exemplar lambda in the <a href="https://docs.aws.amazon.com/lambda/latest/dg/services-apigateway-tutorial.html">API Gateway tutorial</a> does not return the <a href="https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-output-format">correct schema to be used with the API Gateway</a>! <a href="#fnref:2" class="reversefootnote" role="doc-backlink">↩</a></p>
+    </li>
+  </ol>
+</div>
+
+        </div>
+
+        
+          <div class="page-share">
+  <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Ffranck-chester.github.io%2F%2F2021%2F11%2F10%2FTerraform-CDK-part-2.html" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="btn btn--facebook btn--small"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i> <span>Share</span></a>
+  <a href="https://twitter.com/intent/tweet?text=Terraform+CDK+-+part+2%20https%3A%2F%2Ffranck-chester.github.io%2F%2F2021%2F11%2F10%2FTerraform-CDK-part-2.html" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="btn btn--twitter btn--small"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i> <span>Tweet</span></a>
+  <a href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3A%2F%2Ffranck-chester.github.io%2F%2F2021%2F11%2F10%2FTerraform-CDK-part-2.html" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="btn btn--linkedin btn--small"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i> <span>LinkedIn</span></a>
+  <a href="https://reddit.com/submit?title=Terraform+CDK+-+part+2&amp;url=https%3A%2F%2Ffranck-chester.github.io%2F%2F2021%2F11%2F10%2FTerraform-CDK-part-2.html" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="btn btn--reddit btn--small"><i class="fab fa-fw fa-reddit" aria-hidden="true"></i> <span>Reddit</span></a>
+</div>
+
+        
+
+        
+
+        <nav class="page-pagination" role="navigation">
+  
+    <a class="page-previous" href="/2021/10/30/Terraform-CDK-part-1.html">
+      <h4 class="page-pagination-label">Previous</h4>
+      <span class="page-pagination-title">
+        <i class="fas fa-arrow-left"></i> Terraform CDK - part 1
+
+      </span>
+    </a>
+  
+
+  
+    <a class="page-next" href="/2022/06/06/monolith-to-mach.html">
+      <h4 class="page-pagination-label">Next</h4>
+      <span class="page-pagination-title">
+        From monolithic to MACH architecture
+ <i class="fas fa-arrow-right"></i>
+      </span>
+    </a>
+  
+</nav>
+
+      </div>
+    </div>
+  </article>
+</main>
+
+
+    <footer id="footer" class="site-footer">
+  <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+<div class="social-icons"><a class="social-icon" href="https://github.com/franck-chester/franck-chester.github.io"><i class="fab fa-github-square fa-2x" title="GitHub"></i></a></div>
+<div class="copyright">
+    
+      <p><a href="https://github.com/franck-chester/franck-chester.github.io/actions/workflows/jekyll.yaml"><img src="https://github.com/franck-chester/franck-chester.github.io/actions/workflows/jekyll.yaml/badge.svg" alt="Build and deploy Jekyll site to GitHub Pages"></a><br>
+© Franck-Chester. Powered by <a href="https://jekyllrb.com">Jekyll</a> &amp; <a href="So%20Simple">So Simple</a>.</p>
+
+    
+  </div>
+</footer>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+  <script src="/assets/js/main.min.js"></script>
+  <script src="https://use.fontawesome.com/releases/v5.0.12/js/all.js"></script>
+
+<script type="text/javascript">
+    var mpq = [];
+    mpq.push(["init", ""]);
+    (function(){var b,a,e,d,c;b=document.createElement("script");b.type="text/javascript";
+    b.async=true;b.src=(document.location.protocol==="https:"?"https:":"http:")+
+    "//api.mixpanel.com/site_media/js/api/mixpanel.js";a=document.getElementsByTagName("script")[0];
+    a.parentNode.insertBefore(b,a);e=function(f){return function(){mpq.push(
+    [f].concat(Array.prototype.slice.call(arguments,0)))}};d=["init","track","track_links",
+    "track_forms","register","register_once","identify","name_tag","set_config"];for(c=0;c<
+    d.length;c++){mpq[d[c]]=e(d[c])}})();
+</script>
+
+  </body>
+
+</html>

@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<!--
+    So Simple Jekyll Theme 3.2.0
+    Copyright 2013-2019 Michael Rose - mademistakes.com | @mmistakes
+    Free for personal and commercial use under the MIT license
+    https://github.com/mmistakes/so-simple-theme/blob/master/LICENSE
+-->
+<html lang="en-US" class="no-js">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  
+
+  
+    
+    <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Architecture descriptions in the cloud | Franck’s stuff</title>
+<meta name="generator" content="Jekyll v4.3.1" />
+<meta property="og:title" content="Architecture descriptions in the cloud" />
+<meta name="author" content="Franck" />
+<meta property="og:locale" content="en_GB" />
+<meta name="description" content="This week I have started documenting our target architecture. Now, what I was actually asked to do was “document our target cloud infrastructure”, but I have been there before and believe a formal (ish) overall architecture description is required before diving into any specific problem area." />
+<meta property="og:description" content="This week I have started documenting our target architecture. Now, what I was actually asked to do was “document our target cloud infrastructure”, but I have been there before and believe a formal (ish) overall architecture description is required before diving into any specific problem area." />
+<link rel="canonical" href="https://franck-chester.github.io//2021/10/22/Architecture-descriptions-in-the-cloud.html" />
+<meta property="og:url" content="https://franck-chester.github.io//2021/10/22/Architecture-descriptions-in-the-cloud.html" />
+<meta property="og:site_name" content="Franck’s stuff" />
+<meta property="og:image" content="https://franck-chester.github.io//assets/images/2021-10-21-architecture-description-cube.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-10-22T00:00:00+00:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://franck-chester.github.io//assets/images/2021-10-21-architecture-description-cube.png" />
+<meta property="twitter:title" content="Architecture descriptions in the cloud" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Franck"},"dateModified":"2021-10-22T00:00:00+00:00","datePublished":"2021-10-22T00:00:00+00:00","description":"This week I have started documenting our target architecture. Now, what I was actually asked to do was “document our target cloud infrastructure”, but I have been there before and believe a formal (ish) overall architecture description is required before diving into any specific problem area.","headline":"Architecture descriptions in the cloud","image":"https://franck-chester.github.io//assets/images/2021-10-21-architecture-description-cube.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://franck-chester.github.io//2021/10/22/Architecture-descriptions-in-the-cloud.html"},"url":"https://franck-chester.github.io//2021/10/22/Architecture-descriptions-in-the-cloud.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+  
+
+  <script>
+    /* Cut the mustard */
+    if ( 'querySelector' in document && 'addEventListener' in window ) {
+      document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/g, '') + 'js';
+    }
+  </script>
+
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="/assets/css/skins/default.css">
+  
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,700,700i|Lora:400,400i,700,700i">
+  <link rel="alternate" type="application/atom+xml" title="Franck&#39;s stuff" href="/feed.xml">
+<!-- start custom head snippets -->
+
+<!-- insert favicons. use http://realfavicongenerator.net/ -->
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/images/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon-16x16.png">
+<link rel="manifest" href="/assets/images/site.webmanifest">
+<link rel="mask-icon" href="/assets/images/safari-pinned-tab.svg" color="#5bbad5">
+<link rel="shortcut icon" href="/assets/images/favicon.ico">
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="msapplication-config" content="/assets/images/browserconfig.xml">
+<meta name="theme-color" content="#ffffff">
+<!-- end custom head snippets -->
+
+</head>
+
+
+  <body class="layout--post  architecture-descriptions-in-the-cloud">
+    <nav class="skip-links">
+  <h2 class="screen-reader-text">Skip links</h2>
+  <ul>
+    <li><a href="#primary-nav" class="screen-reader-shortcut">Skip to primary navigation</a></li>
+    <li><a href="#main" class="screen-reader-shortcut">Skip to content</a></li>
+    <li><a href="#footer" class="screen-reader-shortcut">Skip to footer</a></li>
+  </ul>
+</nav>
+
+    
+  <div class="navigation-wrapper">
+    <a href="#menu-toggle" id="menu-toggle">Menu</a>
+    <nav id="primary-nav" class="site-nav animated drop">
+      <ul><li><a href="/posts/">Posts</a></li><li><a href="/links/">Links</a></li><li><a href="/tags/">Tags</a></li><li><a href="/search/">Search</a></li><li><a href="/">About</a></li></ul>
+    </nav>
+  </div><!-- /.navigation-wrapper -->
+
+
+    <header class="masthead">
+  <div class="wrap">
+    
+    
+    
+  </div>
+</header><!-- /.masthead -->
+
+
+    <main id="main" class="main-content" aria-label="Content">
+  <article class="h-entry">
+    
+  
+  
+  
+
+  <div class="page-image">
+    <img src="/assets/images/2021-10-21-architecture-description-cube.png" class="entry-feature-image u-photo" alt="Architecture descriptions in the cloud" style="margin-top: 0;">
+    
+  </div>
+
+
+    <div class="page-wrapper">
+      <header class="page-header">
+        
+        
+          <h1 id="page-title" class="page-title p-name">Architecture descriptions in the cloud
+</h1>
+        
+      </header>
+
+      <div class="page-sidebar">
+        <div class="page-author h-card p-author"><img src="/assets/images/franck.png" class="author-avatar u-photo" alt="Franck"><div class="author-info"><div class="author-name">
+        <em>by</em> <span class="p-name">Franck</span>
+      </div><ul class="author-links"><li class="author-link">
+            <a class="u-url" rel="me" href="https://github.com/franck-chester"><i class="fab fa-github-square fa-lg" title="GitHub"></i></a>
+          </li></ul>
+    <time class="page-date dt-published" datetime="2021-10-22T00:00:00+00:00"><a class="u-url" href="">2021-10-22</a>
+</time>
+
+  </div>
+</div>
+
+        
+
+        
+  <h3 class="page-taxonomies-title">Tags</h3>
+  
+  <ul class="page-taxonomies"><li class="page-taxonomy"><a href="/tags/#architecture" title="Pages tagged architecture" rel="tag">architecture</a></li>
+  </ul>
+
+
+      </div>
+
+      <div class="page-content">
+        <div class="e-content">
+          <p>This week I have started documenting our target architecture. Now, what I was actually asked to do was “document our target cloud infrastructure”, but I have been there before and believe a formal (ish) overall architecture description is required before diving into any specific problem area.</p>
+
+<p>I am going to use this post to describe how I use architecture descriptions and other architecture modelling techniques. I do not claim this is the only way or even the right way, but it works for me so might work for you as well.</p>
+
+<h1 id="architecture-description">Architecture description</h1>
+<p>What do I mean by an architecture description? I mean <a href="http://www.iso-architecture.org/ieee-1471/ads/">Systems and software engineering — Architecture description
+ISO/IEC/IEEE 42010</a> which is an old fashion standard I was once required to adhere to for a government project.</p>
+
+<p>Now, in those <a href="https://en.wikipedia.org/wiki/Waterfall_model">waterfall</a> days, my role as software architect was to design the solution upfront before delivering a formal, all encompassing description of it to the development teams. At the time it was easy, and a good idea, to use the viewpoints and perspectives listed in <a href="https://www.viewpoints-and-perspectives.info">Rozanski and Woods “Software Systems Architecture”</a>(R&amp;W) book. In particular the book (but sadly not the website) helped me examine my architecture through different angles and lenses, and provided a lot of <a href="https://checkify.com/blog/power-of-a-simple-checklist/">checklists</a> to validate both the solution and my description of it.</p>
+
+<p>Today, with <a href="https://theleanway.net/The-Five-Principles-of-Lean">lean</a> and <a href="https://agilemanifesto.org/">agile</a> development processes adopted wholesale throughout the industry, I can be an <a href="https://www.agilearchitect.org/agile/principles.htm">agile architect</a>, and never again create such a big design up front.</p>
+
+<p>I am however still a big fan of ‘proper’ architecture supported by appropriate descriptions, which often puts me at odd with the Agile (with a big A) crowd who misunderstand “<em>Working software over comprehensive documentation</em>” as meaning “<em>no documentation</em>”. I, personally, have found that the tools and techniques used to put an architecture descriptions are essential to support the conversations and eventual decisions that we take as a team, and to convey these decisions at various level of the organisation (what Gregor Hohpe calls <a href="https://architectelevator.com/">“riding the architect elevator to connect the penthouse with the engine room”</a>). My architecture descriptions now pick and choose from a multitude of modelling techniques, whatever works to best communicate a particular aspect of the solution to my stakeholders.</p>
+
+<h1 id="format">Format</h1>
+
+<p>As much as I love a good diagram, I make a point to use both text and diagrams, the rule being that any important information appearing in the latter will be reflected in the former - that is I never rely solely on visual information. Vice-versa, I can be quite verbose so always try to reflect what I write in supporting diagrams. The added advantages of doing so are threefold:</p>
+<ol>
+  <li>the act of comparing text and diagram forces me to see both through the eye of my stakeholders, and identify incongruences.</li>
+  <li>iterating between text and diagram, adding or removing information from one to better align with the other generally improves the content, usually by simplifying it.</li>
+  <li>I get a ready made powerpoint slide - show the picture on screen and use the text as my spiel.</li>
+</ol>
+
+<p>I have tons of books on the <a href="https://www.omg.org/spec/UML/2.5.1/PDF">Unified Modelling Language (UML)</a> and have used it extensively in my career, and know for a fact that most people don’t care for it, don’t understand it and find it ugly. And to be fair, they are mostly right.</p>
+
+<p>When documenting a cloud architecture, it is preferable to use the prettier, and now ubiquitous cloud architecture format (square <a href="https://aws.amazon.com/architecture/icons/">icons</a>, boxes and lines) to describe the technical elements.
+Where I need to include more normative information, I do still use UML, but limit myself to <a href="https://www.uml-diagrams.org/component-diagrams.html">component</a> and <a href="https://www.uml-diagrams.org/sequence-diagrams.html">sequence</a> diagrams, which are relatively accessible. For interactions I sometime use extremely parred down <a href="https://www.uml-diagrams.org/activity-diagrams.html">activity diagrams</a> but find that business stakeholders prefer the <a href="https://www.process.st/bpmn-tutorial/">Business Process Modelling Notation (BPMN)</a>.</p>
+
+<p>Finally, for logical views, I give myself more artistic licence, and use whatever shapes and colours I need to describe any specific concept.</p>
+
+<p>What is essential however is consistency between diagrams across the whole architecture description.</p>
+
+<h1 id="granularity">Granularity</h1>
+<p>The architecture description provides 3 increasing levels of details, roughly aligned with C4 Modelling techniques, to support communication with a wide range of stakeholders, not all of which have an understanding of our technological or business domain.</p>
+
+<p>The <strong>high-level (macro)</strong> view will consider the elements of the solution that are our responsibility, and how these elements relate to the wider architecture of the enterprise. It very much aligns with the notion of Context in C4 modelling, and as such supports conversations with non technical stakeholders outside our team, as well as colleagues having only just joined us.</p>
+
+<p>The <strong>intermediate (meso)</strong> view will consider the major elements of our solution, and how they relate to each other, which aligns it with the C4 Container diagram, and support conversations with non technical stakeholders within our team or outside it but aligned to our business domain. Intermediate views are also a good basis to start technical conversations, or to reproduce ad-hoc on a physical or electronic whiteboard.</p>
+
+<p>The <strong>detailed (micro)</strong> view will consider architectural and design patterns used to implement specific aspects of our solution, very much like C4 Component diagram. Detailed views can be used to support decision making at team level (aka detailed design) as well as more formal process gates such as <a href="https://www.simplifyconsulting.co.uk/the-design-authority-unpacked/">Technical Design Authority</a> reviews or <a href="https://rmas.fad.harvard.edu/pages/change-control">change control management</a>.</p>
+
+<p>It is important however to note that the detailled design artefacts are not themselves part of the architecture description, but refer to the patterns and guidelines documented within it.</p>
+
+<h1 id="viewpoints">Viewpoints</h1>
+<p>Viewpoints are an <a href="http://www.iso-architecture.org/ieee-1471/ads/">ISO/IEC/IEEE 42010 - Systems and software engineering — Architecture description</a> archetype. There are and have been a multitude of so-called <a href="https://en.wikipedia.org/wiki/View_model">view models</a> in our industry, but my favourite is the approach described by Rozanski and Woods (R&amp;W) by in their book “<a href="https://www.viewpoints-and-perspectives.info/">Software System Architecture</a>”, which I have adapted with a set of viewpoint better aligned (imo) with agile and cloud architecture.</p>
+
+<h2 id="context-viewpoint">Context viewpoint</h2>
+<p>The context viewpoint was apparently a late addition by R&amp;W to the second edition of their book, but is one I believe is essential to provide a solid foundation to architectural discussions and decisions.</p>
+
+<p><a href="https://www.viewpoints-and-perspectives.info/home/viewpoints/context/">They define it</a> as:</p>
+
+<blockquote>
+  <p>The Context view of a system defines the relationships, dependencies, and interactions between the system and its environment—the people, systems, and external entities with which it interacts. It defines what the system does and does not do; where the boundaries are between it and the outside world; and how the system interacts with other systems, organizations, and people across these boundaries.</p>
+</blockquote>
+
+<p><a href="https://c4model.com/#SystemContextDiagram">C4 Modelling defines it</a> as:</p>
+
+<blockquote>
+  <p>this is your zoomed out view showing a big picture of the system landscape. The focus should be on people (actors, roles, personas, etc) and software systems rather than technologies, protocols and other low-level details. It’s the sort of diagram that you could show to non-technical people.</p>
+</blockquote>
+
+<h2 id="functional-viewpoint">Functional viewpoint</h2>
+<p>R&amp;W <a href="https://www.viewpoints-and-perspectives.info/home/viewpoints/functional-viewpoint/">define it</a> as:</p>
+
+<blockquote>
+  <p>The view documents the system’s functional structure-including the key functional elements, their responsibilities, the interfaces they expose, and the interactions between them. Taken together, this demonstrates how the system will perform the functions required of it.</p>
+</blockquote>
+
+<p>whereas the <a href="https://www.cs.ubc.ca/~gregor/teaching/papers/4+1view-architecture.pdf">4+1 model</a> calls it the ‘logical view’:</p>
+
+<blockquote>
+  <p>The logical architecture primarily supports the functional requirements—what the system should provide in terms of services to its users. The system is decomposed into a set of key abstractions, taken (mostly) from the problem domain, in the form of objects or object classes. They exploit the principles of abstraction, encapsulation, and inheritance. This decomposition is not only for the sake of functional analysis, but also serves to identify common mechanisms and design elements across the various parts of the system.</p>
+</blockquote>
+
+<p>A key word in the 4+1 definition is <strong>abstractions</strong>: the principal role of the functional viewpoints for is to <strong>name things</strong>. This is where we introduce the vocabulary that will be reused throughout the architecture description, its ubiquitous language (a <a href="https://www.martinfowler.com/bliki/UbiquitousLanguage.html">term originating</a> from <a href="https://docs.microsoft.com/en-us/archive/msdn-magazine/2009/february/best-practice-an-introduction-to-domain-driven-design">Domain Driven Design</a>), the rule of which is “<em>a single name for each thing, and only one thing identified by any given name</em>” (my clunky wording). We must give ourselves a vocabulary precise enough to support architecture discussions and decisions without having to constantly explain what we mean. And this vocabulary must abstract lower level implementation details, to stop these discussions getting bogged down.</p>
+
+<p>When drawn, the functional view will make heavy use of non-descript boxes and arrows, ideal for electronic and physical whiteboarding sessions.</p>
+
+<h2 id="infrastructure-viewpoint">Infrastructure viewpoint</h2>
+<p>This is my preferred term over R&amp;W ‘<a href="https://www.viewpoints-and-perspectives.info/home/viewpoints/deployment/">deployment</a>’ and 4+1 ‘physical’ viewpoints. This is where we start naming technologies and drawing cloud diagrams. What is important here is to maintain traceability between abstractions (things we described in our logical views) and their physical implementation.  This will stop us from suffering from the common disconnect between the fluffy abstraction and the nitty gritty of their implementation that has given both architecture and infrastructure such a bad name.</p>
+
+<p>From an architecture description point of view, we must also refrain from describing every nut and bolt of our infrastructure, as there is no value in doing so. What we describe here as the elements that personify our architecture decisions, with just enough detail to explain how they do so, and no more.</p>
+
+<h2 id="development-viewpoint">Development viewpoint</h2>
+<p>Most view models have a development view, but mean different things by it. 4+1 describes it as:</p>
+
+<blockquote>
+  <p>[…] related to the ease of development, software management, reuse or commonality, and to the constraints imposed by the toolset, or the programming language</p>
+</blockquote>
+
+<p><a href="https://www.viewpoints-and-perspectives.info/home/viewpoints/development/">R&amp;W as </a></p>
+
+<blockquote>
+  <p>[…] include code structure and dependencies, build and configuration management of deliverables, system-wide design constraints, and system-wide standards to ensure technical integrity. It is the role of the Development view to address these aspects of the system development process.</p>
+</blockquote>
+
+<p>In our architecture description it will be used to bridge the gap between the what - as documented in the Logical and Infrastructure views - and the how, that is how we as a tribe go from wanting a thing to have that thing up and running in production. We will document where architecture decisions are constrained by our software development lifecycle (SDLC) and vice-versa. For example our choice of development language might limit our choice of infrastructure components or design patterns. The way we organise ourselves, our <a href="https://teamtopologies.com/key-concepts">teams topologies</a>, might impact how we assign responsibilities to specific software and/or infrastructure components. Our agile development processes and our adoption of <a href="https://docs.microsoft.com/en-us/devops/what-is-devops">DevOps</a> and <a href="https://www.devsecops.org/">DevSecOps</a> practices will also influence our architecture.</p>
+
+<h2 id="information-viewpoint">Information viewpoint</h2>
+<p>This viewpoint is again inspired <a href="https://www.viewpoints-and-perspectives.info/home/viewpoints/information/">from R&amp;W</a>:</p>
+
+<blockquote>
+  <p>[…] high-level view of static information structure and dynamic information flow, with the objective of answering the big questions around ownership, latency, references, and so forth</p>
+</blockquote>
+
+<p>Here we adapt and extend it to cover description of our <a href="https://en.wikipedia.org/wiki/Data_model">data model</a>, how and what information flows through our systems and, how and where it is stored and accessed from and who by.</p>
+
+<p>This will support our <a href="https://docs.microsoft.com/en-us/archive/msdn-magazine/2009/february/best-practice-an-introduction-to-domain-driven-design">Domain Driven Design</a>, the definition or our interfaces, as well as threat modelling and compliance with the likes of <a href="https://www.gdpreu.org/">General Data Protection Regulation (GDPR)</a> and <a href="https://digitalguardian.com/blog/what-pci-compliance">Payment Card Industry Data Security Standards (PCI DSS)</a>.</p>
+
+<h1 id="perspectives">Perspectives</h1>
+<p>These are a concept introduced by R&amp;W and provide an elegant mechanism to address the non-functional attributes, also known as the quality attributes, or ‘-ities’ (security, availability, usability…). Rather than consider these concerns on their own, and risk being disconnected from the realities of our architecture, we acknowledge they are cross-cutting through the viewpoints described above.</p>
+
+<p>This also enables us to <a href="https://checkify.com/blog/power-of-a-simple-checklist/">use checklists</a> to reassure ourselves our architecture description doesn’t have any blind spots. These checklists can (and should) also be used outside the architecture description as part of or day to day design activities, such as <a href="https://www.agilealliance.org/glossary/three-amigos/">3 amigo sessions</a>, or even work items’ <a href="https://www.agilealliance.org/glossary/definition-of-ready">definition of ready</a>.</p>
+
+<p>Unfortunately, <a href="https://www.viewpoints-and-perspectives.info/home/perspectives/">R&amp;W Perspective catalogue</a> does not map very well (imo) to a modern cloud based architecture. We will instead align our architecture description with the five pillars of well architected cloud solutions (e.g. <a href="https://docs.aws.amazon.com/wellarchitected/latest/framework/welcome.html">AWS</a>, <a href="https://docs.microsoft.com/en-us/azure/architecture/framework/">Azure</a> and <a href="https://cloud.google.com/architecture/framework">GCP</a>):</p>
+
+<h2 id="operational-perspective">Operational perspective</h2>
+<p>We must ensure that our architecture supports our ability to develop, deploy, run and support the solution and its individual components. This perspective allows us to question the element described in any given viewpoint against this criteria.</p>
+
+<p>Interestingly, R&amp;W treated Operational attributes via a <a href="https://www.viewpoints-and-perspectives.info/home/viewpoints/operational/">viewpoint of its own</a> rather than a perspective, but with DevOps, that aspect in my mind is subsummed in the Development viewpoint.</p>
+
+<p>AWS Well-Architected Framework <a href="https://d1.awsstatic.com/whitepapers/architecture/AWS-Operational-Excellence-Pillar.pdf">Operational Excellence Pillar whitepaper</a> is an essential read to understand operational attributes of our architecture.</p>
+
+<h2 id="security-perspective">Security perspective</h2>
+<p>Here we consider whether the elements described by a given viewpoint impact:</p>
+
+<ul>
+  <li>
+    <p><strong>security</strong> - how we prevent unauthorized access to organizational assets such as computers, networks, and data, and maintain the confidentiality, integrity and accessibility (so called <a href="https://www.fortinet.com/resources/cyberglossary/cia-triad">CIA triad</a>) sensitive and/or business critical information.</p>
+  </li>
+  <li>
+    <p><strong>privacy</strong> - how we control access to Personally Identifiable Information  (PII) and other sensitive information and how it is used.</p>
+  </li>
+  <li>
+    <p><strong>compliance</strong> - how we meet legal and regulatory requirements such as GDPR and PCI.</p>
+  </li>
+</ul>
+
+<p>See also AWS Well-Architected Framework <a href="https://docs.aws.amazon.com/wellarchitected/latest/security-pillar/welcome.html?ref=wellarchitected-wp">Security Pillar whitepaper</a>.</p>
+
+<h2 id="reliability-perspective">Reliability perspective</h2>
+<p>This perspective validates that the elements described by a given viewpoint support our ability to perform correctly and consistently, and recover from failure inside or outside our control, at any scale.</p>
+
+<p>See also AWS Well-Architected Framework <a href="https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/welcome.html?ref=wellarchitected-wp">Reliability Pillar whitepaper</a>.</p>
+
+<h2 id="performance-perspective">Performance perspective</h2>
+<p>Here we consider how the elements described by a given viewpoint support our ability to perform consistently and efficiently regardless of the demand placed on our systems by their users. Cloud infrastructure offers elasticity, i.e. can scale in and out on demand, which must be taken into account when architecting our solution.</p>
+
+<p>See also AWS Well-Architected Framework <a href="https://docs.aws.amazon.com/wellarchitected/latest/performance-efficiency-pillar/welcome.html?ref=wellarchitected-wp">Performance Efficiency Pillar whitepaper</a>.</p>
+
+<h2 id="cost-perspective">Cost perspective</h2>
+<p>Cloud infrastructure, and the ability to consume solutions ‘as a Service’ require us to have a clear understanding of the cost implications of our architecture decisions. The choice of components and patterns will greatly affect the overall cost of our solution, as well as the individual cost per-click/transaction. This must be considered as early as possible and become a first class concern in our decision process, weighed equally against sexier technical concerns.</p>
+
+<p>See also AWS Well-Architected Framework <a href="https://docs.aws.amazon.com/wellarchitected/latest/cost-optimization-pillar/welcome.html?ref=wellarchitected-wp">Cost Optimization Pillar whitepaper</a>.</p>
+
+<h1 id="summary">Summary</h1>
+<p>Rather than a big monolithic amorphous chunk of documentation, architecture descriptions can be sliced and diced over 3 axes, with each cell hopefully supporting discussion and decision making within and without our team.</p>
+
+<p><img src="/assets/images/2021-10-21-architecture-description-cube.png" alt="rubik cube like representation of the architecture description 3 axes" /></p>
+
+<p>I will hopefully revisit the subject in later posts, notably to document my checklists and how and where I use them.</p>
+
+        </div>
+
+        
+          <div class="page-share">
+  <a href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Ffranck-chester.github.io%2F%2F2021%2F10%2F22%2FArchitecture-descriptions-in-the-cloud.html" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="btn btn--facebook btn--small"><i class="fab fa-fw fa-facebook" aria-hidden="true"></i> <span>Share</span></a>
+  <a href="https://twitter.com/intent/tweet?text=Architecture+descriptions+in+the+cloud%20https%3A%2F%2Ffranck-chester.github.io%2F%2F2021%2F10%2F22%2FArchitecture-descriptions-in-the-cloud.html" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="btn btn--twitter btn--small"><i class="fab fa-fw fa-twitter" aria-hidden="true"></i> <span>Tweet</span></a>
+  <a href="https://www.linkedin.com/shareArticle?mini=true&url=https%3A%2F%2Ffranck-chester.github.io%2F%2F2021%2F10%2F22%2FArchitecture-descriptions-in-the-cloud.html" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="btn btn--linkedin btn--small"><i class="fab fa-fw fa-linkedin" aria-hidden="true"></i> <span>LinkedIn</span></a>
+  <a href="https://reddit.com/submit?title=Architecture+descriptions+in+the+cloud&url=https%3A%2F%2Ffranck-chester.github.io%2F%2F2021%2F10%2F22%2FArchitecture-descriptions-in-the-cloud.html" onclick="window.open(this.href, 'window', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" class="btn btn--reddit btn--small"><i class="fab fa-fw fa-reddit" aria-hidden="true"></i> <span>Reddit</span></a>
+</div>
+
+        
+
+        
+
+        <nav class="page-pagination" role="navigation">
+  
+    <a class="page-previous" href="/2021/10/18/Setting-up-git-ssh-with-multiple-repos.html">
+      <h4 class="page-pagination-label">Previous</h4>
+      <span class="page-pagination-title">
+        <i class="fas fa-arrow-left"></i> Configuring Git to use the proper SSH key across multiple remote repositories
+
+      </span>
+    </a>
+  
+
+  
+    <a class="page-next" href="/2021/10/30/Terraform-CDK-part-1.html">
+      <h4 class="page-pagination-label">Next</h4>
+      <span class="page-pagination-title">
+        Terraform CDK - part 1
+ <i class="fas fa-arrow-right"></i>
+      </span>
+    </a>
+  
+</nav>
+
+      </div>
+    </div>
+  </article>
+</main>
+
+
+    <footer id="footer" class="site-footer">
+  <!-- start custom footer snippets -->
+
+<!-- end custom footer snippets -->
+<div class="social-icons"><a class="social-icon" href="https://github.com/franck-chester/franck-chester.github.io"><i class="fab fa-github-square fa-2x" title="GitHub"></i></a></div><div class="copyright">
+    
+      <p><a href="https://github.com/franck-chester/franck-chester.github.io/actions/workflows/jekyll.yaml"><img src="https://github.com/franck-chester/franck-chester.github.io/actions/workflows/jekyll.yaml/badge.svg" alt="Build and deploy Jekyll site to GitHub Pages" /></a><br />
+© Franck-Chester. Powered by <a href="https://jekyllrb.com">Jekyll</a> &amp; <a href="So Simple">So Simple</a>.</p>
+
+    
+  </div>
+</footer>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+  <script src="/assets/js/main.min.js"></script>
+  <script src="https://use.fontawesome.com/releases/v5.0.12/js/all.js"></script>
+
+<script type="text/javascript">
+    var mpq = [];
+    mpq.push(["init", ""]);
+    (function(){var b,a,e,d,c;b=document.createElement("script");b.type="text/javascript";
+    b.async=true;b.src=(document.location.protocol==="https:"?"https:":"http:")+
+    "//api.mixpanel.com/site_media/js/api/mixpanel.js";a=document.getElementsByTagName("script")[0];
+    a.parentNode.insertBefore(b,a);e=function(f){return function(){mpq.push(
+    [f].concat(Array.prototype.slice.call(arguments,0)))}};d=["init","track","track_links",
+    "track_forms","register","register_once","identify","name_tag","set_config"];for(c=0;c<
+    d.length;c++){mpq[d[c]]=e(d[c])}})();
+</script>
+
+  </body>
+
+</html>
