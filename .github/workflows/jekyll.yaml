@@ -28,8 +28,13 @@ jobs:
             ${{ runner.os }}-gems-
 
       - name: Build Jekyll site
-        uses: helaili/jekyll-action@v2
+        uses: limjh16/jekyll-action-ts@v2
         with:
-          target_branch: 'gh-pages'
-          token: ${{ secrets.GITHUB_TOKEN }}
+          enable_cache: true
+
+      - name: deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: 'gh-pages'
 
