@@ -32,7 +32,7 @@ Which works!!
 
 Final workflow definition looks like this (check the repo for the latest definition)
 
-December 2022: had to update my action to use x instead of y
+December 2022: had to update my action to use z instead of y
 
 ``` yaml
 name: Generate a new file in the _links folder
